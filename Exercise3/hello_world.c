@@ -36,7 +36,7 @@ int main()
 			if (alt_up_sd_card_is_FAT16())
 			{
 				printf("FAT16 file system detected.\n");
-				if (alt_up_sd_card_find_first("directory", file_name) == 0)
+				if (alt_up_sd_card_find_first("", file_name) == 0)
 				{
 					printf("%s\n", file_name);
 					while (alt_up_sd_card_find_next(file_name) == 0)
