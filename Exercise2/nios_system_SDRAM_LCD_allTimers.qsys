@@ -108,6 +108,22 @@
          type = "int";
       }
    }
+   element hardware_timer.s1
+   {
+      datum baseAddress
+      {
+         value = "8256";
+         type = "long";
+      }
+   }
+   element KEY.s1
+   {
+      datum baseAddress
+      {
+         value = "8288";
+         type = "long";
+      }
+   }
    element timer.s1
    {
       datum baseAddress
@@ -132,27 +148,11 @@
          type = "boolean";
       }
    }
-   element KEY.s1
-   {
-      datum baseAddress
-      {
-         value = "8288";
-         type = "long";
-      }
-   }
    element timestamp_timer.s1
    {
       datum baseAddress
       {
          value = "8224";
-         type = "long";
-      }
-   }
-   element hardware_timer.s1
-   {
-      datum baseAddress
-      {
-         value = "8256";
          type = "long";
       }
    }
@@ -200,7 +200,7 @@
  <parameter name="projectName" value="exercise_two.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1379828103468" />
+ <parameter name="timeStamp" value="1380324911950" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -293,7 +293,7 @@
   <parameter name="mmu_tlbPtrSz" value="7" />
   <parameter name="mmu_tlbNumWays" value="16" />
   <parameter name="mmu_processIDNumBits" value="8" />
-  <parameter name="impl" value="Tiny" />
+  <parameter name="impl" value="Fast" />
   <parameter name="icache_size" value="4096" />
   <parameter name="icache_ramBlockType" value="Automatic" />
   <parameter name="icache_numTCIM" value="0" />
@@ -683,11 +683,6 @@
    start="clocks.sys_clk"
    end="timestamp_timer.clk" />
  <connection
-   kind="reset"
-   version="12.0"
-   start="clocks.sys_clk_reset"
-   end="timestamp_timer.reset" />
- <connection
    kind="interrupt"
    version="12.0"
    start="nios_system.d_irq"
@@ -713,11 +708,6 @@
    start="clk_0.clk_reset"
    end="hardware_timer.reset" />
  <connection
-   kind="reset"
-   version="12.0"
-   start="clocks.sys_clk_reset"
-   end="hardware_timer.reset" />
- <connection
    kind="clock"
    version="12.0"
    start="clocks.sys_clk"
@@ -729,4 +719,14 @@
    end="hardware_timer.irq">
   <parameter name="irqNumber" value="2" />
  </connection>
+ <connection
+   kind="reset"
+   version="12.0"
+   start="nios_system.jtag_debug_module_reset"
+   end="timestamp_timer.reset" />
+ <connection
+   kind="reset"
+   version="12.0"
+   start="nios_system.jtag_debug_module_reset"
+   end="hardware_timer.reset" />
 </system>
