@@ -8,6 +8,9 @@
 #ifndef VGA_DISPLAY_H_
 #define VGA_DISPLAY_H_
 
+#include <stdio.h>
+#include <math.h>
+
 #include "altera_up_avalon_video_pixel_buffer_dma.h"
 #include "altera_up_avalon_video_character_buffer_with_dma.h"
 

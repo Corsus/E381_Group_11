@@ -46,5 +46,6 @@ extern Line line1;
 extern Line line2;
 
 extern unsigned long int game_score;
+extern unsigned long int difficulty_counter;
 
 #endif /* SCREEN_MOVER_H_ */

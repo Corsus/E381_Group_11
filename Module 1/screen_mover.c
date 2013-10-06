@@ -10,7 +10,7 @@ Line line1 = {SCREEN_Y,0,0,0,0,0,RED};
 Line line2 = {SCREEN_Y,0,0,0,0,0,GREEN};
 
 int screen_mover_counter = 0;
-int difficulty_counter = 0;
+unsigned long int difficulty_counter = 1;
 unsigned long int game_score = 0;
 
 void initializeScreenMover()
@@ -94,28 +94,29 @@ void updateCounters()
 		adjustDifficulty();
 	}
 	game_score++;
+	drawInfoBarStats();
 }
 
 void adjustDifficulty()
 {
 	switch(difficulty_counter)
 	{
-		case 1: // 1 250 000
+		case 5: // 1 250 000
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0x12D0);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0013);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
-		case 5: // 900 000
+		case 25: // 900 000
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0xBBA0);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x000D);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
-		case 25: // 625 000
+		case 125: // 625 000
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0x8968);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0009);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
-		case 125: // 500 000
+		case 625: // 500 000
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0xA120);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0007);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);

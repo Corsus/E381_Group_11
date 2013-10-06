@@ -36,7 +36,7 @@ void initialize_ball_irq()
 void handleControllerInput()
 {
 	usleep(5000);
-	if (!((*((volatile char*)KEY_BASE)) & 0x4))
+	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4))
 	{
 		// move right
 		if (gameBall.e_x < SCREEN_X_PLAY - HORIZONTAL_SPEED)
@@ -47,7 +47,7 @@ void handleControllerInput()
 		}
 		printf("Right %d\n", gameBall.nw_x + 1);
 	}
-	else if (!((*((volatile char*)KEY_BASE)) & 0x8))
+	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
 	{
 		// move left
 		if (gameBall.w_x > ((SCREEN_X_PLAY/2) - 2) % 3 )
@@ -58,8 +58,9 @@ void handleControllerInput()
 		}
 		printf("Left %d\n", gameBall.nw_x + 1);
 	}
+
 	usleep(5000);
-	if (!((*((volatile char*)KEY_BASE)) & 0x4) || !((*((volatile char*)KEY_BASE)) & 0x8))
+	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4) || !(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
 	{
 		handleControllerInput();
 	}
