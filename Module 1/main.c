@@ -13,8 +13,8 @@ Ball gameBall;
 int main()
 {
 	printf("Hello. Welcome.\n");
+	initializeVgaDisplay();
 	initializeGame();
-	printf("Starting position: %d\n", gameBall.x_pos);
 
 	// draw menu
 	// wait for user input
@@ -28,15 +28,26 @@ int main()
 
 void initializeGame()
 {
-	initializeVgaDisplay();
 	initializeGameBall();
+	initializeInfoBar();
 	initializeBallMover();
 	initializeScreenMover();
 }
 
 void initializeGameBall()
 {
-	gameBall.x_pos = (SCREEN_X / 2) - 1;
-	gameBall.y_pos = 1;
+	gameBall.nw_x = (SCREEN_X_PLAY / 2) - 2;
+	gameBall.w_x = (SCREEN_X_PLAY / 2) - 2;
+	gameBall.sw_x = (SCREEN_X_PLAY / 2) - 2;
+	gameBall.ne_x = (SCREEN_X_PLAY / 2);
+	gameBall.e_x = (SCREEN_X_PLAY / 2);
+	gameBall.se_x = (SCREEN_X_PLAY / 2);
+
+	gameBall.nw_y = 0;
+	gameBall.w_y = 1;
+	gameBall.sw_y = 2;
+	gameBall.ne_y = 0;
+	gameBall.e_y = 1;
+	gameBall.se_y = 2;
 }
 

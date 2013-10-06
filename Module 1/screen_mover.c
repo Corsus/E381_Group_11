@@ -7,8 +7,7 @@
 #include "screen_mover.h"
 
 Line line1 = {SCREEN_Y,0,0,0,0,0,RED};
-Line line2 = {SCREEN_Y,0,0,0,0,0,YELLOW};
-Line line3 = {SCREEN_Y,0,0,0,0,0,BLUE};
+Line line2 = {SCREEN_Y,0,0,0,0,0,GREEN};
 
 int screen_mover_counter = 0;
 int difficulty_counter = 0;
@@ -52,11 +51,8 @@ void screen_isr(void* context)
 		case 0:
 			generateRandomLine(1);
 			break;
-		case 80:
+		case 120:
 			generateRandomLine(2);
-			break;
-		case 160:
-			generateRandomLine(3);
 			break;
 	}
 	pushScreenUp();
@@ -72,19 +68,14 @@ void pushScreenUp()
 	undrawLines();
 	if (line1.on_screen == 1)
 	{
-		line1.y_pos-=2;
-		printf("Line 1 position: %d\n", line1.y_pos);
+		line1.y_pos -= SCREEN_SPEED;
+		//printf("Line 1 position: %d\n", line1.y_pos);
 	}
 
 	if (line2.on_screen == 1)
 	{
-		line2.y_pos-=2;
-		printf("Line 2 position: %d\n", line2.y_pos);
-	}
-	if (line3.on_screen == 1)
-	{
-		line3.y_pos-=2;
-		printf("Line 3 position: %d\n", line3.y_pos);
+		line2.y_pos -= SCREEN_SPEED;
+		//printf("Line 2 position: %d\n", line2.y_pos);
 	}
 	drawLines();
 }
@@ -93,7 +84,7 @@ void updateCounters()
 {
 	if (screen_mover_counter < SCREEN_Y)
 	{
-		screen_mover_counter+=2;
+		screen_mover_counter += SCREEN_SPEED;
 	}
 	else
 	{
@@ -141,16 +132,13 @@ void generateRandomLine(int lineNumber)
 		case 2:
 			theLine = &line2;
 			break;
-		case 3:
-			theLine = &line3;
-			break;
 	}
 
 	int startGap;
 	int endGap;
 
-	startGap = (rand() % (SCREEN_X - 40));
-	endGap = startGap + 40;
+	startGap = (rand() % (SCREEN_X_PLAY - WALL_GAP));
+	endGap = startGap + WALL_GAP;
 
 	(*theLine).y_pos = SCREEN_Y;	//start off the screen
 
@@ -158,7 +146,7 @@ void generateRandomLine(int lineNumber)
 	(*theLine).end_x1 = startGap;
 
 	(*theLine).start_x2 = endGap;
-	(*theLine).end_x2 = SCREEN_X - 1;
+	(*theLine).end_x2 = SCREEN_X_PLAY - 1;
 
 	(*theLine).on_screen = 1;
 }

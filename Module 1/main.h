@@ -22,17 +22,40 @@
 #include "vga_display.h"
 
 #define SCREEN_X 320
+#define SCREEN_X_PLAY 240
 #define SCREEN_Y 240
-#define WALL_GAP 20
+#define WALL_GAP 40
+
+#define MENU_PLAY 2
+#define MENU_SCORE 1
 
 void initializeGame();
 void initializeGameBall();
 
+void initializeMenu();
+void initialize_menu_button_irq();
+void menubutton_isr(void* context);
+void menu_button_helper();
+void selectMenu();
+
 typedef struct
 {
-	int x_pos;
-	int y_pos;
+	int nw_x, nw_y;
+	int w_x, w_y;
+	int sw_x, sw_y;
+
+	int ne_x, ne_y;
+	int e_x, e_y;
+	int se_x, se_y;
+
 }Ball;
+
+typedef enum
+{
+	MAIN_MENU,
+	PLAYING,
+	HIGH_SCORE
+}GameStatus;
 
 extern Ball gameBall;
 

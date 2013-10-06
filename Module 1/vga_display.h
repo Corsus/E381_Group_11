@@ -17,18 +17,21 @@
 #include "main.h"
 
 #define WHITE 0xFFFF
-#define RED 0xf800
-#define YELLOW 0x07ff
-#define BLUE 0x001f
+#define RED 0xF800
+#define GREEN 0x07E0
+#define BLUE 0x001F
 #define BLACK 0x0000
 
 void initializeVgaDisplay();
+void initializeInfoBar();
 void drawLines();
 void undrawLines();
 void drawBall();
 void undrawBall();
 
 void drawMenu();
+void update_menu_selection(int direction);
+void clearScreen();
 
 
 #endif /* VGA_DISPLAY_H_ */

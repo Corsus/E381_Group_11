@@ -19,6 +19,11 @@
 #include "altera_avalon_timer.h"
 #include "altera_avalon_timer_regs.h"
 
+#define VERTICAL_MOVE 0
+#define HORIZONTAL_MOVE_LEFT 1
+#define HORIZONTAL_MOVE_RIGHT 2
+#define VERTICAL_SPEED 1
+#define HORIZONTAL_SPEED 3
 
 
 void initializeBallMover();
@@ -29,7 +34,9 @@ void initialize_button_irq();
 void pushbutton_isr(void* context);
 void adjustPosition_isrHelper();
 
-int detectCollision(int next_x, int next_y);
+void detectCollision(int movement);
+void handleCollision(int movement, int line_number);
+void updateBallPosition(int movement);
 
 
 #endif /* BALL_MOVER_H_ */

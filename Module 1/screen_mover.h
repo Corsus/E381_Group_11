@@ -18,6 +18,8 @@
 #include "main.h"
 #include "vga_display.h"
 
+#define SCREEN_SPEED 2
+
 void initializeScreenMover();
 void initialize_screen_irq();
 void screen_isr(void* context);
@@ -42,6 +44,5 @@ typedef struct
 
 extern Line line1;
 extern Line line2;
-extern Line line3;
 
 #endif /* SCREEN_MOVER_H_ */
