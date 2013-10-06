@@ -32,10 +32,7 @@
 void initializeGame();
 void initializeGameBall();
 
-void initializeMenu();
-void initialize_menu_button_irq();
-void menubutton_isr(void* context);
-void menu_button_helper();
+void menu_controller();
 void selectMenu();
 
 typedef struct

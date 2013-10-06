@@ -160,12 +160,12 @@ void drawMenu()
 
 void update_menu_selection(int direction)
 {
-	if (direction == 1)
+	if (direction == MENU_SCORE)
 	{
 		alt_up_char_buffer_draw(char_buffer, ' ', 15, 50);
 		alt_up_char_buffer_draw(char_buffer, '>', 55, 50);
 	}
-	else if (direction == 2)
+	else if (direction == MENU_PLAY)
 	{
 		alt_up_char_buffer_draw(char_buffer, '>', 15, 50);
 		alt_up_char_buffer_draw(char_buffer, ' ', 55, 50);
