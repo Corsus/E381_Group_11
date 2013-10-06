@@ -28,9 +28,8 @@ void initializeVgaDisplay()
 	while (alt_up_pixel_buffer_dma_check_swap_buffers_status(pixel_buffer));
 
 	//initialize character buffer
-	char_buffer = alt_up_char_buffer_open_dev(CHARACTER_LCD_NAME);
+	char_buffer = alt_up_char_buffer_open_dev("/dev/character_buffer");
 	alt_up_char_buffer_init(char_buffer);
-	alt_up_char_buffer_clear(char_buffer);
 
 	// Clear the screen
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
@@ -38,8 +37,17 @@ void initializeVgaDisplay()
 
 void initializeInfoBar()
 {
-	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, SCREEN_X_PLAY, 0, SCREEN_X - 1, SCREEN_Y - 1, WHITE, 0);
-	//TODO:
+	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, SCREEN_X_PLAY, 0, SCREEN_X - 1, SCREEN_Y - 1, BLUE, 0);
+
+	alt_up_char_buffer_string(char_buffer, "  GAME STATUS", 60, 5);
+	alt_up_char_buffer_string(char_buffer, "---------------", 60, 6);
+	alt_up_char_buffer_string(char_buffer, "  SCORE", 60, 10);
+	alt_up_char_buffer_string(char_buffer, "  LEVEL", 60, 15);
+}
+
+void drawInfoBarStats()
+{
+
 }
 
 void drawLines()

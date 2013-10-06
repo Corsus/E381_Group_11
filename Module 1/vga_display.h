@@ -24,6 +24,7 @@
 
 void initializeVgaDisplay();
 void initializeInfoBar();
+void drawInfoBarStats();
 void drawLines();
 void undrawLines();
 void drawBall();

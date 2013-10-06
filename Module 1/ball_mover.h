@@ -25,19 +25,15 @@
 #define VERTICAL_SPEED 1
 #define HORIZONTAL_SPEED 3
 
-
 void initializeBallMover();
 void initialize_ball_irq();
 void ball_isr(void* context);
 
-void initialize_button_irq();
-void pushbutton_isr(void* context);
-void adjustPosition_isrHelper();
+void handleControllerInput();
 
 void detectCollision(int movement);
 void handleCollision(int movement, int line_number);
 void updateBallPosition(int movement);
-
 
 #endif /* BALL_MOVER_H_ */
 

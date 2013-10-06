@@ -6,7 +6,6 @@ volatile int edge_capture;
 //initialization function called by main
 void initializeBallMover()
 {
-	initialize_button_irq();
 	initialize_ball_irq();
 }
 
@@ -33,39 +32,10 @@ void initialize_ball_irq()
 	printf("Ball timer started...\n");
 }
 
-//initialize irq for ball controls
-void initialize_button_irq()
-{
-	printf("Initializing Button IRQ...\n");
-
-	void* edge_capture_ptr = (void*) &edge_capture;
-
-	IOWR_ALTERA_AVALON_PIO_IRQ_MASK(KEY_BASE, 0xf);
-
-	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(KEY_BASE, 0x0);
-
-	alt_ic_isr_register(KEY_IRQ_INTERRUPT_CONTROLLER_ID, KEY_IRQ,
-			pushbutton_isr, edge_capture_ptr, 0x0);
-	printf("Initialization completed...\n");
-}
-
-//handler for ball control interrupt
-void pushbutton_isr(void* context)
-{
-	alt_u32 interruptible = alt_irq_interruptible(KEY_IRQ);
-	volatile int* edge_capture_ptr = (volatile int*) context;
-
-	*edge_capture_ptr = IORD_ALTERA_AVALON_PIO_EDGE_CAP(KEY_BASE);
-
-	IOWR_ALTERA_AVALON_PIO_EDGE_CAP(KEY_BASE, 0);
-
-	adjustPosition_isrHelper();
-	alt_irq_non_interruptible(interruptible);
-}
-
 //helper function for pushbutton_isr
-void adjustPosition_isrHelper()
+void handleControllerInput()
 {
+	usleep(5000);
 	if (!((*((volatile char*)KEY_BASE)) & 0x4))
 	{
 		// move right
@@ -88,11 +58,10 @@ void adjustPosition_isrHelper()
 		}
 		printf("Left %d\n", gameBall.nw_x + 1);
 	}
-
-	usleep(20000);
+	usleep(5000);
 	if (!((*((volatile char*)KEY_BASE)) & 0x4) || !((*((volatile char*)KEY_BASE)) & 0x8))
 	{
-		adjustPosition_isrHelper();
+		handleControllerInput();
 	}
 }
 
@@ -114,7 +83,6 @@ void ball_isr(void* context)
 
 }
 
-//TODO: Collision Detection
 // movement parameter: 0 = falling, 1 = horizontal
 void detectCollision(int movement)
 {

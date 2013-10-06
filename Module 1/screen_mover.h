@@ -45,4 +45,6 @@ typedef struct
 extern Line line1;
 extern Line line2;
 
+extern unsigned long int game_score;
+
 #endif /* SCREEN_MOVER_H_ */

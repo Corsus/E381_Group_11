@@ -22,6 +22,7 @@ int main()
 	//main loop
 	while(1)
 	{
+		handleControllerInput();
 	}
 	return 0;
 }
@@ -29,9 +30,9 @@ int main()
 void initializeGame()
 {
 	initializeGameBall();
-	initializeInfoBar();
 	initializeBallMover();
 	initializeScreenMover();
+	initializeInfoBar();
 }
 
 void initializeGameBall()
