@@ -36,6 +36,13 @@ void initialize_ball_irq()
 void handleControllerInput()
 {
 	usleep(5000);
+
+	// check if game is over
+	if (gameBall.nw_y <= 0)
+	{
+		stopGame();
+	}
+
 	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4))
 	{
 		// move right

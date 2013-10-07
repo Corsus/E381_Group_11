@@ -22,6 +22,7 @@
 
 void initializeScreenMover();
 void initialize_screen_irq();
+void initializeScreenObjects();
 void screen_isr(void* context);
 void pushScreenUp();
 void updateCounters();

@@ -39,6 +39,7 @@ void initializeVgaDisplay()
 
 void initializeInfoBar()
 {
+	alt_up_char_buffer_clear(char_buffer);
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, SCREEN_X_PLAY, 0, SCREEN_X - 1, SCREEN_Y - 1, BLUE, 0);
 	alt_up_char_buffer_clear(char_buffer);
 	alt_up_char_buffer_string(char_buffer, "  GAME STATUS", 60, 5);
@@ -172,6 +173,24 @@ void update_menu_selection(int direction)
 	}
 }
 
+void drawGameOverScreen()
+{
+	//clears the game screen
+	clearScreen();
+
+	//draws GAMEOVER screen
+	alt_up_char_buffer_string(char_buffer, "   G   A   M   E        O   V   E   R   ", 19, 20);
+	alt_up_char_buffer_string(char_buffer, "SCORE:", 30, 25);
+	alt_up_char_buffer_string(char_buffer, "LEVEL:", 30, 30);
+	sprintf(score_string, "%lu", game_score);
+	alt_up_char_buffer_string(char_buffer, score_string, 45, 25);
+	sprintf(level_string, "%lu", difficulty_counter);
+	alt_up_char_buffer_string(char_buffer, level_string, 45, 30);
+	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 40);
+	//completed
+}
+
+//function to clear pixel buffer and char buffer
 void clearScreen()
 {
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);

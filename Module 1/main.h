@@ -34,6 +34,8 @@ void initializeGameBall();
 
 void menu_controller();
 void selectMenu();
+void stopGame();
+void waitForInput();
 
 typedef struct
 {
@@ -51,7 +53,8 @@ typedef enum
 {
 	MAIN_MENU,
 	PLAYING,
-	HIGH_SCORE
+	HIGH_SCORE,
+	GAME_OVER
 }GameStatus;
 
 extern Ball gameBall;

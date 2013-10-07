@@ -6,18 +6,42 @@
  */
 #include "screen_mover.h"
 
-Line line1 = {SCREEN_Y,0,0,0,0,0,RED};
-Line line2 = {SCREEN_Y,0,0,0,0,0,GREEN};
+Line line1;
+Line line2;
 
-int screen_mover_counter = 0;
-unsigned long int difficulty_counter = 1;
-unsigned long int game_score = 0;
+int screen_mover_counter;
+unsigned long int difficulty_counter;
+unsigned long int game_score;
 
 void initializeScreenMover()
 {
+	initializeScreenObjects();
+
+	screen_mover_counter = 0;
+	difficulty_counter = 1;
+	game_score = 0;
+
 	srand((unsigned) time(NULL));
 
 	initialize_screen_irq();
+}
+
+void initializeScreenObjects()
+{
+	line1.y_pos = SCREEN_Y;
+	line1.start_x1 = 0;
+	line1.end_x1 = 0;
+	line1.start_x2 = 0;
+	line1.end_x2 = 0;
+	line1.on_screen = 0;
+	line1.lineColor = RED;
+	line2.y_pos = SCREEN_Y;
+	line2.start_x1 = 0;
+	line2.end_x1 = 0;
+	line2.start_x2 = 0;
+	line2.end_x2 = 0;
+	line2.on_screen = 0;
+	line2.lineColor = GREEN;
 }
 
 void initialize_screen_irq()

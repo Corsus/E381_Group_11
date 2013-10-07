@@ -36,6 +36,7 @@ void undrawBall();
 void drawMenu();
 void update_menu_selection(int direction);
 void clearScreen();
+void drawGameOverScreen();
 
 
 #endif /* VGA_DISPLAY_H_ */

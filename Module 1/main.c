@@ -41,6 +41,10 @@ int main()
 		{
 			handleControllerInput();
 		}
+		while (gameStatus == GAME_OVER)
+		{
+			waitForInput();
+		}
 
 		// at the end, we go back to main menu and restart our loop
 		gameStatus = MAIN_MENU;
@@ -122,4 +126,30 @@ void selectMenu()
 			gameStatus = HIGH_SCORE;
 			break;
 	}
+}
+
+void stopGame()
+{
+	//disable all interrupts that run in the game
+	alt_ic_irq_disable(SCREEN_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SCREEN_TIMER_IRQ);
+	alt_ic_irq_disable(BALL_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, BALL_TIMER_IRQ);
+
+	//clear the screen
+	clearScreen();
+
+	gameStatus = GAME_OVER;
+	drawGameOverScreen();
+	printf("Game Over.\n");
+}
+
+void waitForInput()
+{
+	usleep(5000);
+	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x1))
+	{
+		// clears the menu screen
+		clearScreen();
+		gameStatus = MAIN_MENU;
+	}
+	usleep(5000);
 }
