@@ -175,6 +175,7 @@ void switchPlayMode()
 		gameBall.color = WHITE;
 		undraw_color = BLACK;
 	}
+	reverseControllerInput();
 }
 
 //initialize irq for the fall down timer

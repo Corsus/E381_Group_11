@@ -1,9 +1,14 @@
 #include "ball_mover.h"
 
+int right_button_mask = 0x4;
+int left_button_mask = 0x8;
+
 //initialization function called by main
 void initializeBallMover()
 {
 	initialize_ball_irq();
+	right_button_mask = 0x4;
+	left_button_mask = 0x8;
 }
 
 //initialize irq for the fall down timer
@@ -40,7 +45,7 @@ void handleControllerInput()
 		stopGame();
 	}
 
-	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4))
+	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & right_button_mask))
 	{
 		// move right
 		if (gameBall.e_x < SCREEN_X_PLAY - HORIZONTAL_SPEED)
@@ -53,7 +58,7 @@ void handleControllerInput()
 		}
 		//printf("Right %d\n", gameBall.nw_x + 1);
 	}
-	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
+	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & left_button_mask))
 	{
 		// move left
 		if (gameBall.w_x > ((SCREEN_X_PLAY/2) - 2) % 3 )
@@ -68,6 +73,13 @@ void handleControllerInput()
 	}
 
 	usleep(3000);
+}
+
+void reverseControllerInput()
+{
+	int temp = left_button_mask;
+	left_button_mask = right_button_mask;
+	right_button_mask = temp;
 }
 
 //handler for fall down interrupt

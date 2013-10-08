@@ -33,6 +33,7 @@ void enableTimerInterrupt();
 void disableTimerInterrupt();
 
 void handleControllerInput();
+void reverseControllerInput();
 
 void detectCollision(int movement);
 void handleCollision(int movement, int line_number);
