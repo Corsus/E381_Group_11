@@ -1,11 +1,9 @@
 #include "ball_mover.h"
 
-//push button ISR edge capture
-volatile int edge_capture;
-
 //initialization function called by main
 void initializeBallMover()
 {
+	ball_position_lock = UNLOCK;
 	initialize_ball_irq();
 }
 
@@ -35,7 +33,7 @@ void initialize_ball_irq()
 //helper function for pushbutton_isr
 void handleControllerInput()
 {
-	usleep(5000);
+	usleep(3000);
 
 	// check if game is over
 	if (gameBall.nw_y <= 0)
@@ -48,29 +46,29 @@ void handleControllerInput()
 		// move right
 		if (gameBall.e_x < SCREEN_X_PLAY - HORIZONTAL_SPEED)
 		{
+			disableTimerInterrupt();
 			undrawBall();
 			updateBallPosition(HORIZONTAL_MOVE_RIGHT);
 			drawBall();
+			enableTimerInterrupt();
 		}
-		printf("Right %d\n", gameBall.nw_x + 1);
+		//printf("Right %d\n", gameBall.nw_x + 1);
 	}
 	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
 	{
 		// move left
 		if (gameBall.w_x > ((SCREEN_X_PLAY/2) - 2) % 3 )
 		{
+			disableTimerInterrupt();
 			undrawBall();
 			updateBallPosition(HORIZONTAL_MOVE_LEFT);
 			drawBall();
+			enableTimerInterrupt();
 		}
-		printf("Left %d\n", gameBall.nw_x + 1);
+		//printf("Left %d\n", gameBall.nw_x + 1);
 	}
 
-	usleep(5000);
-	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4) || !(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
-	{
-		handleControllerInput();
-	}
+	usleep(3000);
 }
 
 //handler for fall down interrupt
@@ -89,6 +87,18 @@ void ball_isr(void* context)
 	//clear timeout bit
 	IOWR_ALTERA_AVALON_TIMER_STATUS(BALL_TIMER_BASE, 0x0);
 
+}
+
+void disableTimerInterrupt()
+{
+	// disable the interrupt, stops the timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(BALL_TIMER_BASE, 0xA);
+}
+
+void enableTimerInterrupt()
+{
+	// enable the interrupt, starts the timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(BALL_TIMER_BASE, 0x7);
 }
 
 // movement parameter: 0 = falling, 1 = horizontal

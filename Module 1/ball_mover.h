@@ -29,6 +29,8 @@
 void initializeBallMover();
 void initialize_ball_irq();
 void ball_isr(void* context);
+void enableTimerInterrupt();
+void disableTimerInterrupt();
 
 void handleControllerInput();
 

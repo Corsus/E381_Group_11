@@ -101,7 +101,6 @@ void undrawBall()
 			BLACK, 0);
 }
 
-
 void drawMenu()
 {
 	//clear screen
