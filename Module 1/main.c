@@ -165,15 +165,15 @@ void switchPlayMode()
 {
 	if (gameBall.color == WHITE)
 	{
-		reverseClearPlayScreen();
 		gameBall.color = BLACK;
 		undraw_color = WHITE;
+		reverseClearPlayScreen();
 	}
 	else
 	{
-		clearPlayScreen();
 		gameBall.color = WHITE;
 		undraw_color = BLACK;
+		clearPlayScreen();
 	}
 	reverseControllerInput();
 }

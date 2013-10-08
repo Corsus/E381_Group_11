@@ -43,6 +43,7 @@ void handleControllerInput()
 	if (gameBall.nw_y <= 0)
 	{
 		stopGame();
+		return;
 	}
 
 	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & right_button_mask))
