@@ -3,7 +3,6 @@
 //initialization function called by main
 void initializeBallMover()
 {
-	ball_position_lock = UNLOCK;
 	initialize_ball_irq();
 }
 
