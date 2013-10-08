@@ -15,8 +15,13 @@ const char* highscore = "HIGHSCORES";
 char* score_string;
 char* level_string;
 
+int undraw_color;
+
 void initializeVgaDisplay()
 {
+	//initialize our background color
+	undraw_color = BLACK;
+
 	//initialize pixel buffer
 	pixel_buffer = alt_up_pixel_buffer_dma_open_dev(BUFFER_DMA_NAME);
 
@@ -75,13 +80,13 @@ void undrawLines()
 {
 	if (line1.on_screen == 1)
 	{
-		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line1.start_x1, line1.end_x1, line1.y_pos, BLACK, 0);
-		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line1.start_x2, line1.end_x2, line1.y_pos, BLACK, 0);
+		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line1.start_x1, line1.end_x1, line1.y_pos, undraw_color, 0);
+		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line1.start_x2, line1.end_x2, line1.y_pos, undraw_color, 0);
 	}
 	if (line2.on_screen == 1)
 	{
-		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line2.start_x1, line2.end_x1, line2.y_pos, BLACK, 0);
-		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line2.start_x2, line2.end_x2, line2.y_pos, BLACK, 0);
+		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line2.start_x1, line2.end_x1, line2.y_pos, undraw_color, 0);
+		alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, line2.start_x2, line2.end_x2, line2.y_pos, undraw_color, 0);
 	}
 }
 
@@ -90,7 +95,7 @@ void drawBall()
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer,
 			gameBall.nw_x, gameBall.nw_y,
 			gameBall.se_x, gameBall.se_y,
-			WHITE, 0);
+			gameBall.color, 0);
 }
 
 void undrawBall()
@@ -98,7 +103,7 @@ void undrawBall()
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer,
 			gameBall.nw_x, gameBall.nw_y,
 			gameBall.se_x, gameBall.se_y,
-			BLACK, 0);
+			undraw_color, 0);
 }
 
 void drawMenu()
@@ -194,4 +199,14 @@ void clearScreen()
 {
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 	alt_up_char_buffer_clear(char_buffer);
+}
+
+void clearPlayScreen()
+{
+	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, 0, 0, SCREEN_X_PLAY - 1, SCREEN_Y - 1, BLACK, 0);
+}
+
+void reverseClearPlayScreen()
+{
+	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, 0, 0, SCREEN_X_PLAY - 1, SCREEN_Y - 1, WHITE, 0);
 }

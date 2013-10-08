@@ -73,6 +73,7 @@ void handleControllerInput()
 //handler for fall down interrupt
 void ball_isr(void* context)
 {
+	alt_u32 interruptible = alt_irq_interruptible(BALL_TIMER_IRQ);
 	undrawBall();
 	if (gameBall.sw_y < SCREEN_Y - 1)
 	{
@@ -85,6 +86,7 @@ void ball_isr(void* context)
 
 	//clear timeout bit
 	IOWR_ALTERA_AVALON_TIMER_STATUS(BALL_TIMER_BASE, 0x0);
+	alt_irq_non_interruptible(interruptible);
 
 }
 

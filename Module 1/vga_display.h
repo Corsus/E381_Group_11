@@ -32,11 +32,14 @@ void drawLines();
 void undrawLines();
 void drawBall();
 void undrawBall();
+void clearPlayScreen();
+void reverseClearPlayScreen();
 
 void drawMenu();
 void update_menu_selection(int direction);
 void clearScreen();
 void drawGameOverScreen();
 
+extern int undraw_color;
 
 #endif /* VGA_DISPLAY_H_ */

@@ -37,6 +37,10 @@ void selectMenu();
 void stopGame();
 void waitForInput();
 
+void switchPlayMode();
+void initialize_modeSwitch_IRQ();
+void modeSwitch_isr(void* context);
+
 typedef struct
 {
 	int nw_x, nw_y;
@@ -47,6 +51,7 @@ typedef struct
 	int e_x, e_y;
 	int se_x, se_y;
 
+	int color;
 }Ball;
 
 typedef enum

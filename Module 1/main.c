@@ -13,6 +13,9 @@ Ball gameBall;
 // current selection in the menu
 int menu_selection = MENU_PLAY;
 
+// mode switch counter
+int mode_switch_counter;
+
 // state of the game
 GameStatus gameStatus = MAIN_MENU;
 
@@ -58,6 +61,7 @@ void initializeGame()
 	initializeGameBall();
 	initializeBallMover();
 	initializeScreenMover();
+	initialize_modeSwitch_IRQ();
 	initializeInfoBar();
 }
 
@@ -77,6 +81,8 @@ void initializeGameBall()
 	gameBall.ne_y = 0;
 	gameBall.e_y = 1;
 	gameBall.se_y = 2;
+
+	gameBall.color = WHITE;
 }
 
 // Menu button control handler
@@ -133,6 +139,7 @@ void stopGame()
 	//disable all interrupts that run in the game
 	alt_ic_irq_disable(SCREEN_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SCREEN_TIMER_IRQ);
 	alt_ic_irq_disable(BALL_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, BALL_TIMER_IRQ);
+	alt_ic_irq_disable(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ);
 
 	//clear the screen
 	clearScreen();
@@ -153,3 +160,58 @@ void waitForInput()
 	}
 	usleep(5000);
 }
+
+void switchPlayMode()
+{
+	if (gameBall.color == WHITE)
+	{
+		reverseClearPlayScreen();
+		gameBall.color = BLACK;
+		undraw_color = WHITE;
+	}
+	else
+	{
+		clearPlayScreen();
+		gameBall.color = WHITE;
+		undraw_color = BLACK;
+	}
+}
+
+//initialize irq for the fall down timer
+void initialize_modeSwitch_IRQ()
+{
+	mode_switch_counter = 0;
+	printf("Initializing mode switch timer IRQ...\n");
+	// setting up timer (Continuous, Interrupt enabled, Stopped)
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0xb); //stop-start-cont-ito 1011
+
+	// register isr
+	alt_ic_isr_register(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ,
+			modeSwitch_isr, 0x0, 0x0);
+
+	// enable interrupt
+	alt_ic_irq_enable(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ);
+
+	//start timer
+	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0x7); //stop-start-cont-ito 0111
+
+	printf("Mode switch timer started...\n");
+}
+
+//handler for fall down interrupt
+void modeSwitch_isr(void* context)
+{
+	if (mode_switch_counter <= 10)
+	{
+		mode_switch_counter++;
+	}
+	else
+	{
+		mode_switch_counter = 0;
+		switchPlayMode();
+	}
+
+	//clear timeout bit
+	IOWR_ALTERA_AVALON_TIMER_STATUS(MODESWITCH_TIMER_BASE, 0x0);
+}
+
