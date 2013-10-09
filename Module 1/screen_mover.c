@@ -59,11 +59,10 @@ void initialize_screen_irq()
 	IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0013);
 
 	// register isr
-	alt_ic_isr_register(SCREEN_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SCREEN_TIMER_IRQ,
-			screen_isr, 0x0, 0x0);
+	alt_irq_register(SCREEN_TIMER_IRQ, 0x0, screen_isr);
 
 	// enable interrupt
-	alt_ic_irq_enable(SCREEN_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SCREEN_TIMER_IRQ);
+	alt_irq_enable(SCREEN_TIMER_IRQ);
 
 	//start timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7); //stop-start-cont-ito 0111
@@ -71,7 +70,7 @@ void initialize_screen_irq()
 	printf("Screen timer started...\n");
 }
 
-void screen_isr(void* context)
+void screen_isr(void* context, alt_u32 id)
 {
 	alt_u32 interruptible = alt_irq_interruptible(SCREEN_TIMER_IRQ);
 

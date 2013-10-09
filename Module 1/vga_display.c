@@ -14,6 +14,7 @@ const char* play = "PLAY";
 const char* highscore = "HIGHSCORES";
 char* score_string;
 char* level_string;
+char* reverse_counter_string;
 
 int undraw_color;
 
@@ -51,6 +52,8 @@ void initializeInfoBar()
 	alt_up_char_buffer_string(char_buffer, "---------------", 60, 6);
 	alt_up_char_buffer_string(char_buffer, " SCORE", 60, 10);
 	alt_up_char_buffer_string(char_buffer, " LEVEL", 60, 15);
+	alt_up_char_buffer_string(char_buffer, " REVERSE", 60, 20);
+	alt_up_char_buffer_string(char_buffer, "      IN", 60, 21);
 }
 
 void drawInfoBarStats()
@@ -59,6 +62,8 @@ void drawInfoBarStats()
 	alt_up_char_buffer_string(char_buffer, score_string, 68, 10);
 	sprintf(level_string, "%lu", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 68, 15);
+	sprintf(reverse_counter_string, "%d", mode_switch_counter);
+	alt_up_char_buffer_string(char_buffer, reverse_counter_string, 70, 20);
 }
 
 void drawLines()

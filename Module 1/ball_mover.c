@@ -22,11 +22,10 @@ void initialize_ball_irq()
 	IOWR_ALTERA_AVALON_TIMER_PERIODH(BALL_TIMER_BASE, 0x0002);
 
 	// register isr
-	alt_ic_isr_register(BALL_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, BALL_TIMER_IRQ,
-			ball_isr, 0x0, 0x0);
+	alt_irq_register(BALL_TIMER_IRQ, 0x0, ball_isr);
 
 	// enable interrupt
-	alt_ic_irq_enable(BALL_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, BALL_TIMER_IRQ);
+	alt_irq_enable(BALL_TIMER_IRQ);
 
 	//start timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(BALL_TIMER_BASE, 0x7); //stop-start-cont-ito 0111
@@ -37,7 +36,7 @@ void initialize_ball_irq()
 //helper function for pushbutton_isr
 void handleControllerInput()
 {
-	usleep(3000);
+	usleep(4000);
 
 	// check if game is over
 	if (gameBall.nw_y <= 0)
@@ -73,7 +72,7 @@ void handleControllerInput()
 		//printf("Left %d\n", gameBall.nw_x + 1);
 	}
 
-	usleep(3000);
+	usleep(4000);
 }
 
 void reverseControllerInput()
@@ -84,7 +83,7 @@ void reverseControllerInput()
 }
 
 //handler for fall down interrupt
-void ball_isr(void* context)
+void ball_isr(void* context, alt_u32 id)
 {
 	alt_u32 interruptible = alt_irq_interruptible(BALL_TIMER_IRQ);
 	undrawBall();
@@ -92,7 +91,7 @@ void ball_isr(void* context)
 	{
 		updateBallPosition(VERTICAL_MOVE);
 	}
-	detectCollision(VERTICAL_MOVE);
+	detectCollision();
 	drawBall();
 
 	//printf("Ball Y-position: %d\n", gameBall.nw_y + 1);
@@ -116,45 +115,41 @@ void enableTimerInterrupt()
 }
 
 // movement parameter: 0 = falling, 1 = horizontal
-void detectCollision(int movement)
+void detectCollision()
 {
-	if (movement == VERTICAL_MOVE)
+	if (line1.y_pos >= gameBall.nw_y && line1.y_pos <= gameBall.sw_y)
 	{
-		if (line1.y_pos >= gameBall.nw_y && line1.y_pos <= gameBall.sw_y)
+		if (line1.end_x1 >= gameBall.w_x || line1.start_x2 <= gameBall.e_x)
 		{
-			if (line1.end_x1 >= gameBall.w_x || line1.start_x2 <= gameBall.e_x)
-			{
-				handleCollision(VERTICAL_MOVE, 1);
-			}
-		}
-		else if (line2.y_pos >= gameBall.nw_y && line2.y_pos <= gameBall.sw_y)
-		{
-			if (line2.end_x1 >= gameBall.w_x || line2.start_x2 <= gameBall.e_x)
-			{
-				handleCollision(VERTICAL_MOVE, 2);
-			}
+			handleCollision(1);
 		}
 	}
+	else if (line2.y_pos >= gameBall.nw_y && line2.y_pos <= gameBall.sw_y)
+	{
+		if (line2.end_x1 >= gameBall.w_x || line2.start_x2 <= gameBall.e_x)
+		{
+			handleCollision(2);
+		}
+	}
+
 }
 
-void handleCollision(int movement, int line_number)
+void handleCollision(int line_number)
 {
-	if (movement == VERTICAL_MOVE)
+	switch (line_number)
 	{
-		switch (line_number)
-		{
-			case 1:
-				gameBall.sw_y = gameBall.se_y = line1.y_pos - SCREEN_SPEED;
-				gameBall.w_y = gameBall.e_y = line1.y_pos - SCREEN_SPEED - 1;
-				gameBall.nw_y = gameBall.ne_y = line1.y_pos - SCREEN_SPEED - 2;
-				break;
-			case 2:
-				gameBall.sw_y = gameBall.se_y = line2.y_pos - SCREEN_SPEED;
-				gameBall.w_y = gameBall.e_y = line2.y_pos - SCREEN_SPEED - 1;
-				gameBall.nw_y = gameBall.ne_y = line2.y_pos - SCREEN_SPEED - 2;
-				break;
-		}
+		case 1:
+			gameBall.sw_y = gameBall.se_y = line1.y_pos - SCREEN_SPEED;
+			gameBall.w_y = gameBall.e_y = line1.y_pos - SCREEN_SPEED - 1;
+			gameBall.nw_y = gameBall.ne_y = line1.y_pos - SCREEN_SPEED - 2;
+			break;
+		case 2:
+			gameBall.sw_y = gameBall.se_y = line2.y_pos - SCREEN_SPEED;
+			gameBall.w_y = gameBall.e_y = line2.y_pos - SCREEN_SPEED - 1;
+			gameBall.nw_y = gameBall.ne_y = line2.y_pos - SCREEN_SPEED - 2;
+			break;
 	}
+
 }
 
 void updateBallPosition(int movement)

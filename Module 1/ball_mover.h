@@ -28,15 +28,15 @@
 
 void initializeBallMover();
 void initialize_ball_irq();
-void ball_isr(void* context);
+void ball_isr(void* context, alt_u32 id);
 void enableTimerInterrupt();
 void disableTimerInterrupt();
 
 void handleControllerInput();
 void reverseControllerInput();
 
-void detectCollision(int movement);
-void handleCollision(int movement, int line_number);
+void detectCollision();
+void handleCollision(int line_number);
 void updateBallPosition(int movement);
 
 #endif /* BALL_MOVER_H_ */

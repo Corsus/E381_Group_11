@@ -16,10 +16,13 @@
 #include "priv/alt_legacy_irq.h"
 #include "altera_up_sd_card_avalon_interface.h"
 #include "altera_avalon_pio_regs.h"
+#include "altera_up_avalon_audio.h"
 
 #include "screen_mover.h"
 #include "ball_mover.h"
 #include "vga_display.h"
+
+#include "sd_card_controller.h"
 
 #define SCREEN_X 320
 #define SCREEN_X_PLAY 240
@@ -39,7 +42,7 @@ void waitForInput();
 
 void switchPlayMode();
 void initialize_modeSwitch_IRQ();
-void modeSwitch_isr(void* context);
+void modeSwitch_isr(void* context, alt_u32 id);
 
 typedef struct
 {
@@ -63,5 +66,6 @@ typedef enum
 }GameStatus;
 
 extern Ball gameBall;
+extern int mode_switch_counter;
 
 #endif /* MAIN_H_ */

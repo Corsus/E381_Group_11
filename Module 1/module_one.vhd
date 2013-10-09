@@ -41,8 +41,19 @@ entity module_one is
 		SRAM_UB_N:OUT STD_LOGIC;
 		SRAM_CE_N:OUT STD_LOGIC;
 		SRAM_OE_N:OUT STD_LOGIC;
-		SRAM_WE_N:OUT STD_LOGIC
-	 
+		SRAM_WE_N:OUT STD_LOGIC;
+		
+		I2C_SDAT : inout std_logic;
+		I2C_SCLK : out std_logic;
+		
+		AUD_XCK : out std_logic;
+		CLOCK_27 : in std_logic;
+		
+		AUD_ADCDAT : in std_logic;
+		AUD_ADCLRCK : in std_logic;
+		AUD_BCLK : in std_logic;
+		AUD_DACDAT : out std_logic;
+		AUD_DACLRCK : in std_logic
 	);
 end module_one;
 
@@ -90,11 +101,22 @@ architecture module_one_structure of module_one is
 			pixel_buffer_interface_UB_N : out STD_LOGIC;
 			pixel_buffer_interface_CE_N : out STD_LOGIC;
 			pixel_buffer_interface_OE_N : out STD_LOGIC; 
-			pixel_buffer_interface_WE_N : out STD_LOGIC);
+			pixel_buffer_interface_WE_N : out STD_LOGIC;
+			
+			av_config_interface_SDAT : inout STD_LOGIC;
+			av_config_interface_SCLK : out STD_LOGIC;
+			
+			audio_interface_ADCDAT : in STD_LOGIC;
+			audio_interface_ADCLRCK : in STD_LOGIC;
+			audio_interface_BCLK : in STD_LOGIC;
+			audio_interface_DACDAT : out STD_LOGIC;
+			audio_interface_DACLRCK : in STD_LOGIC;
+			
+			audio_out_clk_clk : out STD_LOGIC;
+			audio_in_clk_clk : in STD_LOGIC);
+			
 	end component;
 	
-
-
    signal DQM : std_logic_vector(1 DOWNTO 0);
    signal BA : std_logic_vector(1 DOWNTO 0);
 	
@@ -148,7 +170,20 @@ begin
 		 pixel_buffer_interface_UB_N => SRAM_UB_N,
 		 pixel_buffer_interface_CE_N => SRAM_CE_N,
 		 pixel_buffer_interface_OE_N => SRAM_OE_N,
-		 pixel_buffer_interface_WE_N => SRAM_WE_N);
+		 pixel_buffer_interface_WE_N => SRAM_WE_N,
+		 
+		 av_config_interface_SDAT => I2C_SDAT,
+		 av_config_interface_SCLK => I2C_SCLK,
+			
+		 audio_interface_ADCDAT => AUD_ADCDAT,
+		 audio_interface_ADCLRCK => AUD_ADCLRCK,
+		 audio_interface_BCLK => AUD_BCLK,
+		 audio_interface_DACDAT => AUD_DACDAT,
+		 audio_interface_DACLRCK => AUD_DACLRCK,
+			
+		 audio_out_clk_clk => AUD_XCK,
+		 audio_in_clk_clk => CLOCK_27);
+		 
 end module_one_structure;
 	
 

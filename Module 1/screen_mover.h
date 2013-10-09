@@ -23,7 +23,7 @@
 void initializeScreenMover();
 void initialize_screen_irq();
 void initializeScreenObjects();
-void screen_isr(void* context);
+void screen_isr(void* context, alt_u32 id);
 void pushScreenUp();
 void updateCounters();
 void generateRandomLine(int lineNumber);

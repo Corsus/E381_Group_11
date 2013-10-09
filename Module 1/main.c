@@ -26,6 +26,9 @@ int main()
 	// draw interface
 	initializeVgaDisplay();
 
+	initializeSDCardController();
+	connectToSDCard();
+
 	//main loop
 	while(1)
 	{
@@ -137,9 +140,9 @@ void selectMenu()
 void stopGame()
 {
 	//disable all interrupts that run in the game
-	alt_ic_irq_disable(SCREEN_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, SCREEN_TIMER_IRQ);
-	alt_ic_irq_disable(BALL_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, BALL_TIMER_IRQ);
-	alt_ic_irq_disable(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ);
+	alt_irq_disable(SCREEN_TIMER_IRQ);
+	alt_irq_disable(BALL_TIMER_IRQ);
+	alt_irq_disable(MODESWITCH_TIMER_IRQ);
 
 	//clear the screen
 	clearScreen();
@@ -163,6 +166,7 @@ void waitForInput()
 
 void switchPlayMode()
 {
+	printf("Mode Switch!!\n");
 	if (gameBall.color == WHITE)
 	{
 		gameBall.color = BLACK;
@@ -181,17 +185,16 @@ void switchPlayMode()
 //initialize irq for the fall down timer
 void initialize_modeSwitch_IRQ()
 {
-	mode_switch_counter = 0;
+	mode_switch_counter = 9;
 	printf("Initializing mode switch timer IRQ...\n");
 	// setting up timer (Continuous, Interrupt enabled, Stopped)
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0xb); //stop-start-cont-ito 1011
 
 	// register isr
-	alt_ic_isr_register(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ,
-			modeSwitch_isr, 0x0, 0x0);
+	alt_irq_register(MODESWITCH_TIMER_IRQ, 0x0, modeSwitch_isr);
 
 	// enable interrupt
-	alt_ic_irq_enable(MODESWITCH_TIMER_IRQ_INTERRUPT_CONTROLLER_ID, MODESWITCH_TIMER_IRQ);
+	alt_irq_enable(MODESWITCH_TIMER_IRQ);
 
 	//start timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0x7); //stop-start-cont-ito 0111
@@ -200,15 +203,16 @@ void initialize_modeSwitch_IRQ()
 }
 
 //handler for fall down interrupt
-void modeSwitch_isr(void* context)
+void modeSwitch_isr(void* context, alt_u32 id)
 {
-	if (mode_switch_counter <= 10)
+	if (mode_switch_counter != 0)
 	{
-		mode_switch_counter++;
+		printf("%d\n", mode_switch_counter);
+		mode_switch_counter--;
 	}
 	else
 	{
-		mode_switch_counter = 0;
+		mode_switch_counter = 9;
 		switchPlayMode();
 	}
 
