@@ -40,6 +40,7 @@ void initializeVgaDisplay()
 	alt_up_char_buffer_init(char_buffer);
 
 	// Clear the screen
+	alt_up_char_buffer_clear(char_buffer);
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 }
 
@@ -180,6 +181,13 @@ void update_menu_selection(int direction)
 		alt_up_char_buffer_draw(char_buffer, '>', 15, 50);
 		alt_up_char_buffer_draw(char_buffer, ' ', 55, 50);
 	}
+}
+
+void drawHighScoreScreen()
+{
+	clearScreen();
+	alt_up_char_buffer_string(char_buffer, "H   I   G   H        S   C   O   R   E   S", 19, 10);
+	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
 }
 
 void drawGameOverScreen()

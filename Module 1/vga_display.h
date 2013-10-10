@@ -40,6 +40,8 @@ void update_menu_selection(int direction);
 void clearScreen();
 void drawGameOverScreen();
 
+void drawHighScoreScreen();
+
 extern int undraw_color;
 
 #endif /* VGA_DISPLAY_H_ */

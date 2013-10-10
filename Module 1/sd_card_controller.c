@@ -30,7 +30,6 @@ void connectToSDCard()
 			{
 				printf("Unknown file system.\n");
 			}
-			printf("Terminating.\n");
 		}
 	}
 }

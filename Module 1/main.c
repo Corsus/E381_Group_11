@@ -22,12 +22,11 @@ GameStatus gameStatus = MAIN_MENU;
 int main()
 {
 	printf("Hello. Welcome.\n");
-
 	// draw interface
 	initializeVgaDisplay();
 
 	initializeSDCardController();
-	connectToSDCard();
+	initialize_audio();
 
 	//main loop
 	while(1)
@@ -41,6 +40,11 @@ int main()
 		while (gameStatus == MAIN_MENU)
 		{
 			menu_controller();
+		}
+		// high score loop
+		while (gameStatus == HIGH_SCORE)
+		{
+			waitForInput();
 		}
 		// main game loop
 		while (gameStatus == PLAYING)
@@ -64,8 +68,8 @@ void initializeGame()
 	initializeGameBall();
 	initializeBallMover();
 	initializeScreenMover();
-	initialize_modeSwitch_IRQ();
 	initializeInfoBar();
+	initialize_modeSwitch_IRQ();
 }
 
 // initializeGame helper method: initializes the gameBall
@@ -133,6 +137,7 @@ void selectMenu()
 		case MENU_SCORE:
 			printf("Select: High Score.\n");
 			gameStatus = HIGH_SCORE;
+			drawHighScoreScreen();
 			break;
 	}
 }
