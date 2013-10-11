@@ -53,7 +53,10 @@ entity module_one is
 		AUD_ADCLRCK : in std_logic;
 		AUD_BCLK : in std_logic;
 		AUD_DACDAT : out std_logic;
-		AUD_DACLRCK : in std_logic
+		AUD_DACLRCK : in std_logic;
+		
+		PS2_CLK : inout std_logic;
+		PS2_DAT : inout std_logic
 	);
 end module_one;
 
@@ -113,7 +116,10 @@ architecture module_one_structure of module_one is
 			audio_interface_DACLRCK : in STD_LOGIC;
 			
 			audio_out_clk_clk : out STD_LOGIC;
-			audio_in_clk_clk : in STD_LOGIC);
+			audio_in_clk_clk : in STD_LOGIC;
+			
+			keyboard_interface_CLK : inout std_logic;
+			keyboard_interface_DAT : inout std_logic);
 			
 	end component;
 	
@@ -182,7 +188,10 @@ begin
 		 audio_interface_DACLRCK => AUD_DACLRCK,
 			
 		 audio_out_clk_clk => AUD_XCK,
-		 audio_in_clk_clk => CLOCK_27);
+		 audio_in_clk_clk => CLOCK_27,
+		 
+		 keyboard_interface_CLK => PS2_CLK, 
+		 keyboard_interface_DAT => PS2_DAT);
 		 
 end module_one_structure;
 	
