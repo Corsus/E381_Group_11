@@ -2,7 +2,7 @@
  * screen_mover.h
  *
  *  Created on: 2013-09-30
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #ifndef SCREEN_MOVER_H_
@@ -18,18 +18,10 @@
 #include "main.h"
 #include "vga_display.h"
 
+// vertical movement speed of the screen
 #define SCREEN_SPEED 2
 
-void initializeScreenMover();
-void initialize_screen_irq();
-void initializeScreenObjects();
-void screen_isr(void* context, alt_u32 id);
-void pushScreenUp();
-void updateCounters();
-void generateRandomLine(int lineNumber);
-
-void adjustDifficulty();
-
+// declare the Line structure
 typedef struct
 {
 	int y_pos;
@@ -42,6 +34,18 @@ typedef struct
 	int on_screen;
 	unsigned long int lineColor;
 }Line;
+
+//methods
+void initializeScreenMover();
+void initialize_screen_irq();
+void initializeScreenObjects();
+void screen_isr(void* context, alt_u32 id);
+void pushScreenUp();
+void updateCounters();
+void generateRandomLine(Line *theLine);
+
+void adjustDifficulty();
+
 
 extern Line line1;
 extern Line line2;

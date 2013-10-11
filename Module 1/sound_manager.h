@@ -18,7 +18,10 @@
 
 #define HEADER_SIZE 44
 #define SAMPLE_SIZE 96
-#define AUDIO_SIZE 28976
+#define GREET_SIZE 48664
+#define START_SIZE 75414
+#define LOSE_SIZE 63710
+#define BACKGROUND_SIZE 1766758
 
 void av_config_setup();
 void initialize_audio();
@@ -28,6 +31,16 @@ void initialize_audio_irq();
 void audio_isr(void* context, alt_u32 id);
 void load_sound_data();
 
+void greet_isr(void* context, alt_u32 id);
+void start_isr(void* context, alt_u32 id);
+void lose_isr(void* context, alt_u32 id);
+void background_isr(void* context, alt_u32 id);
+
+void playGreet();
+void playStart();
+void playLose();
+void playBackground();
+void disableSound();
 
 
 #endif /* SOUND_MANAGER_H_ */

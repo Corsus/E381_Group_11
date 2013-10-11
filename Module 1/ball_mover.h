@@ -2,7 +2,7 @@
  * ball_mover.h
  *
  *  Created on: 2013-09-30
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #ifndef BALL_MOVER_H_
@@ -20,12 +20,14 @@
 #include "altera_avalon_timer_regs.h"
 #include "altera_avalon_pio_regs.h"
 
+// movement constants
 #define VERTICAL_MOVE 0
 #define HORIZONTAL_MOVE_LEFT 1
 #define HORIZONTAL_MOVE_RIGHT 2
 #define VERTICAL_SPEED 1
 #define HORIZONTAL_SPEED 3
 
+//methods
 void initializeBallMover();
 void initialize_ball_irq();
 void ball_isr(void* context, alt_u32 id);

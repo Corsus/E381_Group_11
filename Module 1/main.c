@@ -2,7 +2,7 @@
  * main.c
  *
  *  Created on: 2013-10-01
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #include "main.h"
@@ -19,22 +19,32 @@ int mode_switch_counter;
 // state of the game
 GameStatus gameStatus = MAIN_MENU;
 
+/*
+ * Main loop, where it all comes together
+ */
 int main()
 {
-	printf("Hello. Welcome.\n");
-	// draw interface
+	//initialize VGA
 	initializeVgaDisplay();
 
+	//draw loading screen
+	drawLoadingScreen();
+
+	//initialize LCD, SD card, audio
+	initializeLCD();
 	initializeSDCardController();
 	initialize_audio();
+
+	//play intro sound
+	playGreet();
 
 	//main loop
 	while(1)
 	{
 		// we always start with the Menu
-		printf("Initializing menu...\n");
 		drawMenu();
-		printf("Menu Drawn...\n");
+		drawStatus("FALL DOWN 381");
+		drawMode("Main Menu");
 
 		// menu loop
 		while (gameStatus == MAIN_MENU)
@@ -62,7 +72,10 @@ int main()
 	return 0;
 }
 
-// main game initialization
+/*
+ * Game initialization
+ * Initializes all timer interrupts, UI components, game objects
+ */
 void initializeGame()
 {
 	initializeGameBall();
@@ -72,7 +85,9 @@ void initializeGame()
 	initialize_modeSwitch_IRQ();
 }
 
-// initializeGame helper method: initializes the gameBall
+/*
+ * Initializes the game ball's position and color
+ */
 void initializeGameBall()
 {
 	gameBall.nw_x = (SCREEN_X_PLAY / 2) - 2;
@@ -92,7 +107,14 @@ void initializeGameBall()
 	gameBall.color = WHITE;
 }
 
-// Menu button control handler
+/*
+ * The controller method for the Main Menu
+ * Checks for the button presses and acts accordingly
+ * KEY3 selects Play
+ * KEY2 selects High Score
+ * KEY1 selects the current selection
+ * KEY0 does nothing
+ */
 void menu_controller()
 {
 	usleep(5000);
@@ -128,35 +150,61 @@ void selectMenu()
 	{
 		// select Play Game
 		case MENU_PLAY:
-			printf("Select: Play.\n");
+			//change state of game
 			gameStatus = PLAYING;
-			//initialize the game here.
+			//play Game Start sound
+			playStart();
+			//wait for sound to finish
+			usleep(1000000);
+			//initialize the game
 			initializeGame();
+			//start playing background music
+			playBackground();
+			//draw status on LCD
+			drawStatus("Let's Begin.");
+			drawMode("Normal");
 			break;
 		// select High Score table
 		case MENU_SCORE:
-			printf("Select: High Score.\n");
+			//draw status on LCD
+			drawMode("High Scores");
+			//change state of game
 			gameStatus = HIGH_SCORE;
+			//load up highscore UI
 			drawHighScoreScreen();
 			break;
 	}
 }
 
+/*
+ * Stops the game when game is over.
+ * Disables all interrupts.
+ * Clears the play screen and draws the Game Over screen.
+ * Changes the state of the game to Game Over.
+ */
 void stopGame()
 {
 	//disable all interrupts that run in the game
 	alt_irq_disable(SCREEN_TIMER_IRQ);
 	alt_irq_disable(BALL_TIMER_IRQ);
 	alt_irq_disable(MODESWITCH_TIMER_IRQ);
+	alt_irq_disable(AUDIO_IRQ);
 
 	//clear the screen
 	clearScreen();
 
-	gameStatus = GAME_OVER;
+	playLose();
 	drawGameOverScreen();
-	printf("Game Over.\n");
+
+	gameStatus = GAME_OVER;
+	drawMode("Game Over");
 }
 
+/*
+ * Method to wait for a key press (KEY0) from user
+ * When pressed, the status of the game changes to Main Menu
+ * Essentially waits for the user to press a key before going back to Main Menu.
+ */
 void waitForInput()
 {
 	usleep(5000);
@@ -169,25 +217,35 @@ void waitForInput()
 	usleep(5000);
 }
 
+/*
+ * Switches the mode of play from Normal to Reverse and vice-versa
+ * All black colors become white, and all white colors become black.
+ * All directional controls are also reversed.
+ */
 void switchPlayMode()
 {
-	printf("Mode Switch!!\n");
+	//printf("Mode Switch!!\n");
 	if (gameBall.color == WHITE)
 	{
 		gameBall.color = BLACK;
 		undraw_color = WHITE;
 		reverseClearPlayScreen();
+		drawMode("Reversed");
 	}
 	else
 	{
 		gameBall.color = WHITE;
 		undraw_color = BLACK;
 		clearPlayScreen();
+		drawMode("Normal");
 	}
 	reverseControllerInput();
 }
 
-//initialize irq for the fall down timer
+/*
+ * Initializes the mode switch timer irq
+ * Ticks every 1 second.
+ */
 void initialize_modeSwitch_IRQ()
 {
 	mode_switch_counter = 9;
@@ -207,7 +265,10 @@ void initialize_modeSwitch_IRQ()
 	printf("Mode switch timer started...\n");
 }
 
-//handler for fall down interrupt
+/*
+ * Handler for the mode switch irq
+ * After 10 ticks, this method reverses the play mode by calling switchPlayMode
+ */
 void modeSwitch_isr(void* context, alt_u32 id)
 {
 	if (mode_switch_counter != 0)

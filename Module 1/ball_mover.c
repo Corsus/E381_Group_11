@@ -1,9 +1,19 @@
+/*
+ * ball_mover.c
+ *
+ *  Created on: 2013-09-30
+ *      Author: EECE381 Group 11
+ */
+
 #include "ball_mover.h"
 
+// values of the push buttons
 int right_button_mask = 0x4;
 int left_button_mask = 0x8;
 
-//initialization function called by main
+/*
+ * Initialize the ball mover module
+ */
 void initializeBallMover()
 {
 	initialize_ball_irq();
@@ -11,7 +21,9 @@ void initializeBallMover()
 	left_button_mask = 0x8;
 }
 
-//initialize irq for the fall down timer
+/*
+ * Initialize the ball falling timer irq
+ */
 void initialize_ball_irq()
 {
 	printf("Initializing Ball Timer IRQ...\n");
@@ -33,7 +45,9 @@ void initialize_ball_irq()
 	printf("Ball timer started...\n");
 }
 
-//helper function for pushbutton_isr
+/*
+ * Checks the push button input and performs horizontal movement
+ */
 void handleControllerInput()
 {
 	usleep(4000);
@@ -75,6 +89,9 @@ void handleControllerInput()
 	usleep(4000);
 }
 
+/*
+ * Method to swap the values of the left and right buttons
+ */
 void reverseControllerInput()
 {
 	int temp = left_button_mask;
@@ -82,7 +99,10 @@ void reverseControllerInput()
 	right_button_mask = temp;
 }
 
-//handler for fall down interrupt
+/*
+ * Handler for the ball fall timer
+ * Makes the ball fall
+ */
 void ball_isr(void* context, alt_u32 id)
 {
 	alt_u32 interruptible = alt_irq_interruptible(BALL_TIMER_IRQ);
@@ -102,19 +122,31 @@ void ball_isr(void* context, alt_u32 id)
 
 }
 
+/*
+ * Method to disable the ball fall timer
+ * Used by the horizontal movement method to make sure horizontal movement doesn't
+ * get preempted by the vertical movement interrupt
+ */
 void disableTimerInterrupt()
 {
 	// disable the interrupt, stops the timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(BALL_TIMER_BASE, 0xA);
 }
 
+/*
+ * Method to re-enable the ball fall timer after it was disabled
+ * Used in conjunction with the disableTimerInterrupt method
+ */
 void enableTimerInterrupt()
 {
 	// enable the interrupt, starts the timer
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(BALL_TIMER_BASE, 0x7);
 }
 
-// movement parameter: 0 = falling, 1 = horizontal
+/*
+ * Method to detect collision between Ball and Line
+ * Handles the collision if detected
+ */
 void detectCollision()
 {
 	if (line1.y_pos >= gameBall.nw_y && line1.y_pos <= gameBall.sw_y)
@@ -134,6 +166,10 @@ void detectCollision()
 
 }
 
+/*
+ * Method to handle collision once it is detected.
+ * Helper function for detectCollision
+ */
 void handleCollision(int line_number)
 {
 	switch (line_number)
@@ -152,6 +188,9 @@ void handleCollision(int line_number)
 
 }
 
+/*
+ * Method to update the ball's position based on the type of movement
+ */
 void updateBallPosition(int movement)
 {
 	if (movement == VERTICAL_MOVE)

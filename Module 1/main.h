@@ -2,7 +2,7 @@
  * main.h
  *
  *  Created on: 2013-10-01
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #ifndef MAIN_H_
@@ -24,14 +24,19 @@
 #include "sd_card_controller.h"
 #include "sound_manager.h"
 
+#include "lcd_controller.h"
+
+//Positions for VGA module to reference
 #define SCREEN_X 320
 #define SCREEN_X_PLAY 240
 #define SCREEN_Y 240
 #define WALL_GAP 40
 
+//Menu selections
 #define MENU_PLAY 2
 #define MENU_SCORE 1
 
+//methods
 void initializeGame();
 void initializeGameBall();
 
@@ -44,6 +49,7 @@ void switchPlayMode();
 void initialize_modeSwitch_IRQ();
 void modeSwitch_isr(void* context, alt_u32 id);
 
+//game ball
 typedef struct
 {
 	int nw_x, nw_y;
@@ -57,6 +63,7 @@ typedef struct
 	int color;
 }Ball;
 
+//game states
 typedef enum
 {
 	MAIN_MENU,

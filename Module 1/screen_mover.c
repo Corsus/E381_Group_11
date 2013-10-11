@@ -2,17 +2,24 @@
  * screen_mover.c
  *
  *  Created on: 2013-09-30
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 #include "screen_mover.h"
 
+// lines on the screen
 Line line1;
 Line line2;
 
+// line position counters
 int screen_mover_counter;
+
+// stat counters
 unsigned long int difficulty_counter;
 unsigned long int game_score;
 
+/*
+ * initialization of screen mover
+ */
 void initializeScreenMover()
 {
 	//initialize our background color
@@ -29,6 +36,9 @@ void initializeScreenMover()
 	initialize_screen_irq();
 }
 
+/*
+ * initialize screen objects (the two lines)
+ */
 void initializeScreenObjects()
 {
 	line1.y_pos = SCREEN_Y;
@@ -47,6 +57,9 @@ void initializeScreenObjects()
 	line2.lineColor = GREEN;
 }
 
+/*
+ * initialize the screen mover irq
+ */
 void initialize_screen_irq()
 {
 	printf("Initializing Screen Timer IRQ...\n");
@@ -70,6 +83,9 @@ void initialize_screen_irq()
 	printf("Screen timer started...\n");
 }
 
+/*
+ * Handler for the interrupt
+ */
 void screen_isr(void* context, alt_u32 id)
 {
 	alt_u32 interruptible = alt_irq_interruptible(SCREEN_TIMER_IRQ);
@@ -77,10 +93,10 @@ void screen_isr(void* context, alt_u32 id)
 	switch (screen_mover_counter)
 	{
 		case 0:
-			generateRandomLine(1);
+			generateRandomLine(&line1);
 			break;
 		case 120:
-			generateRandomLine(2);
+			generateRandomLine(&line2);
 			break;
 	}
 	pushScreenUp();
@@ -91,6 +107,9 @@ void screen_isr(void* context, alt_u32 id)
 	alt_irq_non_interruptible(interruptible);
 }
 
+/*
+ * Method to update the line positions and animate the movement
+ */
 void pushScreenUp()
 {
 	undrawLines();
@@ -108,6 +127,9 @@ void pushScreenUp()
 	drawLines();
 }
 
+/*
+ * Method to update the stat counters
+ */
 void updateCounters()
 {
 	if (screen_mover_counter < SCREEN_Y)
@@ -124,26 +146,33 @@ void updateCounters()
 	drawInfoBarStats();
 }
 
+/*
+ * Method to increase the difficulty over time
+ */
 void adjustDifficulty()
 {
 	switch(difficulty_counter)
 	{
 		case 10: // 900 000
+			drawStatus("Owning!\0");
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0xBBA0);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x000D);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
 		case 20: // 625 000
+			drawStatus("Dominating!!\0");
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0x8968);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0009);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
 		case 40: // 500 000
+			drawStatus("RAMPAGE!!!\0");
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0xA120);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0007);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
 		case 80: // 300 000
+			drawStatus("G O D L I K E\0");
 			IOWR_ALTERA_AVALON_TIMER_PERIODL(SCREEN_TIMER_BASE, 0x93E0);
 			IOWR_ALTERA_AVALON_TIMER_PERIODH(SCREEN_TIMER_BASE, 0x0004);
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
@@ -151,32 +180,24 @@ void adjustDifficulty()
 	}
 }
 
-void generateRandomLine(int lineNumber)
+/*
+ * Method to randomize the gaps of the lines
+ */
+void generateRandomLine(Line *theLine)
 {
-	Line* theLine;
-	switch (lineNumber)
-	{
-		case 1:
-			theLine = &line1;
-			break;
-		case 2:
-			theLine = &line2;
-			break;
-	}
-
 	int startGap;
 	int endGap;
 
 	startGap = (rand() % (SCREEN_X_PLAY - WALL_GAP));
 	endGap = startGap + WALL_GAP;
 
-	(*theLine).y_pos = SCREEN_Y;	//start off the screen
+	theLine->y_pos = SCREEN_Y;	//start off the screen
 
-	(*theLine).start_x1 = 0;
-	(*theLine).end_x1 = startGap;
+	theLine->start_x1 = 0;
+	theLine->end_x1 = startGap;
 
-	(*theLine).start_x2 = endGap;
-	(*theLine).end_x2 = SCREEN_X_PLAY - 1;
+	theLine->start_x2 = endGap;
+	theLine->end_x2 = SCREEN_X_PLAY - 1;
 
-	(*theLine).on_screen = 1;
+	theLine->on_screen = 1;
 }

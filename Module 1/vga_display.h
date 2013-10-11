@@ -2,7 +2,7 @@
  * vga_display.h
  *
  *  Created on: 2013-10-02
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #ifndef VGA_DISPLAY_H_
@@ -19,12 +19,14 @@
 #include "screen_mover.h"
 #include "main.h"
 
+//define the color values
 #define WHITE 0xFFFF
 #define RED 0xF800
 #define GREEN 0x07E0
 #define BLUE 0x001F
 #define BLACK 0x0000
 
+//methods
 void initializeVgaDisplay();
 void initializeInfoBar();
 void drawInfoBarStats();
@@ -39,8 +41,8 @@ void drawMenu();
 void update_menu_selection(int direction);
 void clearScreen();
 void drawGameOverScreen();
-
 void drawHighScoreScreen();
+void drawLoadingScreen();
 
 extern int undraw_color;
 

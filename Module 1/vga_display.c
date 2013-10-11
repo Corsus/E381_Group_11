@@ -2,22 +2,26 @@
  * vga_display.c
  *
  *  Created on: 2013-10-02
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #include "vga_display.h"
 
 alt_up_pixel_buffer_dma_dev* pixel_buffer;
-alt_up_char_buffer_dev *char_buffer;
+alt_up_char_buffer_dev* char_buffer;
 
-const char* play = "PLAY";
-const char* highscore = "HIGHSCORES";
-char* score_string;
-char* level_string;
-char* reverse_counter_string;
+const char play[] = "PLAY";
+const char highscore[] = "HIGHSCORES";
+char score_string[6];
+char level_string[4];
+char reverse_counter_string[1];
 
+// background color (changes when reversed)
 int undraw_color;
 
+/*
+ * Initialize the VGA diaplay
+ */
 void initializeVgaDisplay()
 {
 	//initialize our background color
@@ -44,6 +48,9 @@ void initializeVgaDisplay()
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 }
 
+/*
+ * Initialize the info bar in the game
+ */
 void initializeInfoBar()
 {
 	alt_up_char_buffer_clear(char_buffer);
@@ -57,6 +64,9 @@ void initializeInfoBar()
 	alt_up_char_buffer_string(char_buffer, "      IN", 60, 21);
 }
 
+/*
+ * Update the counters on the info bar
+ */
 void drawInfoBarStats()
 {
 	sprintf(score_string, "%lu", game_score);
@@ -67,6 +77,9 @@ void drawInfoBarStats()
 	alt_up_char_buffer_string(char_buffer, reverse_counter_string, 70, 20);
 }
 
+/*
+ * The actual drawing of the lines
+ */
 void drawLines()
 {
 	//draw new lines
@@ -82,6 +95,9 @@ void drawLines()
 	}
 }
 
+/*
+ * The actual undrawing of the lines
+ */
 void undrawLines()
 {
 	if (line1.on_screen == 1)
@@ -96,6 +112,9 @@ void undrawLines()
 	}
 }
 
+/*
+ * The actual drawing of the ball
+ */
 void drawBall()
 {
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer,
@@ -104,6 +123,9 @@ void drawBall()
 			gameBall.color, 0);
 }
 
+/*
+ * The actual undrawing of the ball
+ */
 void undrawBall()
 {
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer,
@@ -112,6 +134,9 @@ void undrawBall()
 			undraw_color, 0);
 }
 
+/*
+ * Draws the main menu
+ */
 void drawMenu()
 {
 	//clear screen
@@ -158,6 +183,7 @@ void drawMenu()
 	alt_up_pixel_buffer_dma_draw_hline(pixel_buffer, 230, 255, 80, WHITE, 0);
 	//finish drawing menu title
 
+	//write instructions
 	alt_up_char_buffer_string(char_buffer, "Navigate the ball left and right to avoid the obstacles.", 10, 40);
 	alt_up_char_buffer_string(char_buffer, "Game is over when the ball goes off the top.", 10, 41);
 	alt_up_char_buffer_string(char_buffer, "The longer you survive, the higher your score!", 10, 42);
@@ -169,6 +195,9 @@ void drawMenu()
 	alt_up_char_buffer_string(char_buffer, highscore, 60, 50);
 }
 
+/*
+ * Draws the current selection in the menu
+ */
 void update_menu_selection(int direction)
 {
 	if (direction == MENU_SCORE)
@@ -183,6 +212,9 @@ void update_menu_selection(int direction)
 	}
 }
 
+/*
+ * Draw the high score screen
+ */
 void drawHighScoreScreen()
 {
 	clearScreen();
@@ -190,6 +222,9 @@ void drawHighScoreScreen()
 	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
 }
 
+/*
+ * Draws the game over screen
+ */
 void drawGameOverScreen()
 {
 	//clears the game screen
@@ -207,18 +242,38 @@ void drawGameOverScreen()
 	//completed
 }
 
-//function to clear pixel buffer and char buffer
+/*
+ * Draws the loading screen
+ */
+void drawLoadingScreen()
+{
+	//clears the screen
+	clearScreen();
+
+	alt_up_char_buffer_string(char_buffer, "L O A D I N G . . .", 5, 58);
+	alt_up_char_buffer_string(char_buffer, "P L E A S E   W A I T . . .", 5, 59);
+}
+
+/*
+ * Clears the screen
+ */
 void clearScreen()
 {
 	alt_up_pixel_buffer_dma_clear_screen(pixel_buffer, 0);
 	alt_up_char_buffer_clear(char_buffer);
 }
 
+/*
+ * Clears the playing portion of the screen
+ */
 void clearPlayScreen()
 {
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, 0, 0, SCREEN_X_PLAY - 1, SCREEN_Y - 1, BLACK, 0);
 }
 
+/*
+ * Clears the playing portion of the screen in the reversed color
+ */
 void reverseClearPlayScreen()
 {
 	alt_up_pixel_buffer_dma_draw_box(pixel_buffer, 0, 0, SCREEN_X_PLAY - 1, SCREEN_Y - 1, WHITE, 0);

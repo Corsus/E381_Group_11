@@ -2,7 +2,7 @@
  * sd_card_controller.h
  *
  *  Created on: 2013-10-08
- *      Author: htang
+ *      Author: EECE381 Group 11
  */
 
 #ifndef SD_CARD_CONTROLLER_H_
@@ -14,6 +14,7 @@
 #include "altera_up_sd_card_avalon_interface.h"
 #include "main.h"
 
+//methods
 void initializeSDCardController();
 void connectToSDCard();
 
