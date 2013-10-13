@@ -10,6 +10,8 @@
 
 #include <string.h>
 
+#include "main.h"
+
 #include "altera_up_avalon_ps2.h"
 #include "altera_up_avalon_ps2_regs.h"
 #include "altera_up_ps2_keyboard.h"

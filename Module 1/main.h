@@ -25,6 +25,7 @@
 #include "sound_manager.h"
 
 #include "lcd_controller.h"
+#include "keyboard_controller.h"
 
 //Positions for VGA module to reference
 #define SCREEN_X 320

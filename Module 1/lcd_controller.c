@@ -56,7 +56,6 @@ void drawMode(const char* string)
  */
 void clearRow(int row)
 {
-	int i;
 	alt_up_character_lcd_set_cursor_pos(lcd, 0, row);
 	alt_up_character_lcd_string(lcd, "                ");
 }

@@ -21,13 +21,14 @@ void initializeKeyboardController()
 
 void readFromKeyboard()
 {
-	unsigned char* make_code;
+	alt_u8* make_code;
+	KB_CODE_TYPE* decode_type;
 	char* translation;
 
 	//read from FIFO
-	decode_scancode(keyboard, KB_LONG_BINARY_MAKE_CODE, make_code, 0);
+	decode_scancode(keyboard, decode_type, make_code, 0);
 	//translate reading
-	translate_make_code(KB_LONG_BINARY_MAKE_CODE, make_code, translation);
+	translate_make_code(*decode_type, *make_code, translation);
 
 	if (strcmp(translation, "L ARROW") == 0)
 	{
