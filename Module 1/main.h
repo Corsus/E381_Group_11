@@ -45,10 +45,9 @@ void menu_controller();
 void selectMenu();
 void stopGame();
 void waitForInput();
+void gameOverInput();
 
 void switchPlayMode();
-void initialize_modeSwitch_IRQ();
-void modeSwitch_isr(void* context, alt_u32 id);
 
 //game ball
 typedef struct
@@ -70,10 +69,10 @@ typedef enum
 	MAIN_MENU,
 	PLAYING,
 	HIGH_SCORE,
+	SUBMIT_SCORE,
 	GAME_OVER
 }GameStatus;
 
 extern Ball gameBall;
-extern int mode_switch_counter;
 
 #endif /* MAIN_H_ */

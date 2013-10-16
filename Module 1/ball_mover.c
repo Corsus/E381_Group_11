@@ -8,8 +8,8 @@
 #include "ball_mover.h"
 
 // values of the push buttons
-int right_button_mask = 0x4;
-int left_button_mask = 0x8;
+int right_move = RIGHT_BUTTON;
+int left_move = LEFT_BUTTON;
 
 /*
  * Initialize the ball mover module
@@ -17,8 +17,8 @@ int left_button_mask = 0x8;
 void initializeBallMover()
 {
 	initialize_ball_irq();
-	right_button_mask = 0x4;
-	left_button_mask = 0x8;
+	right_move = RIGHT_BUTTON;
+	left_move = LEFT_BUTTON;
 }
 
 /*
@@ -50,7 +50,7 @@ void initialize_ball_irq()
  */
 void handleControllerInput()
 {
-	usleep(4000);
+	usleep(5000);
 
 	// check if game is over
 	if (gameBall.nw_y <= 0)
@@ -59,7 +59,9 @@ void handleControllerInput()
 		return;
 	}
 
-	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & right_button_mask))
+	int direction = readGameControl();
+
+	if (direction == right_move)
 	{
 		// move right
 		if (gameBall.e_x < SCREEN_X_PLAY - HORIZONTAL_SPEED)
@@ -72,7 +74,7 @@ void handleControllerInput()
 		}
 		//printf("Right %d\n", gameBall.nw_x + 1);
 	}
-	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & left_button_mask))
+	else if (direction == left_move)
 	{
 		// move left
 		if (gameBall.w_x > ((SCREEN_X_PLAY/2) - 2) % 3 )
@@ -86,7 +88,7 @@ void handleControllerInput()
 		//printf("Left %d\n", gameBall.nw_x + 1);
 	}
 
-	usleep(4000);
+	usleep(5000);
 }
 
 /*
@@ -94,9 +96,9 @@ void handleControllerInput()
  */
 void reverseControllerInput()
 {
-	int temp = left_button_mask;
-	left_button_mask = right_button_mask;
-	right_button_mask = temp;
+	int temp = left_move;
+	left_move = right_move;
+	right_move = temp;
 }
 
 /*

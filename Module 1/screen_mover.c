@@ -178,6 +178,11 @@ void adjustDifficulty()
 			IOWR_ALTERA_AVALON_TIMER_CONTROL(SCREEN_TIMER_BASE, 0x7);
 			break;
 	}
+
+	if (difficulty_counter % 15 == 0)
+	{
+		switchPlayMode();
+	}
 }
 
 /*

@@ -16,7 +16,15 @@
 #include "altera_up_avalon_ps2_regs.h"
 #include "altera_up_ps2_keyboard.h"
 
+#define NAME_SIZE 3
+#define LEFT_BUTTON 1
+#define RIGHT_BUTTON 2
+#define ENTER_BUTTON 3
+
+
 void initializeKeyboardController();
-void readFromKeyboard();
+int readGameControl();
+int readMenuControl();
+void readUserNameInput();
 
 #endif /* KEYBOARD_CONTROLLER_H_ */

@@ -26,17 +26,18 @@ int main()
 {
 	//initialize VGA
 	initializeVgaDisplay();
-
+	initializeKeyboardController();
+	//readUserNameInput();
 	//draw loading screen
 	drawLoadingScreen();
 
 	//initialize LCD, SD card, audio
 	initializeLCD();
-	initializeSDCardController();
-	initialize_audio();
+	//initializeSDCardController();
+	//initialize_audio();
 
 	//play intro sound
-	playGreet();
+	//playGreet();
 
 	//main loop
 	while(1)
@@ -45,6 +46,7 @@ int main()
 		drawMenu();
 		drawStatus("FALL DOWN 381");
 		drawMode("Main Menu");
+		menu_selection = MENU_PLAY;
 
 		// menu loop
 		while (gameStatus == MAIN_MENU)
@@ -63,6 +65,11 @@ int main()
 		}
 		while (gameStatus == GAME_OVER)
 		{
+			gameOverInput();
+		}
+		while (gameStatus == SUBMIT_SCORE)
+		{
+			readUserNameInput();
 			waitForInput();
 		}
 
@@ -82,7 +89,6 @@ void initializeGame()
 	initializeBallMover();
 	initializeScreenMover();
 	initializeInfoBar();
-	initialize_modeSwitch_IRQ();
 }
 
 /*
@@ -118,26 +124,29 @@ void initializeGameBall()
 void menu_controller()
 {
 	usleep(5000);
-	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x2))
+	int direction;
+	direction = readMenuControl();
+
+	if (direction == LEFT_BUTTON)
+	{
+		// change option
+		update_menu_selection(MENU_PLAY);
+		menu_selection = MENU_PLAY;
+		//printf("Play.\n");
+	}
+	else if (direction == RIGHT_BUTTON)
+	{
+		// change option
+		update_menu_selection(MENU_SCORE);
+		menu_selection = MENU_SCORE;
+		//printf("High Scores.\n");
+	}
+	else if (direction == ENTER_BUTTON)
 	{
 		// clears the menu screen
 		clearScreen();
 		// select
 		selectMenu();
-	}
-	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x4))
-	{
-		// change option
-		update_menu_selection(MENU_SCORE);
-		menu_selection = MENU_SCORE;
-		printf("High Scores.\n");
-	}
-	else if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x8))
-	{
-		// change option
-		update_menu_selection(MENU_PLAY);
-		menu_selection = MENU_PLAY;
-		printf("Play.\n");
 	}
 	usleep(5000);
 }
@@ -153,13 +162,13 @@ void selectMenu()
 			//change state of game
 			gameStatus = PLAYING;
 			//play Game Start sound
-			playStart();
+			//playStart();
 			//wait for sound to finish
 			usleep(1000000);
 			//initialize the game
 			initializeGame();
 			//start playing background music
-			playBackground();
+			//playBackground();
 			//draw status on LCD
 			drawStatus("Let's Begin.");
 			drawMode("Normal");
@@ -187,13 +196,12 @@ void stopGame()
 	//disable all interrupts that run in the game
 	alt_irq_disable(SCREEN_TIMER_IRQ);
 	alt_irq_disable(BALL_TIMER_IRQ);
-	alt_irq_disable(MODESWITCH_TIMER_IRQ);
 	alt_irq_disable(AUDIO_IRQ);
 
 	//clear the screen
 	clearScreen();
 
-	playLose();
+	//playLose();
 	drawGameOverScreen();
 
 	gameStatus = GAME_OVER;
@@ -208,10 +216,36 @@ void stopGame()
 void waitForInput()
 {
 	usleep(5000);
-	if (!(IORD_ALTERA_AVALON_PIO_DATA(KEY_BASE) & 0x1))
+	int enter = readMenuControl();
+	if (enter == ENTER_BUTTON)
 	{
 		// clears the menu screen
 		clearScreen();
+		gameStatus = MAIN_MENU;
+	}
+	usleep(5000);
+}
+
+/*
+ * Method to wait for a key press (KEY0) from user
+ * When pressed, the status of the game changes to Main Menu
+ * Essentially waits for the user to press a key before going back to Main Menu.
+ */
+void gameOverInput()
+{
+	usleep(5000);
+	int enter = readMenuControl();
+	if (enter == ENTER_BUTTON)
+	{
+		// clears the menu screen
+		clearScreen();
+
+		// TODO: check to see if score is a high score
+		// If yes, gameStatus = SUBMIT_SCORE
+		//		drawSubmitScoreScreen();
+		//
+		// If no, gameStatus = MAIN_MENU
+
 		gameStatus = MAIN_MENU;
 	}
 	usleep(5000);
@@ -240,49 +274,5 @@ void switchPlayMode()
 		drawMode("Normal");
 	}
 	reverseControllerInput();
-}
-
-/*
- * Initializes the mode switch timer irq
- * Ticks every 1 second.
- */
-void initialize_modeSwitch_IRQ()
-{
-	mode_switch_counter = 9;
-	printf("Initializing mode switch timer IRQ...\n");
-	// setting up timer (Continuous, Interrupt enabled, Stopped)
-	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0xb); //stop-start-cont-ito 1011
-
-	// register isr
-	alt_irq_register(MODESWITCH_TIMER_IRQ, 0x0, modeSwitch_isr);
-
-	// enable interrupt
-	alt_irq_enable(MODESWITCH_TIMER_IRQ);
-
-	//start timer
-	IOWR_ALTERA_AVALON_TIMER_CONTROL(MODESWITCH_TIMER_BASE, 0x7); //stop-start-cont-ito 0111
-
-	printf("Mode switch timer started...\n");
-}
-
-/*
- * Handler for the mode switch irq
- * After 10 ticks, this method reverses the play mode by calling switchPlayMode
- */
-void modeSwitch_isr(void* context, alt_u32 id)
-{
-	if (mode_switch_counter != 0)
-	{
-		printf("%d\n", mode_switch_counter);
-		mode_switch_counter--;
-	}
-	else
-	{
-		mode_switch_counter = 9;
-		switchPlayMode();
-	}
-
-	//clear timeout bit
-	IOWR_ALTERA_AVALON_TIMER_STATUS(MODESWITCH_TIMER_BASE, 0x0);
 }
 

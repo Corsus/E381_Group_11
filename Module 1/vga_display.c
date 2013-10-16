@@ -14,7 +14,6 @@ const char play[] = "PLAY";
 const char highscore[] = "HIGHSCORES";
 char score_string[6];
 char level_string[4];
-char reverse_counter_string[1];
 
 // background color (changes when reversed)
 int undraw_color;
@@ -60,8 +59,6 @@ void initializeInfoBar()
 	alt_up_char_buffer_string(char_buffer, "---------------", 60, 6);
 	alt_up_char_buffer_string(char_buffer, " SCORE", 60, 10);
 	alt_up_char_buffer_string(char_buffer, " LEVEL", 60, 15);
-	alt_up_char_buffer_string(char_buffer, " REVERSE", 60, 20);
-	alt_up_char_buffer_string(char_buffer, "      IN", 60, 21);
 }
 
 /*
@@ -73,8 +70,6 @@ void drawInfoBarStats()
 	alt_up_char_buffer_string(char_buffer, score_string, 68, 10);
 	sprintf(level_string, "%lu", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 68, 15);
-	sprintf(reverse_counter_string, "%d", mode_switch_counter);
-	alt_up_char_buffer_string(char_buffer, reverse_counter_string, 70, 20);
 }
 
 /*
@@ -219,7 +214,34 @@ void drawHighScoreScreen()
 {
 	clearScreen();
 	alt_up_char_buffer_string(char_buffer, "H   I   G   H        S   C   O   R   E   S", 19, 10);
+	//TODO: READ FROM SD CARD
+	// Draw out the 3 high scores
 	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
+}
+
+/*
+ * Draw the High Score Submit Screen
+ */
+void drawSubmitScoreScreen()
+{
+	clearScreen();
+	alt_up_char_buffer_string(char_buffer, "    CONGRATULATIONS! YOU ARE A LEGEND!    ", 19, 10);
+	alt_up_char_buffer_string(char_buffer, "       ENTER YOUR NAME (3 letters):       ", 19, 20);
+}
+
+/*
+ * Updates the score submit screen with the user input
+ */
+void updateSubmitScoreScreen(char name_char, int index)
+{
+	if (name_char == 0 && index == 0)
+	{
+		alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
+	}
+	else
+	{
+		alt_up_char_buffer_draw(char_buffer, name_char, 19 + 2*index, 25);
+	}
 }
 
 /*
