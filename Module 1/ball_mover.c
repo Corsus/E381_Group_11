@@ -50,7 +50,7 @@ void initialize_ball_irq()
  */
 void handleControllerInput()
 {
-	usleep(5000);
+	usleep(4000);
 
 	// check if game is over
 	if (gameBall.nw_y <= 0)
@@ -77,7 +77,7 @@ void handleControllerInput()
 	else if (direction == left_move)
 	{
 		// move left
-		if (gameBall.w_x > ((SCREEN_X_PLAY/2) - 2) % 3 )
+		if (gameBall.w_x > 1)
 		{
 			disableTimerInterrupt();
 			undrawBall();
@@ -88,7 +88,7 @@ void handleControllerInput()
 		//printf("Left %d\n", gameBall.nw_x + 1);
 	}
 
-	usleep(5000);
+	usleep(4000);
 }
 
 /*

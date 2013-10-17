@@ -246,6 +246,7 @@ void load_sound_data()
 void playGreet()
 {
 	// register isr
+	sound_data_counter = 0;
 	alt_irq_register(AUDIO_IRQ, 0x0, greet_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
@@ -255,6 +256,7 @@ void playGreet()
 void playLose()
 {
 	// register isr
+	sound_data_counter = 0;
 	alt_irq_register(AUDIO_IRQ, 0x0, lose_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
@@ -264,6 +266,7 @@ void playLose()
 void playBackground()
 {
 	// register isr
+	sound_data_counter = 0;
 	alt_irq_register(AUDIO_IRQ, 0x0, background_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
@@ -273,6 +276,7 @@ void playBackground()
 void playCongrat()
 {
 	// register isr
+	sound_data_counter = 0;
 	alt_irq_register(AUDIO_IRQ, 0x0, congrat_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
@@ -282,6 +286,7 @@ void playCongrat()
 void disableSound()
 {
 	printf("disable\n");
+	sound_data_counter = 0;
 	alt_up_audio_disable_write_interrupt(audio_dev);
 	alt_up_audio_reset_audio_core(audio_dev);
 }

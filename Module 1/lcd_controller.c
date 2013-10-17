@@ -7,6 +7,23 @@
 
 #include "lcd_controller.h"
 
+const char intro_1[] = "FALL DOWN 381";
+const char intro_2[] = "Main Menu";
+const char high_score_menu_string[] = "High Scores";
+const char game_over_string[] = "Game Over";
+const char sub_score_string_1[] = "Congrats!";
+const char sub_score_string_2[] = "New Highscore!";
+
+const char play_mode_string_1[] = "Normal";
+const char play_mode_string_2[] = "Reversed";
+
+const char game_status_string_1[] = "Let's Begin";
+const char game_status_string_2[] = "Owning!";
+const char game_status_string_3[] = "Dominating!!";
+const char game_status_string_4[] = "RAMPAGE!!!";
+const char game_status_string_5[] = "G O D L I K E";
+
+
 alt_up_character_lcd_dev* lcd;
 
 /*

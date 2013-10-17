@@ -12,8 +12,8 @@ alt_up_char_buffer_dev* char_buffer;
 
 const char play[] = "PLAY";
 const char highscore[] = "HIGHSCORES";
-char score_string[6];
-char level_string[4];
+char score_string[7];	//6 digits + null character
+char level_string[4];	//3 digits + null character
 
 // background color (changes when reversed)
 int undraw_color;
@@ -66,9 +66,9 @@ void initializeInfoBar()
  */
 void drawInfoBarStats()
 {
-	sprintf(score_string, "%d", game_score);
+	snprintf(score_string, 7, "%d", game_score);
 	alt_up_char_buffer_string(char_buffer, score_string, 68, 10);
-	sprintf(level_string, "%d", difficulty_counter);
+	snprintf(level_string, 4, "%d", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 68, 15);
 }
 
@@ -182,7 +182,8 @@ void drawMenu()
 	alt_up_char_buffer_string(char_buffer, "Navigate the ball left and right to avoid the obstacles.", 10, 40);
 	alt_up_char_buffer_string(char_buffer, "Game is over when the ball goes off the top.", 10, 41);
 	alt_up_char_buffer_string(char_buffer, "The longer you survive, the higher your score!", 10, 42);
-	alt_up_char_buffer_string(char_buffer, "Good luck and have fun! - EECE381 G11", 10, 44);
+	alt_up_char_buffer_string(char_buffer, "The controls will reverse every so often, so be careful!", 10, 43);
+	alt_up_char_buffer_string(char_buffer, "Good luck and have fun! - EECE381 G11", 10, 45);
 
 	// update menu selections
 	update_menu_selection(2);
@@ -235,7 +236,7 @@ void drawHighScoreScreen()
 	}
 
 	// Draw out the high scores
-	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
+	alt_up_char_buffer_string(char_buffer, "PRESS ENTER BUTTON TO CONTINUE", 25, 50);
 }
 
 /*
@@ -251,22 +252,7 @@ void drawSubmitScoreScreen()
 	alt_up_char_buffer_string(char_buffer, "        YOUR SCORE HAS BEEN SAVED!        ", 19, 30);
 	writeHighscore(game_score);
 	usleep(100000);
-	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
-}
-
-/*
- * Updates the score submit screen with the user input
- */
-void updateSubmitScoreScreen(char name_char, int index)
-{
-	if (name_char == 0 && index == 0)
-	{
-		alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
-	}
-	else
-	{
-		alt_up_char_buffer_draw(char_buffer, name_char, 19 + 2*index, 25);
-	}
+	alt_up_char_buffer_string(char_buffer, "PRESS ENTER BUTTON TO CONTINUE", 25, 50);
 }
 
 /*
@@ -287,7 +273,7 @@ void drawGameOverScreen()
 	sprintf(level_string, "%d", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 45, 30);
 	usleep(500000);
-	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 40);
+	alt_up_char_buffer_string(char_buffer, "PRESS ENTER BUTTON TO CONTINUE", 25, 40);
 	//completed
 }
 

@@ -43,8 +43,8 @@ int main()
 	{
 		// we always start with the Menu
 		drawMenu();
-		drawStatus("FALL DOWN 381");
-		drawMode("Main Menu");
+		drawStatus(intro_1);
+		drawMode(intro_2);
 		menu_selection = MENU_PLAY;
 
 		// menu loop
@@ -163,13 +163,13 @@ void selectMenu()
 			//start playing background music
 			playBackground();
 			//draw status on LCD
-			drawStatus("Let's Begin.");
-			drawMode("Normal");
+			drawStatus(game_status_string_1);
+			drawMode(play_mode_string_1);
 			break;
 		// select High Score table
 		case MENU_SCORE:
 			//draw status on LCD
-			drawMode("High Scores");
+			drawMode(high_score_menu_string);
 			//change state of game
 			gameStatus = HIGH_SCORE;
 			//load up highscore UI
@@ -195,9 +195,10 @@ void stopGame()
 	clearScreen();
 
 	playLose();
+	drawMode(game_over_string);
 	drawGameOverScreen();
 	gameStatus = GAME_OVER;
-	drawMode("Game Over");
+
 }
 
 /*
@@ -237,6 +238,8 @@ void gameOverInput()
 			playCongrat();
 			drawSubmitScoreScreen();
 			gameStatus = SUBMIT_SCORE;
+			drawStatus(sub_score_string_1);
+			drawMode(sub_score_string_2);
 		}
 		else
 		{
@@ -258,14 +261,14 @@ void switchPlayMode()
 		gameBall.color = BLACK;
 		undraw_color = WHITE;
 		reverseClearPlayScreen();
-		drawMode("Reversed");
+		drawMode(play_mode_string_2);
 	}
 	else
 	{
 		gameBall.color = WHITE;
 		undraw_color = BLACK;
 		clearPlayScreen();
-		drawMode("Normal");
+		drawMode(play_mode_string_1);
 	}
 	reverseControllerInput();
 }

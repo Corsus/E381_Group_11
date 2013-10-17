@@ -42,7 +42,6 @@ void update_menu_selection(int direction);
 void clearScreen();
 void drawGameOverScreen();
 void drawSubmitScoreScreen();
-void updateSubmitScoreScreen(char name_char, int index);
 void drawHighScoreScreen();
 void drawLoadingScreen();
 

@@ -9,6 +9,7 @@
 #define HIGHSCORE_H_
 
 #include <stdio.h>
+#include <stdlib.h>
 #include "altera_up_sd_card_avalon_interface.h"
 #include "string.h"
 
