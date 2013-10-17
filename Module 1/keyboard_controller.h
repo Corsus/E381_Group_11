@@ -25,6 +25,5 @@
 void initializeKeyboardController();
 int readGameControl();
 int readMenuControl();
-void readUserNameInput();
 
 #endif /* KEYBOARD_CONTROLLER_H_ */

@@ -27,17 +27,16 @@ int main()
 	//initialize VGA
 	initializeVgaDisplay();
 	initializeKeyboardController();
-	//readUserNameInput();
 	//draw loading screen
 	drawLoadingScreen();
 
 	//initialize LCD, SD card, audio
 	initializeLCD();
-	//initializeSDCardController();
-	//initialize_audio();
+	initializeSDCardController();
+	initialize_audio();
 
 	//play intro sound
-	//playGreet();
+	playGreet();
 
 	//main loop
 	while(1)
@@ -67,11 +66,12 @@ int main()
 		{
 			gameOverInput();
 		}
+		usleep(100000);
 		while (gameStatus == SUBMIT_SCORE)
 		{
-			readUserNameInput();
 			waitForInput();
 		}
+		usleep(100000);
 
 		// at the end, we go back to main menu and restart our loop
 		gameStatus = MAIN_MENU;
@@ -116,10 +116,7 @@ void initializeGameBall()
 /*
  * The controller method for the Main Menu
  * Checks for the button presses and acts accordingly
- * KEY3 selects Play
- * KEY2 selects High Score
- * KEY1 selects the current selection
- * KEY0 does nothing
+ * Valid input: L ARROW, R ARROW, ENTER
  */
 void menu_controller()
 {
@@ -161,14 +158,10 @@ void selectMenu()
 		case MENU_PLAY:
 			//change state of game
 			gameStatus = PLAYING;
-			//play Game Start sound
-			//playStart();
-			//wait for sound to finish
-			usleep(1000000);
 			//initialize the game
 			initializeGame();
 			//start playing background music
-			//playBackground();
+			playBackground();
 			//draw status on LCD
 			drawStatus("Let's Begin.");
 			drawMode("Normal");
@@ -201,15 +194,14 @@ void stopGame()
 	//clear the screen
 	clearScreen();
 
-	//playLose();
+	playLose();
 	drawGameOverScreen();
-
 	gameStatus = GAME_OVER;
 	drawMode("Game Over");
 }
 
 /*
- * Method to wait for a key press (KEY0) from user
+ * Method to wait for a key press (ENTER) from user
  * When pressed, the status of the game changes to Main Menu
  * Essentially waits for the user to press a key before going back to Main Menu.
  */
@@ -227,7 +219,7 @@ void waitForInput()
 }
 
 /*
- * Method to wait for a key press (KEY0) from user
+ * Method to wait for a key press (ENTER) from user
  * When pressed, the status of the game changes to Main Menu
  * Essentially waits for the user to press a key before going back to Main Menu.
  */
@@ -240,13 +232,16 @@ void gameOverInput()
 		// clears the menu screen
 		clearScreen();
 
-		// TODO: check to see if score is a high score
-		// If yes, gameStatus = SUBMIT_SCORE
-		//		drawSubmitScoreScreen();
-		//
-		// If no, gameStatus = MAIN_MENU
-
-		gameStatus = MAIN_MENU;
+		if (game_score > readHighscore(10))
+		{
+			playCongrat();
+			drawSubmitScoreScreen();
+			gameStatus = SUBMIT_SCORE;
+		}
+		else
+		{
+			gameStatus = MAIN_MENU;
+		}
 	}
 	usleep(5000);
 }
@@ -258,7 +253,6 @@ void gameOverInput()
  */
 void switchPlayMode()
 {
-	//printf("Mode Switch!!\n");
 	if (gameBall.color == WHITE)
 	{
 		gameBall.color = BLACK;

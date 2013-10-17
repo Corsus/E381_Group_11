@@ -10,7 +10,7 @@
 alt_up_audio_dev * audio_dev;
 
 unsigned int* greet_data;
-unsigned int* start_data;
+unsigned int* congrat_data;
 unsigned int* lose_data;
 unsigned int* background_data;
 
@@ -85,32 +85,6 @@ void greet_isr(void* context, alt_u32 id)
 	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_RIGHT);
 }
 
-void start_isr(void* context, alt_u32 id)
-{
-	// FIFO is 75% empty, need to fill it up
-	int sample_counter;
-	for (sample_counter = 0; sample_counter < SAMPLE_SIZE; sample_counter++)
-	{
-		// take 2 bytes at a time
-		byte_data[0] = start_data[sound_data_counter];
-		byte_data[1] = start_data[sound_data_counter+1];
-		sound_data_counter += 2;
-
-		// combine the two bytes and store into sample buffer
-		sound_buff[sample_counter] = (byte_data[1] << 8) | byte_data[0];
-
-		// if we finish reading our data buffer, then we loop back to start over
-		if (sound_data_counter >= START_SIZE)
-		{
-			sound_data_counter = 0;
-			alt_up_audio_disable_write_interrupt(audio_dev);
-		}
-	}
-	// finally, we write this sample data to the FIFO
-	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_LEFT);
-	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_RIGHT);
-}
-
 void lose_isr(void* context, alt_u32 id)
 {
 	// FIFO is 75% empty, need to fill it up
@@ -162,6 +136,32 @@ void background_isr(void* context, alt_u32 id)
 	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_RIGHT);
 }
 
+void congrat_isr(void* context, alt_u32 id)
+{
+	// FIFO is 75% empty, need to fill it up
+	int sample_counter;
+	for (sample_counter = 0; sample_counter < SAMPLE_SIZE; sample_counter++)
+	{
+		// take 2 bytes at a time
+		byte_data[0] = congrat_data[sound_data_counter];
+		byte_data[1] = congrat_data[sound_data_counter+1];
+		sound_data_counter += 2;
+
+		// combine the two bytes and store into sample buffer
+		sound_buff[sample_counter] = (byte_data[1] << 8) | byte_data[0];
+
+		// if we finish reading our data buffer, then we loop back to start over
+		if (sound_data_counter >= CONGRAT_SIZE)
+		{
+			sound_data_counter = 0;
+			alt_up_audio_disable_write_interrupt(audio_dev);
+		}
+	}
+	// finally, we write this sample data to the FIFO
+	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_LEFT);
+	alt_up_audio_write_fifo(audio_dev, sound_buff, SAMPLE_SIZE, ALT_UP_AUDIO_RIGHT);
+}
+
 
 // opens the sound file and loads it into memory
 void load_sound_data()
@@ -173,11 +173,11 @@ void load_sound_data()
 
 	// create large buffer to store all sound data
 	greet_data = (unsigned int*) malloc(GREET_SIZE * sizeof(unsigned int));
-	start_data = (unsigned int*) malloc(START_SIZE * sizeof(unsigned int));
 	lose_data = (unsigned int*) malloc(LOSE_SIZE * sizeof(unsigned int));
+	congrat_data = (unsigned int*) malloc(CONGRAT_SIZE * sizeof(unsigned int));
 	background_data = (unsigned int*) malloc(BACKGROUND_SIZE * sizeof(unsigned int));
 
-	//printf("Check\n");
+	printf("Check\n");
 	//greet
 	file_handle = alt_up_sd_card_fopen("greet.wav", false);
 	// skip header
@@ -191,22 +191,22 @@ void load_sound_data()
 		greet_data[loop_counter] = alt_up_sd_card_read(file_handle);
 	}
 	alt_up_sd_card_fclose(file_handle);
-	//printf("Check\n");
+	printf("Check\n");
 
-	//start
-	file_handle = alt_up_sd_card_fopen("start.wav", false);
+	//congrat
+	file_handle = alt_up_sd_card_fopen("congrats.wav", false);
 	// skip header
 	for (loop_counter = 0; loop_counter < HEADER_SIZE; loop_counter++)
 	{
 		alt_up_sd_card_read(file_handle);
 	}
 	// read and store sound data into memory
-	for (loop_counter = 0; loop_counter < START_SIZE; loop_counter++)
+	for (loop_counter = 0; loop_counter < CONGRAT_SIZE; loop_counter++)
 	{
-		start_data[loop_counter] = alt_up_sd_card_read(file_handle);
+		congrat_data[loop_counter] = alt_up_sd_card_read(file_handle);
 	}
 	alt_up_sd_card_fclose(file_handle);
-	//printf("Check\n");
+	printf("Check\n");
 
 	//background
 	file_handle = alt_up_sd_card_fopen("back.wav", false);
@@ -221,7 +221,7 @@ void load_sound_data()
 		background_data[loop_counter] = alt_up_sd_card_read(file_handle);
 	}
 	alt_up_sd_card_fclose(file_handle);
-	//printf("Check\n");
+	printf("Check\n");
 
 	//lose
 	file_handle = alt_up_sd_card_fopen("defeat.wav", false);
@@ -236,7 +236,7 @@ void load_sound_data()
 		lose_data[loop_counter] = alt_up_sd_card_read(file_handle);
 	}
 	alt_up_sd_card_fclose(file_handle);
-	//printf("Check\n");
+	printf("Check\n");
 
 
 	// create buffer for storing samples from sound_data
@@ -247,15 +247,6 @@ void playGreet()
 {
 	// register isr
 	alt_irq_register(AUDIO_IRQ, 0x0, greet_isr);
-	// enable interrupt
-	alt_irq_enable(AUDIO_IRQ);
-	alt_up_audio_enable_write_interrupt(audio_dev);
-}
-
-void playStart()
-{
-	// register isr
-	alt_irq_register(AUDIO_IRQ, 0x0, start_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
 	alt_up_audio_enable_write_interrupt(audio_dev);
@@ -274,6 +265,15 @@ void playBackground()
 {
 	// register isr
 	alt_irq_register(AUDIO_IRQ, 0x0, background_isr);
+	// enable interrupt
+	alt_irq_enable(AUDIO_IRQ);
+	alt_up_audio_enable_write_interrupt(audio_dev);
+}
+
+void playCongrat()
+{
+	// register isr
+	alt_irq_register(AUDIO_IRQ, 0x0, congrat_isr);
 	// enable interrupt
 	alt_irq_enable(AUDIO_IRQ);
 	alt_up_audio_enable_write_interrupt(audio_dev);

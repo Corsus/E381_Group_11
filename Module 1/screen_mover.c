@@ -14,8 +14,8 @@ Line line2;
 int screen_mover_counter;
 
 // stat counters
-unsigned long int difficulty_counter;
-unsigned long int game_score;
+int difficulty_counter;
+int game_score;
 
 /*
  * initialization of screen mover
@@ -179,6 +179,7 @@ void adjustDifficulty()
 			break;
 	}
 
+	// change the playing mode every 15 levels
 	if (difficulty_counter % 15 == 0)
 	{
 		switchPlayMode();

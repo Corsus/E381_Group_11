@@ -9,6 +9,9 @@
 
 alt_up_ps2_dev* keyboard;
 
+/*
+ * Initialization of keyboard controller
+ */
 void initializeKeyboardController()
 {
 	printf("Initialize keyboard...\n");
@@ -29,9 +32,9 @@ void initializeKeyboardController()
 	printf("Done keyboard initialization...\n");
 }
 
-// make code = press
-// break code = release
-
+/*
+ * In-game control handler
+ */
 int readGameControl()
 {
 	unsigned char make_code = 0;
@@ -54,6 +57,9 @@ int readGameControl()
 	return return_value;
 }
 
+/*
+ * Menu control handler
+ */
 int readMenuControl()
 {
 	unsigned char make_code = 0;
@@ -85,42 +91,3 @@ int readMenuControl()
 
 	return return_value;
 }
-
-void readUserNameInput()
-{
-	int loop_counter = 0;
-
-	unsigned char make_code = 0;
-
-	char player_name[3];
-	char* temp_char;
-
-	//set_keyboard_rate(keyboard, );
-
-	while (loop_counter < 1000)
-	{
-		//read from FIFO, store in temp_char
-		alt_up_ps2_read_data_byte(keyboard, &make_code);
-
-		if (make_code == 0xF0 || make_code == 0xE0)
-		{
-			// skip it
-			printf("skipped\n");
-			alt_up_ps2_read_data_byte(keyboard, &make_code);
-		}
-		else
-		{
-			translate_make_code(KB_ASCII_MAKE_CODE, make_code, temp_char);
-			player_name[loop_counter] = temp_char[0];
-			printf("%c\n", temp_char[0]);
-			//draw the character on screen in correct position
-			//updateSubmitScoreScreen(temp_char[0], loop_counter);
-
-			//increment loop counter
-			loop_counter++;
-		}
-	}
-	//TODO: write to SD card
-	//updateSubmitScoreScreen(0, 0);
-}
-

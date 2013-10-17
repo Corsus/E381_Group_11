@@ -66,9 +66,9 @@ void initializeInfoBar()
  */
 void drawInfoBarStats()
 {
-	sprintf(score_string, "%lu", game_score);
+	sprintf(score_string, "%d", game_score);
 	alt_up_char_buffer_string(char_buffer, score_string, 68, 10);
-	sprintf(level_string, "%lu", difficulty_counter);
+	sprintf(level_string, "%d", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 68, 15);
 }
 
@@ -212,10 +212,29 @@ void update_menu_selection(int direction)
  */
 void drawHighScoreScreen()
 {
+	int i;
+	int score;
+	char* sstring;
 	clearScreen();
 	alt_up_char_buffer_string(char_buffer, "H   I   G   H        S   C   O   R   E   S", 19, 10);
-	//TODO: READ FROM SD CARD
-	// Draw out the 3 high scores
+	alt_up_char_buffer_string(char_buffer, "1.", 19, 20);
+	alt_up_char_buffer_string(char_buffer, "2.", 19, 22);
+	alt_up_char_buffer_string(char_buffer, "3.", 19, 24);
+	alt_up_char_buffer_string(char_buffer, "4.", 19, 26);
+	alt_up_char_buffer_string(char_buffer, "5.", 19, 28);
+	alt_up_char_buffer_string(char_buffer, "6.", 19, 30);
+	alt_up_char_buffer_string(char_buffer, "7.", 19, 32);
+	alt_up_char_buffer_string(char_buffer, "8.", 19, 34);
+	alt_up_char_buffer_string(char_buffer, "9.", 19, 36);
+	alt_up_char_buffer_string(char_buffer, "10.", 19, 38);
+	for (i = 1; i <= 10; i++)
+	{
+		score = readHighscore(i);
+		sprintf(sstring, "%d", score);
+		alt_up_char_buffer_string(char_buffer, sstring, 60, 18+2*i);
+	}
+
+	// Draw out the high scores
 	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
 }
 
@@ -226,7 +245,13 @@ void drawSubmitScoreScreen()
 {
 	clearScreen();
 	alt_up_char_buffer_string(char_buffer, "    CONGRATULATIONS! YOU ARE A LEGEND!    ", 19, 10);
-	alt_up_char_buffer_string(char_buffer, "       ENTER YOUR NAME (3 letters):       ", 19, 20);
+	usleep(100000);
+	alt_up_char_buffer_string(char_buffer, "    YOU ARE ONE OF THE HIGHEST SCORERS!   ", 19, 20);
+	usleep(100000);
+	alt_up_char_buffer_string(char_buffer, "        YOUR SCORE HAS BEEN SAVED!        ", 19, 30);
+	writeHighscore(game_score);
+	usleep(100000);
+	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 50);
 }
 
 /*
@@ -254,12 +279,14 @@ void drawGameOverScreen()
 
 	//draws GAMEOVER screen
 	alt_up_char_buffer_string(char_buffer, "   G   A   M   E        O   V   E   R   ", 19, 20);
+	usleep(200000);
 	alt_up_char_buffer_string(char_buffer, "SCORE:", 30, 25);
 	alt_up_char_buffer_string(char_buffer, "LEVEL:", 30, 30);
-	sprintf(score_string, "%lu", game_score);
+	sprintf(score_string, "%d", game_score);
 	alt_up_char_buffer_string(char_buffer, score_string, 45, 25);
-	sprintf(level_string, "%lu", difficulty_counter);
+	sprintf(level_string, "%d", difficulty_counter);
 	alt_up_char_buffer_string(char_buffer, level_string, 45, 30);
+	usleep(500000);
 	alt_up_char_buffer_string(char_buffer, "PRESS START BUTTON TO CONTINUE", 25, 40);
 	//completed
 }
@@ -272,8 +299,8 @@ void drawLoadingScreen()
 	//clears the screen
 	clearScreen();
 
-	alt_up_char_buffer_string(char_buffer, "L O A D I N G . . .", 5, 58);
-	alt_up_char_buffer_string(char_buffer, "P L E A S E   W A I T . . .", 5, 59);
+	alt_up_char_buffer_string(char_buffer, "L O A D I N G . . .", 5, 50);
+	alt_up_char_buffer_string(char_buffer, "P L E A S E   W A I T . . .", 5, 55);
 }
 
 /*

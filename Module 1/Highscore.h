@@ -2,7 +2,7 @@
  * Highscore.h
  *
  *  Created on: 2013-10-08
- *      Author: Corsus
+ *      Author: EECE381 G11
  */
  
 #ifndef HIGHSCORE_H_
@@ -14,8 +14,7 @@
 
 #define FILE_NAME "HS.TXT"
 
-
-bool writeHighscore(int);
+void writeHighscore(int);
 int readHighscore(int);
 
 #endif

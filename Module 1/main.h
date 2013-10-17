@@ -27,6 +27,8 @@
 #include "lcd_controller.h"
 #include "keyboard_controller.h"
 
+#include "Highscore.h"
+
 //Positions for VGA module to reference
 #define SCREEN_X 320
 #define SCREEN_X_PLAY 240
