@@ -260,27 +260,11 @@
          type = "int";
       }
    }
-   element sdram.s1
+   element ball_timer.s1
    {
       datum baseAddress
       {
-         value = "16777216";
-         type = "long";
-      }
-   }
-   element KEY.s1
-   {
-      datum baseAddress
-      {
-         value = "18560";
-         type = "long";
-      }
-   }
-   element screen_timer.s1
-   {
-      datum baseAddress
-      {
-         value = "18496";
+         value = "18528";
          type = "long";
       }
    }
@@ -292,19 +276,19 @@
          type = "boolean";
       }
    }
-   element timer.s1
+   element KEY.s1
    {
       datum baseAddress
       {
-         value = "18432";
+         value = "18560";
          type = "long";
       }
    }
-   element ball_timer.s1
+   element sdram.s1
    {
       datum baseAddress
       {
-         value = "18528";
+         value = "16777216";
          type = "long";
       }
    }
@@ -313,6 +297,22 @@
       datum baseAddress
       {
          value = "18464";
+         type = "long";
+      }
+   }
+   element screen_timer.s1
+   {
+      datum baseAddress
+      {
+         value = "18496";
+         type = "long";
+      }
+   }
+   element timer.s1
+   {
+      datum baseAddress
+      {
+         value = "18432";
          type = "long";
       }
    }
@@ -392,7 +392,7 @@
  <parameter name="projectName" value="module_one.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1381617904048" />
+ <parameter name="timeStamp" value="1382036377081" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -517,7 +517,7 @@
   <parameter name="setting_interruptControllerType" value="Internal" />
   <parameter name="setting_branchPredictionType" value="Automatic" />
   <parameter name="setting_bhtPtrSz" value="8" />
-  <parameter name="muldiv_multiplierType" value="EmbeddedMulFast" />
+  <parameter name="muldiv_multiplierType" value="NoneSmall" />
   <parameter name="mpu_minInstRegionSize" value="12" />
   <parameter name="mpu_minDataRegionSize" value="12" />
   <parameter name="mmu_uitlbNumEntries" value="4" />
