@@ -10,7 +10,7 @@
 const char intro_1[] = "FALL DOWN 381";
 const char intro_2[] = "Main Menu";
 const char high_score_menu_string[] = "High Scores";
-const char game_over_string[] = "Game Over";
+const char game_over_string[] = "Game over";
 const char sub_score_string_1[] = "Congrats!";
 const char sub_score_string_2[] = "New Highscore!";
 

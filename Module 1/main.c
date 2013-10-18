@@ -195,10 +195,9 @@ void stopGame()
 	clearScreen();
 
 	playLose();
-	drawMode(game_over_string);
 	drawGameOverScreen();
 	gameStatus = GAME_OVER;
-
+	drawMode(game_over_string);
 }
 
 /*
