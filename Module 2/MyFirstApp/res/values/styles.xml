@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <!-- here i can customize my theme -->
+    <style name="MyTheme" 
+        parent="@android:style/Theme.Holo.Light">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+   		
+   		<!-- What i do here i say i want to override the actionBarStyle of this theme -->
+   		<item name="android:actionBarStyle">@style/MyActionBar</item>
+   		<item name="android:actionBarTabTextStyle">@style/MyActionBarTabText</item>
+   		<item name="android:actionMenuTextColor">@android:color/darker_gray</item>
+	</style>
+	
+    <!-- the same customize theme but with overlay action bar -->
+    <style name="MyThemeOverlay"
+        parent="@style/MyTheme">
+        <item name="android:windowActionBarOverlay">true</item>
+    </style>
+    
+    <style name="MyThemeNoActionBar"
+        parent="@style/MyTheme">
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    
+    <!-- ActionBar styles -->
+    <!-- Here i define my custom actionBar Style -->
+    <style name="MyActionBar"
+           parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@android:color/holo_green_light</item>
+        <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
+    </style>
+    
+    <!-- ActionBar titleText style -->
+    <style name="MyActionBarTitleText"
+       	   parent="@android:style/TextAppearance.Holo.Widget.ActionBar.Title">
+       	<item name="android:textColor">@android:color/white</item>
+    </style>
+    
+    <!-- ActionBar Tab Text style -->
+    <style name="MyActionBarTabText"
+       	   parent="@android:style/Widget.ActionBar.TabText">
+       	<item name="android:textColor">@android:color/white</item>
+    </style>      
+    
+</resources>
