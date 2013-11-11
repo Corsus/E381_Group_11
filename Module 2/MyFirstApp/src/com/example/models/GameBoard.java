@@ -11,6 +11,7 @@ public class GameBoard {
 	private static final int height = 7;
 	
 	private ArrayList<Battleship> shipOnBoard;
+	private ArrayList<int[]> shipOnBoardCoor;
 	
 	public GameBoard()
 	{
@@ -20,6 +21,7 @@ public class GameBoard {
 	private void initializeGameBoard()
 	{
 		shipOnBoard = new ArrayList<Battleship>();
+		shipOnBoardCoor = new ArrayList<int[]>();
 		gameBoard = new Tile[width][height];
 		for (int i = 0; i < width; i++)
 		{
@@ -51,11 +53,12 @@ public class GameBoard {
 						}
 					}
 					//insert into board
+					shipOnBoard.add(ship);
+					shipOnBoardCoor.add(coordinates);
 					for (int i = coordinates[1]; i < coordinates[1] + size; i++)
 					{
 						gameBoard[coordinates[0]][i].fillTile(ship.getShipComponentAt(i - coordinates[1]));
 					}
-					assignShipToBoard(ship);
 					return true;
 				}
 				else
@@ -75,11 +78,12 @@ public class GameBoard {
 						}
 					}
 					//insert into board
+					shipOnBoard.add(ship);
+					shipOnBoardCoor.add(coordinates);
 					for (int i = coordinates[0]; i < coordinates[0] + size; i++)
 					{
 						gameBoard[i][coordinates[1]].fillTile(ship.getShipComponentAt(i - coordinates[0]));
 					}
-					assignShipToBoard(ship);
 					return true;
 				}
 				else
@@ -90,12 +94,6 @@ public class GameBoard {
 				return false;
 		}	
 	}
-	
-	private void assignShipToBoard(Battleship ship)
-	{
-		this.shipOnBoard.add(ship);
-	}
-	
 
 	public Tile[][] getGameBoard()
 	{
@@ -121,6 +119,18 @@ public class GameBoard {
 	{
 		return this.shipOnBoard;
 	}
+	
+	public ArrayList<int[]> getShipOnBoardCoor()
+	{
+		return this.shipOnBoardCoor;
+	}
+	
+	public void removeShipFromBoard(int shipIndex)
+	{
+		shipOnBoard.remove(shipIndex);
+		shipOnBoardCoor.remove(shipIndex);
+	}
+	
 	
 	
 }

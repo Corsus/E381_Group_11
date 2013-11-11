@@ -13,39 +13,42 @@
     <ViewFlipper
         android:id="@+id/GameMapsLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_weight="5" >
         
         <GridLayout
-	        android:id="@+id/myBoardLayout"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center"
-	        android:background="@drawable/space"
-	        android:columnCount="6"
-	        android:columnOrderPreserved="true"
-	        android:rowCount="7"
-	        android:rowOrderPreserved="true" >
+            android:id="@+id/myBoardLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/space"
+            android:columnCount="6"
+            android:columnOrderPreserved="true"
+            android:rowCount="7"
+            android:rowOrderPreserved="true" >
+
    		</GridLayout>
    		
         <GridLayout
-	        android:id="@+id/fogBoardLayout"
-	        android:layout_width="wrap_content"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center"
-	        android:background="@drawable/space"
-	        android:columnCount="6"
-	        android:columnOrderPreserved="true"
-	        android:rowCount="7"
-	        android:rowOrderPreserved="true" >
+            android:id="@+id/fogBoardLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/space"
+            android:columnCount="6"
+            android:columnOrderPreserved="true"
+            android:rowCount="7"
+            android:rowOrderPreserved="true" >
+
    		</GridLayout>
    		
     </ViewFlipper>
 
-
     <FrameLayout
         android:id="@+id/ButtonPanelLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="0dp"
+        android:layout_weight="2" >
 
         <LinearLayout
             android:id="@+id/setupPanel"
@@ -158,9 +161,11 @@
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button
-                android:id="@+id/button1"
+                android:id="@+id/fire_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:clickable="false"
+                android:enabled="false"
                 android:onClick="send_fire_command"
                 android:text="@string/button_fire_string" />
 

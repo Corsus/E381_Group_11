@@ -13,4 +13,9 @@ public class Tile {
 	{
 		this.worldObject = worldObject;
 	}
+	
+	public void clearTile()
+	{
+		this.worldObject = null;
+	}
 }

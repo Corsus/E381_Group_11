@@ -2,10 +2,13 @@ package com.example.myfirstapp;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.app.NavUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -30,6 +33,11 @@ public class SetupGameBoard extends Activity {
 	private GridLayout myBoardLayout;
 	private GridLayout fogBoardLayout;
 
+	private final Handler longPressHandler = new Handler();
+	private LongPressRunnable gridLongPress = new LongPressRunnable();
+	private boolean isLongPress = false;
+	private View longPressView;
+
 	private int crossfadeAnimationDuration;
 
 	private ViewFlipper viewflipper;
@@ -42,7 +50,10 @@ public class SetupGameBoard extends Activity {
 
 	private ShipOrientation setupOrientation = ShipOrientation.HORIZONTAL;
 
+	private boolean gameIsPlaying = false;
+	private Button fire_button;
 	private int[] fire_coordinates;
+	private AnimationDrawable selected_fog_cell;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -65,6 +76,7 @@ public class SetupGameBoard extends Activity {
 		// reference the button panels
 		playPanel = findViewById(R.id.playPanel);
 		setupPanel = findViewById(R.id.setupPanel);
+		fire_button = (Button) findViewById(R.id.fire_button);
 
 		// reference the map layouts
 		fogBoardLayout = (GridLayout) findViewById(R.id.fogBoardLayout);
@@ -76,14 +88,14 @@ public class SetupGameBoard extends Activity {
 		// set the animation time for crossfade
 		crossfadeAnimationDuration = getResources().getInteger(
 				android.R.integer.config_mediumAnimTime);
-		
-		//after all initialization, we draw the map
+
+		// after all initialization, we draw the map
 		drawGameBoard();
 		drawFogBoard();
 	}
 
-	//==================Layout Related================//
-	
+	// ==================Layout Related================//
+
 	private void drawGameBoard() {
 		Tile theTile;
 		ImageView imageView;
@@ -92,7 +104,8 @@ public class SetupGameBoard extends Activity {
 				theTile = this.gameBoard.getTileAt(i, j);
 				if (theTile.getTileObject() == null) {
 					imageView = new ImageView(this);
-					imageView.setImageResource(R.drawable.ic_launcher);
+					imageView.setImageResource(R.drawable.grid_border);
+					imageView.setBackgroundResource(R.drawable.ship_cell);
 					imageView.setOnTouchListener(mapTouchListener);
 					myBoardLayout.addView(imageView,
 							new GridLayout.LayoutParams(GridLayout.spec(j),
@@ -101,14 +114,14 @@ public class SetupGameBoard extends Activity {
 			}
 		}
 	}
-	
+
 	private void drawFogBoard() {
 		ImageView imageView;
 		for (int i = 0; i < GameBoard.getBoardWidth(); i++) {
 			for (int j = 0; j < GameBoard.getBoardHeight(); j++) {
 				// initialize the tile image
 				imageView = new ImageView(this);
-				imageView.setImageResource(R.drawable.space);
+				imageView.setImageResource(R.drawable.selectable_grid);
 				imageView.setOnTouchListener(mapTouchListener);
 				// add to layout
 				fogBoardLayout.addView(imageView, new GridLayout.LayoutParams(
@@ -131,26 +144,44 @@ public class SetupGameBoard extends Activity {
 	}
 
 	private void drawShipOnMap(Battleship ship, int index) {
-		GridLayout gl = (GridLayout) findViewById(R.id.myBoardLayout);
 		switch (ship.getOrientation()) {
-		case HORIZONTAL: 
+		case HORIZONTAL:
 			for (int i = 0; i < ship.getSize(); i++) {
-				ImageView iv = (ImageView) gl.getChildAt(index + i
+				ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
 						* GameBoard.getBoardHeight());
-				iv.setImageResource(R.drawable.ship);
+				iv.setBackgroundResource(R.drawable.ship_cell);
+				TransitionDrawable td = (TransitionDrawable) iv.getBackground();
+				td.startTransition(crossfadeAnimationDuration);
 			}
 			break;
-		case VERTICAL: 
+		case VERTICAL:
 			for (int i = 0; i < ship.getSize(); i++) {
-				ImageView iv = (ImageView) gl.getChildAt(index + i);
-				iv.setImageResource(R.drawable.ship);
+				ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+				iv.setBackgroundResource(R.drawable.ship_cell);
+				TransitionDrawable td = (TransitionDrawable) iv.getBackground();
+				td.startTransition(crossfadeAnimationDuration);
 			}
 			break;
 		}
 	}
-
-	//=================Game Logic Related========================//
 	
+	private void enableFireButton()
+	{
+		if (selected_fog_cell != null)
+		{
+			fire_button.setEnabled(true);
+			fire_button.setClickable(true);
+		}
+	}
+	
+	private void disableFireButton()
+	{
+		fire_button.setEnabled(false);
+		fire_button.setClickable(false);
+	}
+
+	// =================Game Logic Related========================//
+
 	// onClick handler for the 4 ship selector buttons
 	public void selectShipOnClick(View view) {
 		ImageButton button_clicked = (ImageButton) view;
@@ -198,17 +229,47 @@ public class SetupGameBoard extends Activity {
 		}
 	}
 
+	// Re-enables the select ship button
+	// Input: size of the ship, so that it can figure out which button to
+	// reenable
+	private void enableSelectShipButton(int size) {
+		ImageButton ib = null;
+		switch (size) {
+		case 1:
+			ib = (ImageButton) findViewById(R.id.SelectScout);
+			break;
+		case 2:
+			ib = (ImageButton) findViewById(R.id.SelectCruiser);
+			break;
+		case 3:
+			ib = (ImageButton) findViewById(R.id.SelectDestroyer);
+			break;
+		case 4:
+			ib = (ImageButton) findViewById(R.id.SelectMothership);
+			break;
+		}
+		if (ib != null) {
+			ib.setEnabled(true);
+			ib.setClickable(true);
+		}
+	}
+
 	// Check to see if the setup is complete.
 	// If so, enables the ready button.
 	// Called after a ship has been placed on the board.
 	private void isBoardReady() {
+		Button b1 = (Button) findViewById(R.id.readyButton);
+		Button b2 = (Button) findViewById(R.id.changeOrientation);
 		if (this.gameBoard.getShipOnBoard().size() == 4) {
-			Button b = (Button) findViewById(R.id.readyButton);
-			b.setEnabled(true);
-			b.setClickable(true);
-			b = (Button) findViewById(R.id.changeOrientation);
-			b.setEnabled(false);
-			b.setClickable(false);
+			b1.setEnabled(true);
+			b1.setClickable(true);
+			b2.setEnabled(false);
+			b2.setClickable(false);
+		} else {
+			b1.setEnabled(false);
+			b1.setClickable(false);
+			b2.setEnabled(true);
+			b2.setClickable(true);
 		}
 	}
 
@@ -220,8 +281,8 @@ public class SetupGameBoard extends Activity {
 		}
 	}
 
-	//==================Activity Related=====================//
-	
+	// ==================Activity Related=====================//
+
 	@Override
 	// when child activities return, we handle it here
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -229,6 +290,7 @@ public class SetupGameBoard extends Activity {
 		if (requestCode == 1) {
 			Toast.makeText(this, "Loading completed...", Toast.LENGTH_SHORT)
 					.show();
+			gameIsPlaying = true;
 			crossfadePanels();
 		}
 	}
@@ -252,17 +314,19 @@ public class SetupGameBoard extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-	
-	//================Button OnClick Handlers==========//
-	
+
+	// ================Button OnClick Handlers==========//
+
 	// TODO: Send fire coordinates to Middleman
 	public void send_fire_command(View view) {
+		disableFireButton();
+		stopAnimateSelectedGridCell();
 		// send
 		// reset coordinates
 		fire_coordinates = null;
 		// unhighlight the tile
 	}
-	
+
 	// onClick handler for the Change Orientation button
 	// Changes the orientation of the ships that are to be created
 	public void changeOrientation(View view) {
@@ -277,7 +341,7 @@ public class SetupGameBoard extends Activity {
 			break;
 		}
 	}
-	
+
 	// onClick handler for the Ready button
 	// Loads the LoadingScreen activity (to wait for other player)
 	public void setupComplete(View view) {
@@ -288,9 +352,9 @@ public class SetupGameBoard extends Activity {
 		// we want to handle its return
 		startActivityForResult(intent, 1);
 	}
-	
-	//================Animations related==============//
-	
+
+	// ================Animations related==============//
+
 	private void crossfadePanels() {
 		// alpha 0 means it is transparent
 		playPanel.setAlpha(0f);
@@ -308,7 +372,7 @@ public class SetupGameBoard extends Activity {
 					}
 				});
 	}
-	
+
 	private void clickGrid(View view) {
 		ImageView iv = (ImageView) view;
 		if (iv.getParent() == findViewById(R.id.myBoardLayout)) {
@@ -324,24 +388,52 @@ public class SetupGameBoard extends Activity {
 			}
 		} else if (iv.getParent() == findViewById(R.id.fogBoardLayout)) {
 			// click, store the coordinates of the selected tile
+			animateSelectedGridCell(iv);
 			int index = fogBoardLayout.indexOfChild(iv);
 			fire_coordinates = indexToCoordinates(index);
-			Toast.makeText(getApplicationContext(), "Clicked",
-					Toast.LENGTH_SHORT).show();
-			// TODO: highlight this tile
+			enableFireButton();
+		}
+	}
+
+	private void animateSelectedGridCell(ImageView iv) {
+		if (selected_fog_cell != null) {
+			selected_fog_cell.stop();
+			selected_fog_cell.selectDrawable(0);
+		}
+
+		selected_fog_cell = (AnimationDrawable) iv.getDrawable();
+		selected_fog_cell.setExitFadeDuration(crossfadeAnimationDuration);
+		selected_fog_cell.start();
+	}
+	
+	private void stopAnimateSelectedGridCell()
+	{
+		if (selected_fog_cell != null)
+		{
+			selected_fog_cell.stop();
+			selected_fog_cell.selectDrawable(0);
+			selected_fog_cell = null;
 		}
 	}
 
 	private void swipeLeftRight() {
 		// in from left
 		setViewFlipperAnimation(R.anim.in_left, R.anim.out_right);
+		viewflipper.getCurrentView().animate().alpha(0f)
+				.setDuration(crossfadeAnimationDuration).setListener(null);
 		viewflipper.showNext();
+		viewflipper.getCurrentView().animate().alpha(1f)
+				.setDuration(crossfadeAnimationDuration).setListener(null);
 	}
 
 	private void swipeRightLeft() {
 		// in from right
 		setViewFlipperAnimation(R.anim.in_right, R.anim.out_left);
-		viewflipper.showPrevious();
+		viewflipper.getCurrentView().animate().alpha(0f)
+				.setDuration(crossfadeAnimationDuration).setListener(null);
+		viewflipper.showNext();
+		viewflipper.getCurrentView().animate().alpha(1f)
+				.setDuration(crossfadeAnimationDuration).setListener(null);
 	}
 
 	private void setViewFlipperAnimation(int resource_in, int resource_out) {
@@ -353,27 +445,138 @@ public class SetupGameBoard extends Activity {
 	class GameMapOnTouchListener implements OnTouchListener {
 		@Override
 		public boolean onTouch(View v, MotionEvent event) {
-			// TODO Auto-generated method stub
 			if (event.getAction() == MotionEvent.ACTION_DOWN) {
 				// touch
 				previous_x_position = event.getX();
+				if (shipOnHand == null && gameIsPlaying == false) {
+					// need to keep track of view being long pressed
+					longPressView = v;
+					longPressHandler.postDelayed(gridLongPress, 1000);
+				}
+			}
+			if (event.getAction() == MotionEvent.ACTION_MOVE) {
+				longPressHandler.removeCallbacks(gridLongPress);
 			}
 			if (event.getAction() == MotionEvent.ACTION_UP) {
 				// click
+				longPressHandler.removeCallbacks(gridLongPress);
 				current_x_position = event.getX();
-				if (current_x_position == previous_x_position) {
-					clickGrid(v);
-				} else if (current_x_position > previous_x_position) {
-					swipeLeftRight();
-				} else if (current_x_position < previous_x_position) {
-					swipeRightLeft();
+				// If this click was a long press, then it was already handled
+				// by the Runnable
+				// Therefore, we can skip this as we don't want to handle it
+				// again.
+				if (isLongPress == true) {
+					// we reset the flag because the long press has now been
+					// handled.
+					isLongPress = false;
+				}
+				// If this wasn't a long press, then we want to handle it here.
+				else {
+					if (current_x_position == previous_x_position) {
+						clickGrid(v);
+					} else if (current_x_position > previous_x_position) {
+						if (gameIsPlaying)
+							swipeLeftRight();
+					} else if (current_x_position < previous_x_position) {
+						if (gameIsPlaying)
+							swipeRightLeft();
+					}
 				}
 			}
 			return true;
 		}
 	}
+
+	class LongPressRunnable implements Runnable {
+		@Override
+		public void run() {
+
+			if (longPressView instanceof ImageView) {
+				if (longPressView.getParent() == findViewById(R.id.myBoardLayout)) {
+					// get index of this cell
+					int index = myBoardLayout.indexOfChild(longPressView);
+					// convert to matrix coordinates
+					int[] coordinates = indexToCoordinates(index);
+					// get the tile at that coordinate
+					Tile tile = gameBoard.getTileAt(coordinates[0],
+							coordinates[1]);
+					// check to see if this is actually a ship component
+					if (tile.getTileObject() != null
+							&& tile.getTileObject() instanceof ShipComponent) {
+						// if yes, we find the parent ship of this component
+						ShipComponent sc = (ShipComponent) tile.getTileObject();
+						Battleship shipToRemove = sc.getParent();
+						// we want to get need to get coordinates of the HEAD of
+						// the parent ship
+						int shipIndex = gameBoard.getShipOnBoard().indexOf(
+								shipToRemove);
+						coordinates = gameBoard.getShipOnBoardCoor().get(
+								shipIndex);
+						// remove this ship from the underlying board
+						removeShipComponentFromMatrix(shipToRemove.getSize(),
+								shipToRemove.getOrientation(), coordinates);
+						// undraw this ship from the layout using the
+						// coordinates
+						undrawShip(shipToRemove.getSize(),
+								shipToRemove.getOrientation(), coordinates[0]
+										* GameBoard.getBoardHeight()
+										+ coordinates[1]);
+						// re-enable the corresponding spawn ship button
+						enableSelectShipButton(shipToRemove.getSize());
+						// finally, get rid of this ship from the board
+						gameBoard.removeShipFromBoard(shipIndex);
+						// check once again if board is ready
+						isBoardReady();
+					}
+				}
+			}
+
+			// set flag
+			isLongPress = true;
+		}
+
+		private void removeShipComponentFromMatrix(int size,
+				ShipOrientation orientation, int[] coor) {
+			int x = coor[0];
+			int y = coor[1];
+			switch (orientation) {
+			case HORIZONTAL:
+				for (int i = x; i < x + size; i++) {
+					gameBoard.getTileAt(i, y).clearTile();
+				}
+				break;
+			case VERTICAL:
+				for (int i = y; i < y + size; i++) {
+					gameBoard.getTileAt(x, i).clearTile();
+				}
+				break;
+			}
+		}
+
+		// helper method to undraw the ship from the board
+		// input: size of ship, orientation of ship, and the starting cell index
+		// to undraw
+		private void undrawShip(int size, ShipOrientation orientation, int index) {
+			switch (orientation) {
+			case HORIZONTAL:
+				for (int i = 0; i < size; i++) {
+					ImageView iv = (ImageView) myBoardLayout.getChildAt(index
+							+ i * GameBoard.getBoardHeight());
+					TransitionDrawable td = (TransitionDrawable) iv
+							.getBackground();
+					td.reverseTransition(crossfadeAnimationDuration);
+				}
+				break;
+			case VERTICAL:
+				for (int i = 0; i < size; i++) {
+					ImageView iv = (ImageView) myBoardLayout.getChildAt(index
+							+ i);
+					TransitionDrawable td = (TransitionDrawable) iv
+							.getBackground();
+					td.reverseTransition(crossfadeAnimationDuration);
+				}
+				break;
+			}
+		}
+	}
 }
-
-
-	
-

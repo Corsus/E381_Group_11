@@ -9,4 +9,9 @@ public class ShipComponent extends WorldObject{
 		this.parentShip = parent;
 	}
 	
+	public Battleship getParent()
+	{
+		return this.parentShip;
+	}
+	
 }

@@ -21,5 +21,6 @@
     <string name="button_fire_string">FIRE</string>
     <string name="title_activity_loading_screen">LoadingScreen</string>
     <string name="loading_string">LOADING...</string>
+    <string name="remove_string">Remove</string>
 
 </resources>
