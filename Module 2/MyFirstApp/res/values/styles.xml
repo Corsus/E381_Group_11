@@ -40,7 +40,7 @@
     <!-- Here i define my custom actionBar Style -->
     <style name="MyActionBar"
            parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
-        <item name="android:background">@android:color/holo_green_light</item>
+        <item name="android:background">@android:color/background_dark</item>
         <item name="android:titleTextStyle">@style/MyActionBarTitleText</item>
     </style>
     

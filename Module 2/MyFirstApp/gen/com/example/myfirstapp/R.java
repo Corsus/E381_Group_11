@@ -37,11 +37,12 @@ public final class R {
         public static final int ic_launcher_long=0x7f020007;
         public static final int ic_launcher_medium=0x7f020008;
         public static final int ic_launcher_short=0x7f020009;
-        public static final int selectable_grid=0x7f02000a;
-        public static final int ship=0x7f02000b;
-        public static final int ship_cell=0x7f02000c;
-        public static final int space=0x7f02000d;
-        public static final int space_gradient=0x7f02000e;
+        public static final int main_icon=0x7f02000a;
+        public static final int selectable_grid=0x7f02000b;
+        public static final int ship=0x7f02000c;
+        public static final int ship_cell=0x7f02000d;
+        public static final int space=0x7f02000e;
+        public static final int space_gradient=0x7f02000f;
     }
     public static final class id {
         public static final int ButtonPanelLayout=0x7f09000a;
