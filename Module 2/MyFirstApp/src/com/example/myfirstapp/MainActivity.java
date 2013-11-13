@@ -57,7 +57,7 @@ public class MainActivity extends Activity  {
 	
 	public void playMulti(View view)
 	{
-		Intent intent = new Intent(this, SetupGameBoard.class);
+		Intent intent = new Intent(this, ConnectToHost.class);
 		startActivity(intent);
 	}
 	

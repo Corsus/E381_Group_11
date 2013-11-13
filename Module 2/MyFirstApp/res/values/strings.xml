@@ -22,5 +22,9 @@
     <string name="title_activity_loading_screen">LoadingScreen</string>
     <string name="loading_string">LOADING...</string>
     <string name="remove_string">Remove</string>
+    <string name="title_activity_connect_to_host">Connect</string>
+    <string name="label_ip">IP:</string>
+    <string name="label_port">Port:</string>
+    <string name="connect_button_string">Connect</string>
 
 </resources>

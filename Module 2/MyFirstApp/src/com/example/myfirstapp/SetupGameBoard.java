@@ -1,5 +1,11 @@
 package com.example.myfirstapp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -92,6 +98,12 @@ public class SetupGameBoard extends Activity {
 		// after all initialization, we draw the map
 		drawGameBoard();
 		drawFogBoard();
+		
+		// Set up a timer task.  We will use the timer to check the
+		// input queue every 500 ms
+		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
+		Timer tcp_timer = new Timer();
+		tcp_timer.schedule(tcp_task, 3000, 500);
 	}
 
 	// ==================Layout Related================//
@@ -352,6 +364,35 @@ public class SetupGameBoard extends Activity {
 		// we want to handle its return
 		startActivityForResult(intent, 1);
 	}
+	
+	public void send_message(String msg)
+	{
+		BattleShipApp app = (BattleShipApp) getApplication();
+		
+		if (app.sock != null && app.sock.isConnected() && !app.sock.isClosed())
+		{	
+			// Create an array of bytes.  First byte will be the
+			// message length, and the next ones will be the message
+			
+			byte buf[] = new byte[msg.length() + 1];
+			buf[0] = (byte) msg.length(); 
+			System.arraycopy(msg.getBytes(), 0, buf, 1, msg.length());
+	
+			// Now send through the output stream of the socket
+			
+			OutputStream out;
+			try {
+				out = app.sock.getOutputStream();
+				try {
+					out.write(buf, 0, msg.length() + 1);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 	// ================Animations related==============//
 
@@ -576,6 +617,44 @@ public class SetupGameBoard extends Activity {
 					td.reverseTransition(crossfadeAnimationDuration);
 				}
 				break;
+			}
+		}
+	}
+
+	// This is a timer Task.  Be sure to work through the tutorials
+	// on Timer Tasks before trying to understand this code.
+	
+	public class TCPReadTimerTask extends TimerTask {
+		public void run() {
+			final BattleShipApp app = (BattleShipApp) getApplication();
+			if (app.sock != null && app.sock.isConnected()
+					&& !app.sock.isClosed()) {
+				
+				try {
+					InputStream in = app.sock.getInputStream();
+
+					// See if any bytes are available from the Middleman
+					int bytes_avail = in.available();
+					if (bytes_avail > 0) {
+						
+						// If so, read them in and create a sring
+						byte buf[] = new byte[bytes_avail];
+						in.read(buf);
+
+						final String s = new String(buf, 0, bytes_avail, "US-ASCII");
+		
+						// GUI can not be updated in an asyncrhonous task.  
+						// So, update the GUI using the UI thread.
+						runOnUiThread(new Runnable() {
+							public void run() {
+								Toast.makeText(app, s, Toast.LENGTH_SHORT).show();
+							}
+						});
+						
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
