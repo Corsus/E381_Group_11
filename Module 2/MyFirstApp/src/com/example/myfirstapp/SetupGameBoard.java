@@ -3,6 +3,7 @@ package com.example.myfirstapp;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -61,6 +62,13 @@ public class SetupGameBoard extends Activity {
 	private int[] fire_coordinates;
 	private AnimationDrawable selected_fog_cell;
 
+	private boolean myTurn = false;
+	
+	// Set up a timer task. We will use the timer to check the
+	// input queue every 500 ms
+	ServerMessageHandler smh = new ServerMessageHandler();
+	Timer tcp_timer = new Timer();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,12 +106,6 @@ public class SetupGameBoard extends Activity {
 		// after all initialization, we draw the map
 		drawGameBoard();
 		drawFogBoard();
-		
-		// Set up a timer task.  We will use the timer to check the
-		// input queue every 500 ms
-		TCPReadTimerTask tcp_task = new TCPReadTimerTask();
-		Timer tcp_timer = new Timer();
-		tcp_timer.schedule(tcp_task, 3000, 500);
 	}
 
 	// ==================Layout Related================//
@@ -176,18 +178,15 @@ public class SetupGameBoard extends Activity {
 			break;
 		}
 	}
-	
-	private void enableFireButton()
-	{
-		if (selected_fog_cell != null)
-		{
+
+	private void enableFireButton() {
+		if (selected_fog_cell != null) {
 			fire_button.setEnabled(true);
 			fire_button.setClickable(true);
 		}
 	}
-	
-	private void disableFireButton()
-	{
+
+	private void disableFireButton() {
 		fire_button.setEnabled(false);
 		fire_button.setClickable(false);
 	}
@@ -300,10 +299,10 @@ public class SetupGameBoard extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == 1) {
-			Toast.makeText(this, "Loading completed...", Toast.LENGTH_SHORT)
-					.show();
+			tcp_timer.schedule(smh, 0, 500);
 			gameIsPlaying = true;
 			crossfadePanels();
+			disableFireButton();
 		}
 	}
 
@@ -331,12 +330,14 @@ public class SetupGameBoard extends Activity {
 
 	// TODO: Send fire coordinates to Middleman
 	public void send_fire_command(View view) {
+		// disable fire button
+		myTurn = false;
 		disableFireButton();
-		stopAnimateSelectedGridCell();
-		// send
-		// reset coordinates
-		fire_coordinates = null;
 		// unhighlight the tile
+		stopAnimateSelectedGridCell();
+		// send to DE2 board
+		send_message("F" + Integer.toString(fire_coordinates[0])
+				+ Integer.toString(fire_coordinates[1]));
 	}
 
 	// onClick handler for the Change Orientation button
@@ -359,32 +360,44 @@ public class SetupGameBoard extends Activity {
 	public void setupComplete(View view) {
 		// disable clicking for the gameboard
 		disableSetupClickListeners();
-		// TODO: send signal to Middleman
+		// Build ready signal 
+		String setupMsg = "R";
+		// Append ship positions to signal
+		for (int i = 0; i < 4; i++)
+		{
+			String size = Integer.toString(gameBoard.
+					getShipOnBoard().get(i).getSize());
+			String orientation = gameBoard.
+					getShipOnBoard().get(i).getOrientation().toString();
+			String x_pos = Integer.toString(gameBoard.
+					getShipOnBoardCoor().get(i)[0]);
+			String y_pos = Integer.toString(gameBoard. 
+					getShipOnBoardCoor().get(i)[1]);
+			setupMsg = setupMsg + size + orientation + x_pos + y_pos;
+		}
+		//send the signal
+		send_message(setupMsg);
+
+		// start Loading activity to wait for response
 		Intent intent = new Intent(this, LoadingScreen.class);
 		// we want to handle its return
 		startActivityForResult(intent, 1);
 	}
-	
-	public void send_message(String msg)
-	{
+
+	public void send_message(String msg) {
 		BattleShipApp app = (BattleShipApp) getApplication();
-		
-		if (app.sock != null && app.sock.isConnected() && !app.sock.isClosed())
-		{	
-			// Create an array of bytes.  First byte will be the
-			// message length, and the next ones will be the message
-			
-			byte buf[] = new byte[msg.length() + 1];
-			buf[0] = (byte) msg.length(); 
-			System.arraycopy(msg.getBytes(), 0, buf, 1, msg.length());
-	
+
+		if (app.sock != null && app.sock.isConnected() && !app.sock.isClosed()) {
+			byte buf[] = new byte[msg.length()];
+			System.arraycopy(msg.getBytes(), 0, buf, 0, msg.length());
+
 			// Now send through the output stream of the socket
-			
+
 			OutputStream out;
 			try {
 				out = app.sock.getOutputStream();
 				try {
-					out.write(buf, 0, msg.length() + 1);
+					out.write(buf, 0, msg.length());
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
@@ -432,7 +445,10 @@ public class SetupGameBoard extends Activity {
 			animateSelectedGridCell(iv);
 			int index = fogBoardLayout.indexOfChild(iv);
 			fire_coordinates = indexToCoordinates(index);
-			enableFireButton();
+			if (myTurn == true) {
+				enableFireButton();
+			}
+
 		}
 	}
 
@@ -446,11 +462,9 @@ public class SetupGameBoard extends Activity {
 		selected_fog_cell.setExitFadeDuration(crossfadeAnimationDuration);
 		selected_fog_cell.start();
 	}
-	
-	private void stopAnimateSelectedGridCell()
-	{
-		if (selected_fog_cell != null)
-		{
+
+	private void stopAnimateSelectedGridCell() {
+		if (selected_fog_cell != null) {
 			selected_fog_cell.stop();
 			selected_fog_cell.selectDrawable(0);
 			selected_fog_cell = null;
@@ -620,11 +634,8 @@ public class SetupGameBoard extends Activity {
 			}
 		}
 	}
-
-	// This is a timer Task.  Be sure to work through the tutorials
-	// on Timer Tasks before trying to understand this code.
 	
-	public class TCPReadTimerTask extends TimerTask {
+	public class ServerMessageHandler extends TimerTask {
 		public void run() {
 			final BattleShipApp app = (BattleShipApp) getApplication();
 			if (app.sock != null && app.sock.isConnected()
@@ -641,13 +652,15 @@ public class SetupGameBoard extends Activity {
 						byte buf[] = new byte[bytes_avail];
 						in.read(buf);
 
-						final String s = new String(buf, 0, bytes_avail, "US-ASCII");
-		
+						final String msgReceived = new String(buf, 0, bytes_avail, "US-ASCII");
+	
 						// GUI can not be updated in an asyncrhonous task.  
 						// So, update the GUI using the UI thread.
 						runOnUiThread(new Runnable() {
 							public void run() {
-								Toast.makeText(app, s, Toast.LENGTH_SHORT).show();
+								Toast.makeText(app, msgReceived, Toast.LENGTH_SHORT).show();
+								if (msgReceived.equals("T"))
+									myTurn = true;
 							}
 						});
 						

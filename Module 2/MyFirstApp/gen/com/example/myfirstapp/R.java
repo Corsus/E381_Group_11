@@ -79,17 +79,19 @@ public final class R {
     }
     public static final class layout {
         public static final int activity_connect_to_host=0x7f030000;
-        public static final int activity_display_message=0x7f030001;
-        public static final int activity_loading_screen=0x7f030002;
-        public static final int activity_main=0x7f030003;
-        public static final int activity_setup_game_board=0x7f030004;
+        public static final int activity_connected=0x7f030001;
+        public static final int activity_display_message=0x7f030002;
+        public static final int activity_loading_screen=0x7f030003;
+        public static final int activity_main=0x7f030004;
+        public static final int activity_setup_game_board=0x7f030005;
     }
     public static final class menu {
         public static final int connect_to_host=0x7f080000;
-        public static final int display_message=0x7f080001;
-        public static final int loading_screen=0x7f080002;
-        public static final int main=0x7f080003;
-        public static final int setup_game_board=0x7f080004;
+        public static final int connected=0x7f080001;
+        public static final int display_message=0x7f080002;
+        public static final int loading_screen=0x7f080003;
+        public static final int main=0x7f080004;
+        public static final int setup_game_board=0x7f080005;
     }
     public static final class string {
         public static final int action_search=0x7f060005;
@@ -111,6 +113,7 @@ public final class R {
         public static final int setup_ready_string=0x7f06000f;
         public static final int setup_select_bar_string=0x7f06000d;
         public static final int title_activity_connect_to_host=0x7f060015;
+        public static final int title_activity_connected=0x7f060019;
         public static final int title_activity_display_message=0x7f060007;
         public static final int title_activity_game_versus_ai=0x7f06000a;
         public static final int title_activity_game_versus_player=0x7f06000b;

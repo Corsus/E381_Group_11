@@ -11,7 +11,15 @@ public class Battleship {
 	public enum ShipOrientation
 	{
 		VERTICAL,
-		HORIZONTAL
+		HORIZONTAL;
+		
+		public String toString()
+		{
+			if (this == ShipOrientation.HORIZONTAL)
+				return "H";
+			else
+				return "V";
+		}
 	}
 	
 	public Battleship(int size, ShipOrientation orientation)
@@ -39,7 +47,7 @@ public class Battleship {
 	{
 		return this.orientation;
 	}
-	
+		
 	public int getSize()
 	{
 		return this.size;

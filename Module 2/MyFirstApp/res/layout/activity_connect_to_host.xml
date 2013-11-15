@@ -30,7 +30,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="number" >
+            android:inputType="number"
+            android:text="192" >
 
             <requestFocus />
         </EditText>
@@ -40,21 +41,24 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="number" />
+            android:inputType="number"
+            android:text="168" />
 
         <EditText
             android:id="@+id/ip3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="number" />
+            android:inputType="number"
+            android:text="0" />
 
         <EditText
             android:id="@+id/ip4"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:inputType="number" />
+            android:inputType="number"
+            android:text="105" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,7 +79,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="4"
-            android:inputType="number" />
+            android:inputType="number" 
+            android:text="50002" />
     </LinearLayout>
 
     <Button

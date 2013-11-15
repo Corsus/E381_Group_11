@@ -2,45 +2,36 @@ package com.example.myfirstapp;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Timer;
 import java.util.TimerTask;
 
-
-import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
+import android.app.Activity;
 import android.view.Menu;
 import android.widget.Toast;
 
-public class LoadingScreen extends Activity {
-
-	private ReadySignalHandler readySignalHandler = new ReadySignalHandler();
-	private Timer tcp_timer = new Timer();
+public class ConnectedActivity extends Activity {
 	
+	private String msgReceived;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_loading_screen);
-		
-		tcp_timer.schedule(readySignalHandler, 3000, 500);
-	}
-	
-	private void finishLoading()
-	{
-		
-		Toast.makeText(this, "Loading Completed...", Toast.LENGTH_SHORT).show();
-		setResult(1);
-		finish();
+		setContentView(R.layout.activity_connected);
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		getMenuInflater().inflate(R.menu.loading_screen, menu);
+		getMenuInflater().inflate(R.menu.connected, menu);
 		return true;
 	}
 	
-	public class ReadySignalHandler extends TimerTask {
+	public String getMsgReceived()
+	{
+		return this.msgReceived;
+	}
+		
+	public class TCPReadTimerTask extends TimerTask {
 		public void run() {
 			final BattleShipApp app = (BattleShipApp) getApplication();
 			if (app.sock != null && app.sock.isConnected()
@@ -57,17 +48,16 @@ public class LoadingScreen extends Activity {
 						byte buf[] = new byte[bytes_avail];
 						in.read(buf);
 
-						String msgReceived = new String(buf, 0, bytes_avail, "US-ASCII");
-						//if we get the Ready signal, we move on to next activity
-						if (msgReceived.equals("R"))
-						{
-							runOnUiThread(new Runnable() {
-								public void run() {
-									tcp_timer.cancel();
-									finishLoading();
-								}
-							});
-						}	
+						msgReceived = new String(buf, 0, bytes_avail, "US-ASCII");
+		
+						// GUI can not be updated in an asyncrhonous task.  
+						// So, update the GUI using the UI thread.
+						runOnUiThread(new Runnable() {
+							public void run() {
+								Toast.makeText(app, msgReceived, Toast.LENGTH_SHORT).show();
+							}
+						});
+						
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -75,5 +65,6 @@ public class LoadingScreen extends Activity {
 			}
 		}
 	}
-
 }
+
+

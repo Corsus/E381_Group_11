@@ -43,12 +43,6 @@ public class ConnectToHost extends Activity {
 	    // (defined below).  This creates an instance of the subclass
 		// and executes the code in it.
 		new SocketConnect().execute((Void) null);
-		
-		//wait for the connection to be made
-		while (app.sock == null || !app.sock.isConnected());
-		
-		Intent intent = new Intent(this, SetupGameBoard.class);
-		startActivity(intent);
 	}
 		
 	// Construct an IP address from the four boxes
@@ -109,6 +103,8 @@ public class ConnectToHost extends Activity {
 			BattleShipApp myApp = (BattleShipApp) ConnectToHost.this
 					.getApplication();
 			myApp.sock = s;
+			Intent intent = new Intent(ConnectToHost.this, SetupGameBoard.class);
+			startActivity(intent);
 		}
 	}
 }

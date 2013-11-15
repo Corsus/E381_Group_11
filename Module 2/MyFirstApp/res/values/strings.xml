@@ -26,5 +26,6 @@
     <string name="label_ip">IP:</string>
     <string name="label_port">Port:</string>
     <string name="connect_button_string">Connect</string>
+    <string name="title_activity_connected">ConnectedActivity</string>
 
 </resources>
