@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/space"
+            android:background="@android:color/transparent"
             android:columnCount="6"
             android:columnOrderPreserved="true"
             android:rowCount="7"
@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@drawable/space"
+            android:background="@android:color/transparent"
             android:columnCount="6"
             android:columnOrderPreserved="true"
             android:rowCount="7"
@@ -156,11 +156,12 @@
                 android:textColor="@android:color/white" />
 
             <TextView
-                android:id="@+id/textView3"
+                android:id="@+id/status_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@android:color/holo_green_light"
                 android:gravity="center"
+                android:textColor="@android:color/white"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
 
             <Button

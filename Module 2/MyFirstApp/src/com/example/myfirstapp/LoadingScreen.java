@@ -8,7 +8,6 @@ import java.util.TimerTask;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.widget.Toast;
 

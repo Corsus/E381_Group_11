@@ -52,6 +52,7 @@ public class MainActivity extends Activity  {
 	public void playAI(View view)
 	{
 		Intent intent = new Intent(this, SetupGameBoard.class);
+		intent.putExtra(EXTRA_MESSAGE, "SINGLE");
 		startActivity(intent);
 	}
 	

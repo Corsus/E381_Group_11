@@ -27,6 +27,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
@@ -59,9 +60,11 @@ public class SetupGameBoard extends Activity {
 
 	private boolean gameIsPlaying = false;
 	private Button fire_button;
+	private TextView status_bar;
 	private int[] fire_coordinates;
 	private AnimationDrawable selected_fog_cell;
 
+	private boolean single_player_mode = false;
 	private boolean myTurn = false;
 	
 	// Set up a timer task. We will use the timer to check the
@@ -91,6 +94,7 @@ public class SetupGameBoard extends Activity {
 		playPanel = findViewById(R.id.playPanel);
 		setupPanel = findViewById(R.id.setupPanel);
 		fire_button = (Button) findViewById(R.id.fire_button);
+		status_bar = (TextView) findViewById(R.id.status_bar);
 
 		// reference the map layouts
 		fogBoardLayout = (GridLayout) findViewById(R.id.fogBoardLayout);
@@ -106,6 +110,13 @@ public class SetupGameBoard extends Activity {
 		// after all initialization, we draw the map
 		drawGameBoard();
 		drawFogBoard();
+		
+		Intent intent = getIntent();
+		String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
+		if (message != null && message.equals("SINGLE"))
+		{
+			single_player_mode = true;
+		}
 	}
 
 	// ==================Layout Related================//
@@ -299,7 +310,11 @@ public class SetupGameBoard extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == 1) {
-			tcp_timer.schedule(smh, 0, 500);
+			//we need to schedule to read from middleman in multiplayer
+			if (single_player_mode == false)
+			{
+				tcp_timer.schedule(smh, 0, 500);
+			}
 			gameIsPlaying = true;
 			crossfadePanels();
 			disableFireButton();
@@ -335,9 +350,20 @@ public class SetupGameBoard extends Activity {
 		disableFireButton();
 		// unhighlight the tile
 		stopAnimateSelectedGridCell();
-		// send to DE2 board
-		send_message("F" + Integer.toString(fire_coordinates[0])
-				+ Integer.toString(fire_coordinates[1]));
+		// update status abr
+		status_bar.setText("Fired at (" + Integer.toString(fire_coordinates[0]) 
+				+ "," + Integer.toString(fire_coordinates[1]) + ")");
+		// Multiplayer mode: send to DE2 board 
+		if (single_player_mode == false)
+		{
+			send_message("F" + Integer.toString(fire_coordinates[0])
+					+ Integer.toString(fire_coordinates[1]));
+		}
+		// Singleplayer mode: process command locally
+		else 
+		{
+			//TODO: Single player mode implementation
+		}
 	}
 
 	// onClick handler for the Change Orientation button
@@ -375,13 +401,21 @@ public class SetupGameBoard extends Activity {
 					getShipOnBoardCoor().get(i)[1]);
 			setupMsg = setupMsg + size + orientation + x_pos + y_pos;
 		}
-		//send the signal
-		send_message(setupMsg);
-
-		// start Loading activity to wait for response
-		Intent intent = new Intent(this, LoadingScreen.class);
-		// we want to handle its return
-		startActivityForResult(intent, 1);
+		//Multiplayer: send the signal to middleman
+		if (single_player_mode == false)
+		{
+			send_message(setupMsg);
+	
+			// start Loading activity to wait for response
+			Intent intent = new Intent(this, LoadingScreen.class);
+			// we want to handle its return
+			startActivityForResult(intent, 1);
+		}
+		//Singleplayer: setup AI locally
+		else 
+		{
+			//TODO: Single player setup
+		}
 	}
 
 	public void send_message(String msg) {
@@ -442,10 +476,10 @@ public class SetupGameBoard extends Activity {
 			}
 		} else if (iv.getParent() == findViewById(R.id.fogBoardLayout)) {
 			// click, store the coordinates of the selected tile
-			animateSelectedGridCell(iv);
-			int index = fogBoardLayout.indexOfChild(iv);
-			fire_coordinates = indexToCoordinates(index);
 			if (myTurn == true) {
+				animateSelectedGridCell(iv);
+				int index = fogBoardLayout.indexOfChild(iv);
+				fire_coordinates = indexToCoordinates(index);
 				enableFireButton();
 			}
 
@@ -660,7 +694,17 @@ public class SetupGameBoard extends Activity {
 							public void run() {
 								Toast.makeText(app, msgReceived, Toast.LENGTH_SHORT).show();
 								if (msgReceived.equals("T"))
+								{
 									myTurn = true;
+									if (viewflipper.getDisplayedChild() == 0)
+									{
+										//go to the fog board when it is my turn
+										swipeRightLeft();
+										status_bar.setText("Your Turn! Pick a tile.");
+									}
+								}
+								// acknowledge 
+								send_message("A");
 							}
 						});
 						
