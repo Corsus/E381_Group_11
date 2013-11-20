@@ -80,35 +80,39 @@
 
                     <ImageButton
                         android:id="@+id/SelectScout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
                         android:src="@drawable/ship_1_small" />
 
                     <ImageButton
                         android:id="@+id/SelectCruiser"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
                         android:src="@drawable/ship_2_small" />
 
                     <ImageButton
                         android:id="@+id/SelectDestroyer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
                         android:src="@drawable/ship_3_small" />
 
                     <ImageButton
                         android:id="@+id/SelectMothership"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
-                        android:src="@drawable/ship_4_small" />
+						android:scaleType="fitCenter"
+                        android:src="@drawable/ship_4_small" />		
                 </LinearLayout>
             </LinearLayout>
 
