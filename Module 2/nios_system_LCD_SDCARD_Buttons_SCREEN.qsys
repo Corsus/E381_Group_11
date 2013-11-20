@@ -140,14 +140,6 @@
          type = "long";
       }
    }
-   element ball_timer
-   {
-      datum _sortIndex
-      {
-         value = "12";
-         type = "int";
-      }
-   }
    element buffer_dma
    {
       datum _sortIndex
@@ -260,6 +252,14 @@
          type = "int";
       }
    }
+   element read_timer
+   {
+      datum _sortIndex
+      {
+         value = "12";
+         type = "int";
+      }
+   }
    element rgb_resampler
    {
       datum _sortIndex
@@ -276,7 +276,39 @@
          type = "int";
       }
    }
-   element ball_timer.s1
+   element screen_timer.s1
+   {
+      datum baseAddress
+      {
+         value = "18496";
+         type = "long";
+      }
+   }
+   element sdram.s1
+   {
+      datum baseAddress
+      {
+         value = "16777216";
+         type = "long";
+      }
+   }
+   element timestamp_timer.s1
+   {
+      datum baseAddress
+      {
+         value = "18464";
+         type = "long";
+      }
+   }
+   element KEY.s1
+   {
+      datum baseAddress
+      {
+         value = "18560";
+         type = "long";
+      }
+   }
+   element read_timer.s1
    {
       datum baseAddress
       {
@@ -297,38 +329,6 @@
       datum baseAddress
       {
          value = "18432";
-         type = "long";
-      }
-   }
-   element timestamp_timer.s1
-   {
-      datum baseAddress
-      {
-         value = "18464";
-         type = "long";
-      }
-   }
-   element sdram.s1
-   {
-      datum baseAddress
-      {
-         value = "16777216";
-         type = "long";
-      }
-   }
-   element screen_timer.s1
-   {
-      datum baseAddress
-      {
-         value = "18496";
-         type = "long";
-      }
-   }
-   element KEY.s1
-   {
-      datum baseAddress
-      {
-         value = "18560";
          type = "long";
       }
    }
@@ -405,10 +405,10 @@
  <parameter name="globalResetBus" value="false" />
  <parameter name="hdlLanguage" value="VERILOG" />
  <parameter name="maxAdditionalLatency" value="1" />
- <parameter name="projectName" value="module_one.qpf" />
+ <parameter name="projectName" value="module_two.qpf" />
  <parameter name="sopcBorderPoints" value="false" />
  <parameter name="systemHash" value="1" />
- <parameter name="timeStamp" value="1383249702450" />
+ <parameter name="timeStamp" value="1384570977005" />
  <parameter name="useTestBenchNamingPattern" value="false" />
  <instanceScript></instanceScript>
  <interface name="clk" internal="clk_0.clk_in" type="clock" dir="end" />
@@ -569,7 +569,7 @@
   <parameter name="tightlyCoupledInstructionMaster2AddrWidth" value="1" />
   <parameter name="tightlyCoupledInstructionMaster3AddrWidth" value="1" />
   <parameter name="instSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory.s1' start='0x0' end='0x1000' /><slave name='nios_system.jtag_debug_module' start='0x1800' end='0x2000' /><slave name='sd_card.avalon_sdcard_slave' start='0x4400' end='0x4800' /><slave name='sdram.s1' start='0x1000000' end='0x1800000' /></address-map>]]></parameter>
-  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory.s1' start='0x0' end='0x1000' /><slave name='nios_system.jtag_debug_module' start='0x1800' end='0x2000' /><slave name='character_buffer.avalon_char_buffer_slave' start='0x2000' end='0x4000' /><slave name='sd_card.avalon_sdcard_slave' start='0x4400' end='0x4800' /><slave name='timer.s1' start='0x4800' end='0x4820' /><slave name='timestamp_timer.s1' start='0x4820' end='0x4840' /><slave name='screen_timer.s1' start='0x4840' end='0x4860' /><slave name='ball_timer.s1' start='0x4860' end='0x4880' /><slave name='KEY.s1' start='0x4880' end='0x4890' /><slave name='buffer_dma.avalon_control_slave' start='0x4890' end='0x48A0' /><slave name='audio_and_video_config.avalon_av_config_slave' start='0x48A0' end='0x48B0' /><slave name='audio.avalon_audio_slave' start='0x48B0' end='0x48C0' /><slave name='JTAG_UART.avalon_jtag_slave' start='0x48C0' end='0x48C8' /><slave name='character_buffer.avalon_char_control_slave' start='0x48C8' end='0x48D0' /><slave name='keyboard_controller.avalon_ps2_slave' start='0x48D0' end='0x48D8' /><slave name='rs232_0.avalon_rs232_slave' start='0x48D8' end='0x48E0' /><slave name='character_lcd.avalon_lcd_slave' start='0x48E0' end='0x48E2' /><slave name='pixel_buffer.avalon_sram_slave' start='0x80000' end='0x100000' /><slave name='sdram.s1' start='0x1000000' end='0x1800000' /></address-map>]]></parameter>
+  <parameter name="dataSlaveMapParam"><![CDATA[<address-map><slave name='onchip_memory.s1' start='0x0' end='0x1000' /><slave name='nios_system.jtag_debug_module' start='0x1800' end='0x2000' /><slave name='character_buffer.avalon_char_buffer_slave' start='0x2000' end='0x4000' /><slave name='sd_card.avalon_sdcard_slave' start='0x4400' end='0x4800' /><slave name='timer.s1' start='0x4800' end='0x4820' /><slave name='timestamp_timer.s1' start='0x4820' end='0x4840' /><slave name='screen_timer.s1' start='0x4840' end='0x4860' /><slave name='read_timer.s1' start='0x4860' end='0x4880' /><slave name='KEY.s1' start='0x4880' end='0x4890' /><slave name='buffer_dma.avalon_control_slave' start='0x4890' end='0x48A0' /><slave name='audio_and_video_config.avalon_av_config_slave' start='0x48A0' end='0x48B0' /><slave name='audio.avalon_audio_slave' start='0x48B0' end='0x48C0' /><slave name='JTAG_UART.avalon_jtag_slave' start='0x48C0' end='0x48C8' /><slave name='character_buffer.avalon_char_control_slave' start='0x48C8' end='0x48D0' /><slave name='keyboard_controller.avalon_ps2_slave' start='0x48D0' end='0x48D8' /><slave name='rs232_0.avalon_rs232_slave' start='0x48D8' end='0x48E0' /><slave name='character_lcd.avalon_lcd_slave' start='0x48E0' end='0x48E2' /><slave name='pixel_buffer.avalon_sram_slave' start='0x80000' end='0x100000' /><slave name='sdram.s1' start='0x1000000' end='0x1800000' /></address-map>]]></parameter>
   <parameter name="clockFrequency" value="50000000" />
   <parameter name="deviceFamilyName" value="Cyclone II" />
   <parameter name="internalIrqMaskSystemInfo" value="511" />
@@ -744,12 +744,12 @@
    kind="altera_avalon_timer"
    version="12.0"
    enabled="1"
-   name="ball_timer">
+   name="read_timer">
   <parameter name="alwaysRun" value="false" />
   <parameter name="counterSize" value="32" />
   <parameter name="fixedPeriod" value="false" />
-  <parameter name="period" value="200" />
-  <parameter name="periodUnits" value="MSEC" />
+  <parameter name="period" value="3" />
+  <parameter name="periodUnits" value="SEC" />
   <parameter name="resetOutput" value="false" />
   <parameter name="snapshot" value="true" />
   <parameter name="systemFrequency" value="50000000" />
@@ -1194,17 +1194,17 @@
    kind="reset"
    version="12.0"
    start="clk_0.clk_reset"
-   end="ball_timer.reset" />
+   end="read_timer.reset" />
  <connection
    kind="clock"
    version="12.0"
    start="clocks.sys_clk"
-   end="ball_timer.clk" />
+   end="read_timer.clk" />
  <connection
    kind="avalon"
    version="12.0"
    start="nios_system.data_master"
-   end="ball_timer.s1">
+   end="read_timer.s1">
   <parameter name="arbitrationPriority" value="1" />
   <parameter name="baseAddress" value="0x4860" />
  </connection>
@@ -1212,14 +1212,14 @@
    kind="interrupt"
    version="12.0"
    start="nios_system.d_irq"
-   end="ball_timer.irq">
+   end="read_timer.irq">
   <parameter name="irqNumber" value="3" />
  </connection>
  <connection
    kind="reset"
    version="12.0"
    start="nios_system.jtag_debug_module_reset"
-   end="ball_timer.reset" />
+   end="read_timer.reset" />
  <connection
    kind="clock"
    version="12.0"

@@ -12,16 +12,26 @@
 #include "altera_up_avalon_rs232.h"
 #include <string.h>
 #include <stdlib.h>
+#include "altera_avalon_timer.h"
+#include "altera_avalon_timer_regs.h"
+#include "priv/alt_legacy_irq.h"
 
 
 void initializeRS232();
 void sendToClient(int clientID, char* msg);
 void receiveFromClient();
 
+void waitForAcknowledgement(int clientID);
+void initializeReadTimerInterrupt();
+void enableReadTimerInterrupt();
+void disableReadTimerInterrupt();
+void read_timer_isr();
+
 void waitForClientsToSetup();
 int isClientReady();
 
-void handleFireCommandFromClient();
+void handleFireCommandFromClientOne();
+void handleFireCommandFromClientTwo();
 
 extern char* msgReceived;
 extern int clientFromID;

@@ -11,6 +11,8 @@ GridContent playerTwoGrid[GRID_COLS][GRID_ROWS];
 
 char* ready_message = "R";
 char* turn_message = "T";
+char* win_message = "W";
+char* lose_message = "L";
 
 void initializeGridContents(GridContent grid[GRID_COLS][GRID_ROWS])
 {
@@ -85,50 +87,103 @@ void insertShipInGrid(int player, char* shipInfo)
 	}
 }
 
+int isGameOver(GridContent gridToCheck[GRID_COLS][GRID_ROWS])
+{
+	int i;
+	int j;
+	for (i = 0; i < GRID_ROWS; i++)
+	{
+		for (j = 0; j < GRID_COLS; j++)
+		{
+			if (gridToCheck[j][i] == SHIP)
+			{
+				//game is not over, this player is still alive
+				return 0;
+			}
+		}
+	}
+	return 1; //game is over, this player is dead
+}
+
 
 int main()
 {
-	printf("Initializing Grid Models...\n");
-	initializeGridContents(playerOneGrid);
-	initializeGridContents(playerTwoGrid);
-
-	printf("Initializing RS232 Connection...\n");
-	initializeRS232();
-
-	//wait for players to report ship positions (PRESS READY ON ANDROID)
-	//store ship positions in grid model
-	printf("Waiting for clients...\n");
-	waitForClientsToSetup();
-	printf("Setup is ready...\n");
-
-	printf("Client 1 Board: \n");
-	testGridContents(playerOneGrid);
-	printf("Client 2 Board: \n");
-	testGridContents(playerTwoGrid);
-
-	//tell clients that loading is done
-	printf("Game is starting. Informing clients...\n");
-	usleep(1000000);
-	sendToClient(1, ready_message);
-	usleep(1000000);
-	sendToClient(2, ready_message);
-	//ready to play
+	//main server loop
 	while (1)
 	{
-		//tell client one to act "11T"
-		usleep(3000000);
-		printf("Client 1 turn to act...\n");
-		sendToClient(1, turn_message);
-		//wait for client one response/action and handle it
-		handleFireCommandFromClient();
+		printf("Initializing Grid Models...\n");
+		initializeGridContents(playerOneGrid);
+		initializeGridContents(playerTwoGrid);
 
-		//tell client two to act "21T"
-		usleep(3000000);
-		printf("Client 2 turn to act...\n");
-		sendToClient(2, turn_message);
-		//wait for client two response/action and handle it
-		handleFireCommandFromClient();
+		printf("Initializing RS232 Connection...\n");
+		initializeRS232();
+		initializeReadTimerInterrupt();
 
+		//wait for players to report ship positions (PRESS READY ON ANDROID)
+		//store ship positions in grid model
+		printf("Waiting for clients...\n");
+		waitForClientsToSetup();
+		printf("Setup is ready...\n");
+
+		//testing purposes
+		printf("Client 1 Board: \n");
+		testGridContents(playerOneGrid);
+		printf("Client 2 Board: \n");
+		testGridContents(playerTwoGrid);
+
+		//tell clients that loading is done
+		printf("Game is starting. Informing clients...\n");
+		//tell client 1 that loading is complete
+		sendToClient(1, ready_message);
+		//wait for acknowledgement
+		waitForAcknowledgement(1);
+
+		//tell client 2 that loading is complete
+		sendToClient(2, ready_message);
+		//wait for acknowledgement
+		waitForAcknowledgement(2);
+
+		//game is playing loop
+		while (1)
+		{
+			//tell client one to act "11T"
+			printf("Client 1 turn to act...\n");
+			sendToClient(1, turn_message);
+			//wait for acknowledgement
+			waitForAcknowledgement(1);
+			//wait for client one response/action and handle it
+			handleFireCommandFromClientOne();
+
+			if (isGameOver(playerTwoGrid) == 1)
+			{
+				printf("Client 1 is the winner...\n");
+				sendToClient(1, win_message);
+				waitForAcknowledgement(1);
+				sendToClient(2, lose_message);
+				waitForAcknowledgement(2);
+				break;
+			}
+
+			//tell client two to act "21T"
+			printf("Client 2 turn to act...\n");
+			sendToClient(2, turn_message);
+			//wait for acknowledgement
+			waitForAcknowledgement(2);
+			//wait for client two response/action and handle it
+			handleFireCommandFromClientTwo();
+
+			if (isGameOver(playerOneGrid) == 1)
+			{
+				printf("Client 2 is the winner...\n");
+				sendToClient(2, win_message);
+				waitForAcknowledgement(2);
+				sendToClient(1, lose_message);
+				waitForAcknowledgement(1);
+				break;
+			}
+		}
+		printf("Game is over...\n");
+		printf("Restarting server...\n");
 	}
 	return 0;
 }

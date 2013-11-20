@@ -33,6 +33,7 @@ typedef enum
 
 void initializeGridContents(GridContent grid[GRID_COLS][GRID_ROWS]);
 void insertShipInGrid(int player, char* shipInfo);
+int isGameOver(GridContent gridToCheck[GRID_COLS][GRID_ROWS]);
 int main();
 
 void testGridContents(GridContent grid[GRID_COLS][GRID_ROWS]);
