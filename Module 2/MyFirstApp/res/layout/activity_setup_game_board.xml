@@ -35,7 +35,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@android:color/transparent"
+            android:background="@drawable/space"
             android:columnCount="6"
             android:columnOrderPreserved="true"
             android:rowCount="7"
@@ -73,7 +73,7 @@
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:textColor="@android:color/white" />
 
-                <LinearLayout
+                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center" >
@@ -84,7 +84,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/ship_1_small" />
 
                     <ImageButton
                         android:id="@+id/SelectCruiser"
@@ -92,7 +92,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/ship_2_small" />
 
                     <ImageButton
                         android:id="@+id/SelectDestroyer"
@@ -100,7 +100,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/ship_3_small" />
 
                     <ImageButton
                         android:id="@+id/SelectMothership"
@@ -108,7 +108,7 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:onClick="selectShipOnClick"
-                        android:src="@drawable/ic_launcher" />
+                        android:src="@drawable/ship_4_small" />
                 </LinearLayout>
             </LinearLayout>
 

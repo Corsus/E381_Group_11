@@ -178,28 +178,205 @@ public class SetupGameBoard extends Activity {
 		return coordinates;
 	}
 
-	private void drawShipOnMap(Battleship ship, int index) {
-		switch (ship.getOrientation()) {
-		case HORIZONTAL:
-			for (int i = 0; i < ship.getSize(); i++) {
-				ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
-						* GameBoard.getBoardHeight());
-				iv.setBackgroundResource(R.drawable.ship_cell);
-				TransitionDrawable td = (TransitionDrawable) iv.getBackground();
-				td.startTransition(crossfadeAnimationDuration);
+		private void drawShipOnMap(Battleship ship, int index) {
+		switch (ship.getSize())
+
+
+		{
+		case 1: //SHIP 1
+			switch (ship.getOrientation()) {
+			case HORIZONTAL:
+				{
+					ImageView iv = (ImageView) myBoardLayout.getChildAt(index);
+
+					iv.setBackgroundResource(R.drawable.ship_1_hori);
+
+
+				}
+				break;
+			case VERTICAL:
+				{					
+					ImageView iv = (ImageView) myBoardLayout.getChildAt(index);
+					iv.setBackgroundResource(R.drawable.ship_1_vert);
+				}
+				break;
 			}
 			break;
-		case VERTICAL:
-			for (int i = 0; i < ship.getSize(); i++) {
-				ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
-				iv.setBackgroundResource(R.drawable.ship_cell);
-				TransitionDrawable td = (TransitionDrawable) iv.getBackground();
-				td.startTransition(crossfadeAnimationDuration);
+
+			
+		case 2: //SHIP 2
+			switch (ship.getOrientation()) {
+			case HORIZONTAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_2_1_hori);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_2_2_hori);
+
+
+					}
+					break;
+					}
+				}
+				break;
+			case VERTICAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_2_1_vert);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_2_2_vert);
+					}
+					break;
+					}
+				}
+				break;
+			}
+			break;
+			
+		case 3: //SHIP 3
+			switch (ship.getOrientation()) {
+			case HORIZONTAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_3_1_hori);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_3_2_hori);
+					}
+					break;
+					case 2:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_3_3_hori);
+					}
+					break;				
+					}
+				}
+				break;
+			case VERTICAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_3_1_vert);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_3_2_vert);
+					}
+					break;
+					case 2:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_3_3_vert);
+					}
+					break;
+					}
+				}
+				break;
+			}
+			break;
+			
+		case 4: //SHIP 4
+			switch (ship.getOrientation()) {
+			case HORIZONTAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_4_1_hori);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_4_2_hori);
+					}
+					break;
+					case 2:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_4_3_hori);
+					}
+					break;
+					case 3:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i
+								* GameBoard.getBoardHeight());
+						iv.setBackgroundResource(R.drawable.ship_4_4_hori);
+					}
+					break;	
+					}
+				}
+				break;
+			case VERTICAL:
+				for (int i = 0; i < ship.getSize(); i++) {
+					switch (i){
+					case 0:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_4_1_vert);
+					}
+					break;
+					case 1:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_4_2_vert);
+					}
+					break;
+					case 2:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_4_3_vert);
+					}
+					break;
+					case 3:
+					{
+						ImageView iv = (ImageView) myBoardLayout.getChildAt(index + i);
+						iv.setBackgroundResource(R.drawable.ship_4_4_vert);
+					}
+					break;
+					}
+				}
+				break;
 			}
 			break;
 		}
 	}
 
+	
 	private void enableFireButton() {
 		if (selected_fog_cell != null) {
 			fire_button.setEnabled(true);
@@ -380,12 +557,33 @@ public class SetupGameBoard extends Activity {
 	// Changes the orientation of the ships that are to be created
 	public void changeOrientation(View view) {
 		switch (this.setupOrientation) {
+		// TODO: Change the image of the ship selector button to reflect this
 		// change
 		case HORIZONTAL:
+		{
+			ImageButton scout = (ImageButton) findViewById(R.id.SelectScout);
+			scout.setImageResource(R.drawable.ship_1_small);
+			ImageButton cruiser = (ImageButton) findViewById(R.id.SelectCruiser);
+			cruiser.setImageResource(R.drawable.ship_2_small);
+			ImageButton destroyer = (ImageButton) findViewById(R.id.SelectDestroyer);
+			destroyer.setImageResource(R.drawable.ship_3_small);
+			ImageButton mothership = (ImageButton) findViewById(R.id.SelectMothership);
+			mothership.setImageResource(R.drawable.ship_4_small);
 			setupOrientation = ShipOrientation.VERTICAL;
+		}
 			break;
 		case VERTICAL:
+		{
+			ImageButton scout = (ImageButton) findViewById(R.id.SelectScout);
+			scout.setImageResource(R.drawable.ship_1_small_h);
+			ImageButton cruiser = (ImageButton) findViewById(R.id.SelectCruiser);
+			cruiser.setImageResource(R.drawable.ship_2_small_h);
+			ImageButton destroyer = (ImageButton) findViewById(R.id.SelectDestroyer);
+			destroyer.setImageResource(R.drawable.ship_3_small_h);
+			ImageButton mothership = (ImageButton) findViewById(R.id.SelectMothership);
+			mothership.setImageResource(R.drawable.ship_4_small_h);
 			setupOrientation = ShipOrientation.HORIZONTAL;
+		}
 			break;
 		}
 	}
