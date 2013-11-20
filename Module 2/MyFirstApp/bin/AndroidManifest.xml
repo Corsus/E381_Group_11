@@ -49,8 +49,8 @@
                 android:value="com.example.myfirstapp.MainActivity" />
         </activity>
         <activity
-            android:name="com.example.myfirstapp.ConnectedActivity"
-            android:label="@string/title_activity_connected" >
+            android:name="com.example.myfirstapp.WinnerScreen"
+            android:label="@string/title_activity_winner_screen" >
         </activity>
     </application>
 

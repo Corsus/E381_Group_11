@@ -62,30 +62,4 @@ public class MainActivity extends Activity  {
 		startActivity(intent);
 	}
 	
-	// function invoked when SEND button is pressed
-	public void sendMessage(View view)
-	{
-		// For onClick functions, they must be public, they must return void, they must take a View as param
-		// Do something in response to button
-		
-		// Intent is an object that gives runtime binding between separate components (such as activities)
-		// "Intent to do something", a link between activities
-		
-		// In this case, we are linking MainActivity and DisplayMessageActivity
-		Intent intent = new Intent(this, DisplayMessageActivity.class);
-		
-		// Intents can also carry bundle of data from one component to another
-	/*	EditText editText = (EditText) findViewById(R.id.edit_message);
-		String message = editText.getText().toString();
-		intent.putExtra(EXTRA_MESSAGE, message);*/
-		
-		// in this case, we get the edit_message view
-		// then, we get the text from this view
-		// finally, we bundle it with the intent as an "extra"
-		// EXTRA_MESSAGE is a key used to query the data in the next activity
-		// It's good practice to prefix the key with the package name "com.example.myfirstapp"
-		
-		startActivity(intent);		//this starts the second activity	
-		
-	}
 }

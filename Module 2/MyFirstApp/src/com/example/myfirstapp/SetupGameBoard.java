@@ -17,6 +17,7 @@ import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.app.NavUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -35,6 +36,8 @@ import com.example.models.*;
 import com.example.models.Battleship.ShipOrientation;
 
 public class SetupGameBoard extends Activity {
+	
+	public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
 
 	private View setupPanel;
 	private View playPanel;
@@ -66,11 +69,17 @@ public class SetupGameBoard extends Activity {
 
 	private boolean single_player_mode = false;
 	private boolean myTurn = false;
+	private Object acknowledgementWaiter = new Object();
+	private String messageToSend;
 	
 	// Set up a timer task. We will use the timer to check the
 	// input queue every 500 ms
-	ServerMessageHandler smh = new ServerMessageHandler();
-	Timer tcp_timer = new Timer();
+	private ServerMessageHandler smh = new ServerMessageHandler();
+	private Timer tcp_timer = new Timer();
+	
+	// set up timer task for acknowledgement
+	private ResendMessageTask rmt = new ResendMessageTask();
+	private Timer resend_timer = new Timer();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +125,7 @@ public class SetupGameBoard extends Activity {
 		if (message != null && message.equals("SINGLE"))
 		{
 			single_player_mode = true;
+			Toast.makeText(this, "SP MODE", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -307,14 +317,14 @@ public class SetupGameBoard extends Activity {
 
 	@Override
 	// when child activities return, we handle it here
+	// Note: This method will only be invoked in Multiplayer mode...
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 		if (requestCode == 1) {
-			//we need to schedule to read from middleman in multiplayer
-			if (single_player_mode == false)
-			{
-				tcp_timer.schedule(smh, 0, 500);
-			}
+			// send acknowledgement to middleman
+			send_message("A");
+			// we need to schedule to read from middleman in multiplayer
+			tcp_timer.schedule(smh, 0, 500);
 			gameIsPlaying = true;
 			crossfadePanels();
 			disableFireButton();
@@ -343,7 +353,6 @@ public class SetupGameBoard extends Activity {
 
 	// ================Button OnClick Handlers==========//
 
-	// TODO: Send fire coordinates to Middleman
 	public void send_fire_command(View view) {
 		// disable fire button
 		myTurn = false;
@@ -356,13 +365,14 @@ public class SetupGameBoard extends Activity {
 		// Multiplayer mode: send to DE2 board 
 		if (single_player_mode == false)
 		{
-			send_message("F" + Integer.toString(fire_coordinates[0])
+			sendAndWaitForAck("F" + Integer.toString(fire_coordinates[0])
 					+ Integer.toString(fire_coordinates[1]));
 		}
 		// Singleplayer mode: process command locally
 		else 
 		{
 			//TODO: Single player mode implementation
+			Toast.makeText(this, "SP FIRE", Toast.LENGTH_SHORT).show();
 		}
 	}
 
@@ -370,7 +380,6 @@ public class SetupGameBoard extends Activity {
 	// Changes the orientation of the ships that are to be created
 	public void changeOrientation(View view) {
 		switch (this.setupOrientation) {
-		// TODO: Change the image of the ship selector button to reflect this
 		// change
 		case HORIZONTAL:
 			setupOrientation = ShipOrientation.VERTICAL;
@@ -404,8 +413,7 @@ public class SetupGameBoard extends Activity {
 		//Multiplayer: send the signal to middleman
 		if (single_player_mode == false)
 		{
-			send_message(setupMsg);
-	
+			send_message(setupMsg);	
 			// start Loading activity to wait for response
 			Intent intent = new Intent(this, LoadingScreen.class);
 			// we want to handle its return
@@ -415,10 +423,31 @@ public class SetupGameBoard extends Activity {
 		else 
 		{
 			//TODO: Single player setup
+			Toast.makeText(this, "SP READY", Toast.LENGTH_SHORT).show();
+			gameIsPlaying = true;
+			crossfadePanels();
+			disableFireButton();
+			myTurn = true;
 		}
+	}
+	
+	public void sendAndWaitForAck(String msg) {
+		send_message(msg);
+		//resend_timer.schedule(rmt, 3000, 3000);
+		try {
+			synchronized (acknowledgementWaiter) {
+				//TODO: looks like this doesn't work
+				acknowledgementWaiter.wait();
+			}
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		//resend_timer.cancel();
+		//resend_timer.purge();
 	}
 
 	public void send_message(String msg) {
+		messageToSend = msg;
 		BattleShipApp app = (BattleShipApp) getApplication();
 
 		if (app.sock != null && app.sock.isConnected() && !app.sock.isClosed()) {
@@ -476,7 +505,7 @@ public class SetupGameBoard extends Activity {
 			}
 		} else if (iv.getParent() == findViewById(R.id.fogBoardLayout)) {
 			// click, store the coordinates of the selected tile
-			if (myTurn == true) {
+			if (myTurn == true && view.getBackground() == null) {
 				animateSelectedGridCell(iv);
 				int index = fogBoardLayout.indexOfChild(iv);
 				fire_coordinates = indexToCoordinates(index);
@@ -669,6 +698,14 @@ public class SetupGameBoard extends Activity {
 		}
 	}
 	
+	public class ResendMessageTask extends TimerTask {
+		@Override
+		public void run() {
+			send_message(messageToSend);
+			//Log.i("OUTPUT", "TEST");
+		}	
+	}
+	
 	public class ServerMessageHandler extends TimerTask {
 		public void run() {
 			final BattleShipApp app = (BattleShipApp) getApplication();
@@ -688,26 +725,102 @@ public class SetupGameBoard extends Activity {
 
 						final String msgReceived = new String(buf, 0, bytes_avail, "US-ASCII");
 	
-						// GUI can not be updated in an asyncrhonous task.  
-						// So, update the GUI using the UI thread.
-						runOnUiThread(new Runnable() {
-							public void run() {
-								Toast.makeText(app, msgReceived, Toast.LENGTH_SHORT).show();
-								if (msgReceived.equals("T"))
-								{
-									myTurn = true;
-									if (viewflipper.getDisplayedChild() == 0)
+						// we cannot run this on UI thread, because UI thread is
+						// supposed to be waiting...
+						if (msgReceived.charAt(0) == 'A')
+						{
+							synchronized (acknowledgementWaiter) {
+								acknowledgementWaiter.notify();
+							}
+						}
+						else
+						{
+							// GUI can not be updated in an asyncrhonous task.  
+							// So, update the GUI using the UI thread.
+							runOnUiThread(new Runnable() {
+								public void run() {
+									Toast.makeText(app, msgReceived, Toast.LENGTH_SHORT).show();
+									if (msgReceived.equals("T"))
 									{
-										//go to the fog board when it is my turn
-										swipeRightLeft();
-										status_bar.setText("Your Turn! Pick a tile.");
+										myTurn = true;
+										if (viewflipper.getDisplayedChild() == 0)
+										{
+											//go to the fog board when it is my turn
+											swipeRightLeft();
+											status_bar.setText("Your Turn! Pick a tile.");
+										}
+										// acknowledge 
+										send_message("A");
+									}
+									else if (msgReceived.equals("Y"))
+									{
+										ImageView iv = (ImageView) fogBoardLayout.
+												getChildAt(fire_coordinates[0] 
+														* GameBoard.getBoardHeight() 
+														+ fire_coordinates[1]);
+										iv.setBackgroundResource(R.drawable.hit_cell);
+										// acknowledge 
+										send_message("A");
+									}
+									else if (msgReceived.equals("N"))
+									{
+										ImageView iv = (ImageView) fogBoardLayout.
+												getChildAt(fire_coordinates[0] 
+														* GameBoard.getBoardHeight() 
+														+ fire_coordinates[1]);
+										iv.setBackgroundResource(R.drawable.miss_cell);
+										// acknowledge 
+										send_message("A");
+									}
+									else if (msgReceived.charAt(0) == 'H')
+									{
+										int x = msgReceived.charAt(1) - 48;
+										int y = msgReceived.charAt(2) - 48;
+										ImageView iv = (ImageView) myBoardLayout.
+												getChildAt(x * GameBoard.getBoardHeight() + y);
+										iv.setBackgroundResource(R.drawable.hit_cell);
+										// acknowledge 
+										send_message("A");
+									}
+									else if (msgReceived.charAt(0) == 'M')
+									{
+										int x = msgReceived.charAt(1) - 48;
+										int y = msgReceived.charAt(2) - 48;
+										ImageView iv = (ImageView) myBoardLayout.
+												getChildAt(x * GameBoard.getBoardHeight() + y);
+										iv.setBackgroundResource(R.drawable.miss_cell);
+										// acknowledge 
+										send_message("A");
+									}
+									else if (msgReceived.equals("W"))
+									{
+										runOnUiThread(new Runnable() {		
+											@Override
+											public void run() {
+												Intent intent = 
+														new Intent(SetupGameBoard.this, WinnerScreen.class);
+												intent.putExtra(EXTRA_MESSAGE, "WIN");
+												startActivity(intent);
+											}
+										});
+										
+									}
+									else if (msgReceived.equals("L"))
+									{
+										runOnUiThread(new Runnable() {
+											
+											@Override
+											public void run() {
+												Intent intent = 
+														new Intent(SetupGameBoard.this, WinnerScreen.class);
+												intent.putExtra(EXTRA_MESSAGE, "LOSE");
+												startActivity(intent);
+											}
+										});
 									}
 								}
-								// acknowledge 
-								send_message("A");
-							}
-						});
-						
+							});
+						}	
 					}
 				} catch (IOException e) {
 					e.printStackTrace();
