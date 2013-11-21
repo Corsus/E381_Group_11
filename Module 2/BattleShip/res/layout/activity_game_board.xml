@@ -1,0 +1,186 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LinearLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/space_gradient"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".BattleShipGame" >
+
+    <ViewFlipper
+        android:id="@+id/GameMapsLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="5" >
+        
+        <GridLayout
+            android:id="@+id/myBoardLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@android:color/transparent"
+            android:columnCount="6"
+            android:columnOrderPreserved="true"
+            android:rowCount="7"
+            android:rowOrderPreserved="true" >
+
+   		</GridLayout>
+   		
+        <GridLayout
+            android:id="@+id/fogBoardLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@drawable/space"
+            android:columnCount="6"
+            android:columnOrderPreserved="true"
+            android:rowCount="7"
+            android:rowOrderPreserved="true" >
+
+   		</GridLayout>
+   		
+    </ViewFlipper>
+
+    <FrameLayout
+        android:id="@+id/ButtonPanelLayout"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2" >
+
+        <LinearLayout
+            android:id="@+id/setupPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:id="@+id/ShipSelectorLayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="vertical" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="@string/setup_select_bar_string"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:textColor="@android:color/white" />
+
+                 <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center" >
+
+                    <ImageButton
+                        android:id="@+id/SelectScout"
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
+                        android:src="@drawable/ship_1_small" />
+
+                    <ImageButton
+                        android:id="@+id/SelectCruiser"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
+                        android:src="@drawable/ship_2_small" />
+
+                    <ImageButton
+                        android:id="@+id/SelectDestroyer"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
+                        android:src="@drawable/ship_3_small" />
+
+                    <ImageButton
+                        android:id="@+id/SelectMothership"
+						android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:layout_weight="1"
+                        android:onClick="selectShipOnClick"
+						android:scaleType="fitCenter"
+                        android:src="@drawable/ship_4_small" />		
+                </LinearLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <Button
+                    android:id="@+id/changeOrientation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:onClick="changeOrientation"
+                    android:text="@string/change_orientation_button_string"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+
+                <Button
+                    android:id="@+id/readyButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:clickable="false"
+                    android:enabled="false"
+                    android:onClick="setupComplete"
+                    android:text="@string/setup_ready_string"
+                    android:textAppearance="?android:attr/textAppearanceSmall" />
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/playPanel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/game_status_string"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/white" />
+
+            <TextView
+                android:id="@+id/status_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_green_light"
+                android:gravity="center"
+                android:text="@string/game_status_string"
+                android:textColor="@android:color/white"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+
+            <Button
+                android:id="@+id/fire_button"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:enabled="false"
+                android:onClick="send_fire_command"
+                android:text="@string/button_fire_string" />
+
+        </LinearLayout>
+
+ </FrameLayout>
+
+</LinearLayout>
+    
