@@ -6,6 +6,9 @@ import java.io.OutputStream;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import android.os.Build;
 import android.os.Bundle;
@@ -72,6 +75,8 @@ public class BattleShipGame extends Activity {
 	private Object acknowledgementWaiter = new Object();
 	private String messageToSend;
 
+	private ScheduledExecutorService resend_service;
+	
 	// Set up a timer task. We will use the timer to check the
 	// input queue every 500 ms
 	private ServerMessageHandler smh = new ServerMessageHandler();
@@ -79,7 +84,7 @@ public class BattleShipGame extends Activity {
 
 	// set up timer task for acknowledgement
 	private ResendMessageTask rmt = new ResendMessageTask();
-	private Timer resend_timer = new Timer();
+	//private Timer resend_timer = new Timer();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -518,6 +523,7 @@ public class BattleShipGame extends Activity {
 			send_message("A");
 			// we need to schedule to read from middleman in multiplayer
 			tcp_timer.schedule(smh, 0, 500);
+			Toast.makeText(this, "Loading Completed...", Toast.LENGTH_SHORT).show();
 			gameIsPlaying = true;
 			crossfadePanels();
 			disableFireButton();
@@ -640,7 +646,8 @@ public class BattleShipGame extends Activity {
 
 	public void sendAndWaitForAck(String msg) {
 		send_message(msg);
-		resend_timer.schedule(rmt, 3000, 3000);
+		resend_service = Executors.newSingleThreadScheduledExecutor();
+		resend_service.scheduleAtFixedRate(rmt, 3, 3, TimeUnit.SECONDS);
 		try {
 			synchronized (acknowledgementWaiter) {
 				acknowledgementWaiter.wait();
@@ -648,7 +655,7 @@ public class BattleShipGame extends Activity {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		rmt.cancel();
+		resend_service.shutdown();
 	}
 
 	public void send_message(String msg) {
@@ -904,11 +911,10 @@ public class BattleShipGame extends Activity {
 		}
 	}
 
-	public class ResendMessageTask extends TimerTask {
+	public class ResendMessageTask implements Runnable {
 		@Override
 		public void run() {
 			send_message(messageToSend);
-			// Log.i("OUTPUT", "TEST");
 		}
 	}
 
@@ -1010,7 +1016,8 @@ public class BattleShipGame extends Activity {
 												startActivity(intent);
 											}
 										});
-
+										// acknowledge
+										send_message("A");
 									} else if (msgReceived.charAt(0) == 'L') {
 										runOnUiThread(new Runnable() {
 
@@ -1024,6 +1031,8 @@ public class BattleShipGame extends Activity {
 												startActivity(intent);
 											}
 										});
+										// acknowledge
+										send_message("A");
 									}
 								}
 							});

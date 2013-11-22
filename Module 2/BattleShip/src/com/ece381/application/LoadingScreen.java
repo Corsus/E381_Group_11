@@ -23,13 +23,11 @@ public class LoadingScreen extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_loading_screen);
 		
-		tcp_timer.schedule(readySignalHandler, 3000, 500);
+		tcp_timer.schedule(readySignalHandler, 0, 500);
 	}
 	
 	private void finishLoading()
 	{
-		
-		Toast.makeText(this, "Loading Completed...", Toast.LENGTH_SHORT).show();
 		setResult(1);
 		finish();
 	}
@@ -60,14 +58,10 @@ public class LoadingScreen extends Activity {
 
 						String msgReceived = new String(buf, 0, bytes_avail, "US-ASCII");
 						//if we get the Ready signal, we move on to next activity
-						if (msgReceived.equals("R"))
+						if (msgReceived.charAt(0) == 'R')
 						{
-							runOnUiThread(new Runnable() {
-								public void run() {
-									tcp_timer.cancel();
-									finishLoading();
-								}
-							});
+							readySignalHandler.cancel();
+							finishLoading();
 						}	
 					}
 				} catch (IOException e) {
