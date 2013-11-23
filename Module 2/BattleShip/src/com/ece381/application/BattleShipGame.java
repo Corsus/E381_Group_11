@@ -89,7 +89,7 @@ public class BattleShipGame extends Activity {
 	//private Timer resend_timer = new Timer();
 	
 	private SoundPool sp;
-    private int[] soundIds;
+	private int[] soundIds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -144,7 +144,7 @@ public class BattleShipGame extends Activity {
 
 	// ==================Layout Related================//
 
-	private void drawGameBoard() {
+	private void drawGameBoard() {		
 		Tile theTile;
 		ImageView imageView;
 		for (int i = 0; i < GameBoard.getBoardWidth(); i++) {
@@ -592,8 +592,6 @@ public class BattleShipGame extends Activity {
 		sp.play(soundIds[2], 100, 100, 1, 0, 1f);
 		
 		switch (this.setupOrientation) {
-		// TODO: Change the image of the ship selector button to reflect this
-		// change
 		case HORIZONTAL: {
 			ImageButton scout = (ImageButton) findViewById(R.id.SelectScout);
 			scout.setImageResource(R.drawable.ship_1_small);
@@ -809,7 +807,7 @@ public class BattleShipGame extends Activity {
 		soundIds[5] = sp.load(this, R.raw.turn, 1);
 		soundIds[6] = sp.load(this, R.raw.hit, 1);	
 	}
-	
+
 
 	// onTouchListener for the Game Map
 	class GameMapOnTouchListener implements OnTouchListener {
@@ -824,9 +822,6 @@ public class BattleShipGame extends Activity {
 					longPressHandler.postDelayed(gridLongPress, 500);
 				}
 			}
-			if (event.getAction() == MotionEvent.ACTION_MOVE) {
-				longPressHandler.removeCallbacks(gridLongPress);
-			}
 			if (event.getAction() == MotionEvent.ACTION_UP) {
 				// click
 				longPressHandler.removeCallbacks(gridLongPress);
@@ -834,7 +829,7 @@ public class BattleShipGame extends Activity {
 				// If this click was a long press, then it was already handled
 				// by the Runnable
 				// Therefore, we can skip this as we don't want to handle it
-				// again.
+				// again..
 				if (isLongPress == true) {
 					// we reset the flag because the long press has now been
 					// handled.
@@ -842,12 +837,12 @@ public class BattleShipGame extends Activity {
 				}
 				// If this wasn't a long press, then we want to handle it here.
 				else {
-					if (current_x_position == previous_x_position) {
+					if (Math.abs(current_x_position - previous_x_position) <= 100) {
 						clickGrid(v);
-					} else if (current_x_position > previous_x_position) {
+					} else if (current_x_position - previous_x_position > 100) {
 						if (gameIsPlaying)
 							swipeLeftRight();
-					} else if (current_x_position < previous_x_position) {
+					} else if (previous_x_position - current_x_position > 100) {
 						if (gameIsPlaying)
 							swipeRightLeft();
 					}
