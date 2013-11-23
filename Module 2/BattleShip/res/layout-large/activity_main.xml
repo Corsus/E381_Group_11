@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/space_gradient"
+    android:gravity="center"
     android:orientation="vertical"
     android:paddingTop="?android:attr/actionBarSize" >
 
@@ -15,17 +16,17 @@
 
     <Button
         android:id="@+id/solo_play"
-        android:layout_width="wrap_content"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginTop="100dp"
+        android:layout_marginTop="144dp"
         android:background="@android:drawable/btn_default"
         android:onClick="playAI"
         android:text="@string/play_button_1" />
 
     <Button
         android:id="@+id/multi_play"
-        android:layout_width="wrap_content"
+        android:layout_width="192dp"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:background="@android:drawable/btn_default"

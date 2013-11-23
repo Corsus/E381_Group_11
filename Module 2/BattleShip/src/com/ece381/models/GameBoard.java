@@ -8,7 +8,7 @@ public class GameBoard {
 
 	private Tile[][] gameBoard; 
 	private static final int width = 6;
-	private static final int height = 7;
+	private static final int height = 6;
 	
 	private ArrayList<Battleship> shipOnBoard;
 	private ArrayList<int[]> shipOnBoardCoor;
