@@ -39,26 +39,6 @@ public class MainActivity extends Activity  {
 		return super.onCreateOptionsMenu(menu);
 	}
 	
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item)
-	{
-		//this is where we handle the action button presses
-		int itemId = item.getItemId();
-		switch(itemId)
-		{
-			case R.id.action_search:
-				Toast t_search = Toast.makeText(getApplicationContext(), "Search", Toast.LENGTH_LONG);
-				t_search.show();
-				return true;
-			case R.id.action_settings:
-				Toast t_settings = Toast.makeText(getApplicationContext(), "Settings", Toast.LENGTH_LONG);
-				t_settings.show();
-				return true;
-			default:
-				return super.onOptionsItemSelected(item);
-		}
-	}
-	
 	public void playAI(View view)
 	{
 		Intent intent = new Intent(this, BattleShipGame.class);
