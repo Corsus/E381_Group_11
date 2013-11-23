@@ -6,6 +6,8 @@ import java.net.UnknownHostException;
 
 import com.example.myfirstapp.R;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.app.Activity;
@@ -17,10 +19,17 @@ import android.widget.Toast;
 
 public class ConnectToHost extends Activity {
 
+	private SoundPool sp;
+    private int soundId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_connect_to_host);
+		// set up sound
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);	
+		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+		soundId = sp.load(this, R.raw.menu, 1);
 	}
 
 	@Override
@@ -35,6 +44,8 @@ public class ConnectToHost extends Activity {
 		findViewById(R.id.connect_button).setEnabled(false);
 		findViewById(R.id.connect_button).setClickable(false);
 		BattleShipApp app = (BattleShipApp) getApplication();
+		
+		sp.play(soundId, 100, 100, 1, 0, 1f);
 
 		// Make sure the socket is not already opened 
 		

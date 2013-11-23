@@ -10,6 +10,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -85,6 +87,9 @@ public class BattleShipGame extends Activity {
 	// set up timer task for acknowledgement
 	private ResendMessageTask rmt = new ResendMessageTask();
 	//private Timer resend_timer = new Timer();
+	
+	private SoundPool sp;
+    private int[] soundIds;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -133,6 +138,8 @@ public class BattleShipGame extends Activity {
 			single_player_mode = true;
 			Toast.makeText(this, "SP MODE", Toast.LENGTH_SHORT).show();
 		}
+		
+		setUpSound();
 	}
 
 	// ==================Layout Related================//
@@ -414,6 +421,9 @@ public class BattleShipGame extends Activity {
 
 	// onClick handler for the 4 ship selector buttons
 	public void selectShipOnClick(View view) {
+		
+		sp.play(soundIds[0], 100, 100, 1, 0, 1f);
+		
 		ImageButton button_clicked = (ImageButton) view;
 		switch (button_clicked.getId()) {
 		case R.id.SelectScout:
@@ -553,6 +563,8 @@ public class BattleShipGame extends Activity {
 	// ================Button OnClick Handlers==========//
 
 	public void send_fire_command(View view) {
+		
+		sp.play(soundIds[4], 100, 100, 1, 0, 1f);
 		// disable fire button
 		myTurn = false;
 		disableFireButton();
@@ -576,6 +588,9 @@ public class BattleShipGame extends Activity {
 	// onClick handler for the Change Orientation button
 	// Changes the orientation of the ships that are to be created
 	public void changeOrientation(View view) {
+		
+		sp.play(soundIds[2], 100, 100, 1, 0, 1f);
+		
 		switch (this.setupOrientation) {
 		// TODO: Change the image of the ship selector button to reflect this
 		// change
@@ -609,6 +624,8 @@ public class BattleShipGame extends Activity {
 	// onClick handler for the Ready button
 	// Loads the LoadingScreen activity (to wait for other player)
 	public void setupComplete(View view) {
+		
+		sp.play(soundIds[3], 100, 100, 1, 0, 1f);
 		// disable clicking for the gameboard
 		disableSetupClickListeners();
 		// Build ready signal
@@ -703,6 +720,9 @@ public class BattleShipGame extends Activity {
 	}
 
 	private void clickGrid(View view) {
+		
+		sp.play(soundIds[1], 100, 100, 1, 0, 1f);
+		
 		ImageView iv = (ImageView) view;
 		if (iv.getParent() == findViewById(R.id.myBoardLayout)) {
 			if (shipOnHand != null) {
@@ -768,9 +788,28 @@ public class BattleShipGame extends Activity {
 	}
 
 	private void setViewFlipperAnimation(int resource_in, int resource_out) {
+		sp.play(soundIds[3], 100, 100, 1, 0, 1f);
 		viewflipper.setInAnimation(this, resource_in);
 		viewflipper.setOutAnimation(this, resource_out);
 	}
+	
+	
+	//load all the sound files
+	private void setUpSound() {
+		// Set the hardware buttons to control the sound
+		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
+				
+		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+		soundIds = new int[7];
+		soundIds[0] = sp.load(this, R.raw.click_ship, 1);
+		soundIds[1] = sp.load(this, R.raw.click_grid, 1);
+		soundIds[2] = sp.load(this, R.raw.orientation, 1);
+		soundIds[3] = sp.load(this, R.raw.ready, 1);
+		soundIds[4] = sp.load(this, R.raw.fire, 1);
+		soundIds[5] = sp.load(this, R.raw.turn, 1);
+		soundIds[6] = sp.load(this, R.raw.hit, 1);	
+	}
+	
 
 	// onTouchListener for the Game Map
 	class GameMapOnTouchListener implements OnTouchListener {
