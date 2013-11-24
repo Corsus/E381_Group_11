@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.ece381.controller.ComputerPlayer;
 import com.ece381.models.*;
 import com.ece381.models.Battleship.ShipOrientation;
 import com.example.myfirstapp.R;
@@ -91,6 +92,8 @@ public class BattleShipGame extends Activity {
 	private SoundPool sp;
 	private int[] soundIds;
 
+	private ComputerPlayer cp;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -581,7 +584,38 @@ public class BattleShipGame extends Activity {
 		// Singleplayer mode: process command locally
 		else {
 			// TODO: Single player mode implementation
-			Toast.makeText(this, "SP FIRE", Toast.LENGTH_SHORT).show();
+//			Toast.makeText(this, "SP FIRE", Toast.LENGTH_SHORT).show();
+			
+			//check if the computer player's ships got hit			
+				//use the same ship locations as the player (For Testing Purpose)
+//				if(gameBoard.getTileAt(fire_coordinates[0],fire_coordinates[1]).getTileObject() == null)
+			if(cp.getAIGameBoard().getTileAt(fire_coordinates[0],fire_coordinates[1]).getTileObject() == null)
+				Toast.makeText(this, "MISS", Toast.LENGTH_SHORT).show();
+			else
+				Toast.makeText(this, "HIT", Toast.LENGTH_SHORT).show();
+			
+			
+			//--------Computer player's turn--------
+			int[] cpFireCoor = cp.computerFireCoordinates();
+//			Toast.makeText(this, cpFireCoor[0]+", "+cpFireCoor[1], Toast.LENGTH_SHORT).show();
+			status_bar.setText("CP Fired at (" + (cpFireCoor[0]+1) + "," + (cpFireCoor[1]+1) + ")");
+			
+			//check if the player's ships got hit
+			if(gameBoard.getTileAt(cpFireCoor[0],cpFireCoor[1]).getTileObject() == null)
+				Toast.makeText(this, "it MISSed", Toast.LENGTH_SHORT).show();				
+			else {
+				Toast.makeText(this, "Player got HIT", Toast.LENGTH_SHORT).show();
+				sp.play(soundIds[6], 100, 100, 1, 0, 1f);
+				cp.setHitLocation(cpFireCoor);
+			}
+			
+			
+			
+			//--------Player's turn--------
+			myTurn = true;
+				
+//			status_bar.setText("Your Turn! Pick a tile.");
+			enableFireButton();
 		}
 	}
 
@@ -626,6 +660,8 @@ public class BattleShipGame extends Activity {
 		sp.play(soundIds[3], 100, 100, 1, 0, 1f);
 		// disable clicking for the gameboard
 		disableSetupClickListeners();
+		// automatically swipe
+		swipeRightLeft();
 		// Build ready signal
 		String setupMsg = "R";
 		// Append ship positions to signal
@@ -651,6 +687,8 @@ public class BattleShipGame extends Activity {
 		// Singleplayer: setup AI locally
 		else {
 			// TODO: Single player setup
+			cp =  new ComputerPlayer();
+			
 			Toast.makeText(this, "SP READY", Toast.LENGTH_SHORT).show();
 			gameIsPlaying = true;
 			crossfadePanels();
