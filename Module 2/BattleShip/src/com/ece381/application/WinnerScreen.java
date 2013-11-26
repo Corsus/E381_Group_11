@@ -32,6 +32,11 @@ public class WinnerScreen extends Activity {
 	}
 
 	@Override
+	public void onBackPressed() {
+		//do nothing, because you should be able to go back from here
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.winner_screen, menu);
@@ -41,6 +46,7 @@ public class WinnerScreen extends Activity {
 	public void returnToMain(View view)
 	{
 		Intent intent = new Intent(this, MainActivity.class);
+		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
 	}
 }

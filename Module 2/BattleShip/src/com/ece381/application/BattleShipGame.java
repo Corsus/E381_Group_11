@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import android.R.color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -18,9 +19,14 @@ import android.os.Handler;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v4.app.NavUtils;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -70,10 +76,10 @@ public class BattleShipGame extends Activity {
 	private boolean gameIsPlaying = false;
 	private Button fire_button;
 	private TextView status_bar;
+	private TextView update_bar;
 	private int[] fire_coordinates;
 	private AnimationDrawable selected_fog_cell;
 
-	private boolean single_player_mode = false;
 	private boolean myTurn = false;
 	private Object acknowledgementWaiter = new Object();
 	private String messageToSend;
@@ -89,10 +95,14 @@ public class BattleShipGame extends Activity {
 	private ResendMessageTask rmt = new ResendMessageTask();
 	//private Timer resend_timer = new Timer();
 	
+	//sound components
 	private SoundPool sp;
 	private int[] soundIds;
 
-	private ComputerPlayer cp;
+	//single player components
+	private boolean single_player_mode = false;
+	private ComputerPlayer aiPlayer;
+	private int single_player_hp = 10;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,6 +127,7 @@ public class BattleShipGame extends Activity {
 		setupPanel = findViewById(R.id.setupPanel);
 		fire_button = (Button) findViewById(R.id.fire_button);
 		status_bar = (TextView) findViewById(R.id.status_bar);
+		update_bar = (TextView) findViewById(R.id.update_bar);
 
 		// reference the map layouts
 		fogBoardLayout = (GridLayout) findViewById(R.id.fogBoardLayout);
@@ -139,7 +150,6 @@ public class BattleShipGame extends Activity {
 		String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		if (message != null && message.equals("SINGLE")) {
 			single_player_mode = true;
-			Toast.makeText(this, "SP MODE", Toast.LENGTH_SHORT).show();
 		}
 		
 		setUpSound();
@@ -427,6 +437,12 @@ public class BattleShipGame extends Activity {
 		
 		sp.play(soundIds[0], 100, 100, 1, 0, 1f);
 		
+		if (shipOnHand != null)
+		{
+			// reenable that button
+			enableSelectShipButton(shipOnHand.getSize());
+		}
+		
 		ImageButton button_clicked = (ImageButton) view;
 		switch (button_clicked.getId()) {
 		case R.id.SelectScout:
@@ -446,6 +462,7 @@ public class BattleShipGame extends Activity {
 			shipOnHand = ship4;
 			break;
 		}
+		disableSelectShipButton(shipOnHand);
 	}
 
 	// Disables the ship selector button when ship has been placed.
@@ -562,7 +579,44 @@ public class BattleShipGame extends Activity {
 			return super.onOptionsItemSelected(item);
 		}
 	}
-
+	
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		LayoutInflater li = LayoutInflater.from(this);
+		View confirmationPrompt = li.inflate(R.layout.confirmation_prompt, null);
+		
+		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+		alertDialogBuilder.setView(confirmationPrompt);
+		
+		alertDialogBuilder
+			.setCancelable(false)
+			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					if (single_player_mode == true)
+					{
+						BattleShipGame.super.onBackPressed();
+					}
+					else
+					{
+						Intent intent = new Intent(BattleShipGame.this, MainActivity.class);
+						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+						startActivity(intent);
+					}
+				}
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					dialog.cancel();
+				}
+			});
+		AlertDialog alertDialog = alertDialogBuilder.create();
+		alertDialog.show();
+	}
+	
 	// ================Button OnClick Handlers==========//
 
 	public void send_fire_command(View view) {
@@ -573,52 +627,104 @@ public class BattleShipGame extends Activity {
 		disableFireButton();
 		// unhighlight the tile
 		stopAnimateSelectedGridCell();
-		// update status abr
+		// update status bar
 		status_bar.setText("Fired at (" + Integer.toString(fire_coordinates[0])
-				+ "," + Integer.toString(fire_coordinates[1]) + ")");
+				+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 		// Multiplayer mode: send to DE2 board
 		if (single_player_mode == false) {
+			status_bar.setBackgroundResource(color.holo_orange_light);
 			sendAndWaitForAck("F" + Integer.toString(fire_coordinates[0])
 					+ Integer.toString(fire_coordinates[1]));
 		}
 		// Singleplayer mode: process command locally
 		else {
 			// TODO: Single player mode implementation
-//			Toast.makeText(this, "SP FIRE", Toast.LENGTH_SHORT).show();
-			
-			//check if the computer player's ships got hit			
-				//use the same ship locations as the player (For Testing Purpose)
-//				if(gameBoard.getTileAt(fire_coordinates[0],fire_coordinates[1]).getTileObject() == null)
-			if(cp.getAIGameBoard().getTileAt(fire_coordinates[0],fire_coordinates[1]).getTileObject() == null)
-				Toast.makeText(this, "MISS", Toast.LENGTH_SHORT).show();
-			else
-				Toast.makeText(this, "HIT", Toast.LENGTH_SHORT).show();
-			
-			
-			//--------Computer player's turn--------
-			int[] cpFireCoor = cp.computerFireCoordinates();
-//			Toast.makeText(this, cpFireCoor[0]+", "+cpFireCoor[1], Toast.LENGTH_SHORT).show();
-			status_bar.setText("CP Fired at (" + (cpFireCoor[0]+1) + "," + (cpFireCoor[1]+1) + ")");
-			
-			//check if the player's ships got hit
-			if(gameBoard.getTileAt(cpFireCoor[0],cpFireCoor[1]).getTileObject() == null)
-				Toast.makeText(this, "it MISSed", Toast.LENGTH_SHORT).show();				
-			else {
-				Toast.makeText(this, "Player got HIT", Toast.LENGTH_SHORT).show();
-				sp.play(soundIds[6], 100, 100, 1, 0, 1f);
-				cp.setHitLocation(cpFireCoor);
-			}
-			
-			
-			
-			//--------Player's turn--------
 			myTurn = true;
-				
-//			status_bar.setText("Your Turn! Pick a tile.");
-			enableFireButton();
+			//fire at the computer
+			fireAtComputer(fire_coordinates);
+			if (aiPlayer.getHP() == 0)
+			{
+				//we win
+				Intent intent = new Intent(BattleShipGame.this,	WinnerScreen.class);
+				intent.putExtra(EXTRA_MESSAGE, "WIN");
+				startActivity(intent);
+			}
+			//computer fires back at you
+			handleResponseFromAi();
+		}
+	}
+	
+	//accepts an array of size 2 that represents the x,y coordinates
+	private void fireAtComputer(int[] coordinates)
+	{
+		if (aiPlayer.receiveFireCommand(coordinates))
+		{
+			//hit :)
+			ImageView iv = (ImageView) fogBoardLayout
+					.getChildAt(coordinates[0]
+							* GameBoard
+									.getBoardHeight()
+							+ coordinates[1]);
+			iv.setImageResource(R.drawable.hit_cell);
+		}
+		else
+		{
+			//missed :(
+			ImageView iv = (ImageView) fogBoardLayout
+					.getChildAt(coordinates[0]
+							* GameBoard
+									.getBoardHeight()
+							+ coordinates[1]);
+			iv.setImageResource(R.drawable.miss_cell);
 		}
 	}
 
+	private void handleResponseFromAi()
+	{
+		int[] coordinates = aiPlayer.computerFireCoordinates();
+		WorldObject wo = this.gameBoard.getTileAt(
+				coordinates[0], coordinates[1]).getTileObject();
+		if (wo != null)
+		{
+			//got hit
+			ImageView iv = (ImageView) myBoardLayout.getChildAt(
+					coordinates[0]* GameBoard.getBoardHeight()
+							+ coordinates[1]);
+			iv.setImageResource(R.drawable.hit_cell);
+			
+			update_bar.setBackgroundResource(color.holo_red_light);
+			update_bar.setText("You got hit at (" + Integer.toString(coordinates[0]) 
+								+ ", " + Integer.toString(coordinates[1]) + ")!");
+			
+			//need to inform ai
+			aiPlayer.updateHitMap(coordinates);
+			//update target list
+			aiPlayer.updateTargetList(coordinates);
+			//update player HP
+			if (--single_player_hp == 0)
+			{
+				//you lost
+				Intent intent = new Intent(BattleShipGame.this,	WinnerScreen.class);
+				intent.putExtra(EXTRA_MESSAGE, "LOSE");
+				startActivity(intent);
+			}
+		}
+		else
+		{
+			//didn't get hit
+			ImageView iv = (ImageView) myBoardLayout.getChildAt(
+					coordinates[0]* GameBoard.getBoardHeight()
+							+ coordinates[1]);
+			iv.setImageResource(R.drawable.miss_cell);
+			
+			update_bar.setBackgroundResource(color.holo_orange_light);
+			update_bar.setText("Your opponent missed at (" + Integer.toString(coordinates[0]) 
+								+ ", " + Integer.toString(coordinates[1]) + ")!");
+			//need to inform ai
+			aiPlayer.updateHitMap(coordinates);
+		}
+	}
+	
 	// onClick handler for the Change Orientation button
 	// Changes the orientation of the ships that are to be created
 	public void changeOrientation(View view) {
@@ -660,8 +766,6 @@ public class BattleShipGame extends Activity {
 		sp.play(soundIds[3], 100, 100, 1, 0, 1f);
 		// disable clicking for the gameboard
 		disableSetupClickListeners();
-		// automatically swipe
-		swipeRightLeft();
 		// Build ready signal
 		String setupMsg = "R";
 		// Append ship positions to signal
@@ -685,11 +789,11 @@ public class BattleShipGame extends Activity {
 			startActivityForResult(intent, 1);
 		}
 		// Singleplayer: setup AI locally
-		else {
-			// TODO: Single player setup
-			cp =  new ComputerPlayer();
-			
-			Toast.makeText(this, "SP READY", Toast.LENGTH_SHORT).show();
+		else 
+		{
+			//create a computer opponent
+			aiPlayer = new ComputerPlayer();
+			//signal to start the game
 			gameIsPlaying = true;
 			crossfadePanels();
 			disableFireButton();
@@ -769,17 +873,25 @@ public class BattleShipGame extends Activity {
 					disableSelectShipButton(shipOnHand);
 					isBoardReady();
 				}
+				else
+				{
+					enableSelectShipButton(shipOnHand.getSize());
+				}
 				shipOnHand = null;
 			}
 		} else if (iv.getParent() == findViewById(R.id.fogBoardLayout)) {
 			// click, store the coordinates of the selected tile
-			if (myTurn == true && view.getBackground() == null) {
-				animateSelectedGridCell(iv);
-				int index = fogBoardLayout.indexOfChild(iv);
-				fire_coordinates = indexToCoordinates(index);
-				enableFireButton();
+			if (myTurn == true)
+			{
+				if (iv.getDrawable() instanceof AnimationDrawable)
+				{
+					//TODO: if view shows hit_cell or miss_cell, we skip this
+					animateSelectedGridCell(iv);
+					int index = fogBoardLayout.indexOfChild(iv);
+					fire_coordinates = indexToCoordinates(index);
+					enableFireButton();
+				}
 			}
-
 		}
 	}
 
@@ -1029,9 +1141,9 @@ public class BattleShipGame extends Activity {
 											// go to the fog board when it is my
 											// turn
 											swipeRightLeft();
-											status_bar
-													.setText("Your Turn! Pick a tile.");
 										}
+										status_bar.setBackgroundResource(color.holo_green_light);
+										status_bar.setText("Your Turn! Pick a tile.");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'Y') {
@@ -1041,6 +1153,20 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										iv.setImageResource(R.drawable.hit_cell);
+										status_bar.setBackgroundResource(color.holo_green_light);
+										status_bar.setText("Hit at (" + Integer.toString(fire_coordinates[0])
+												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
+										// acknowledge
+										send_message("A");
+									} else if (msgReceived.charAt(0) == 'S') {
+										ImageView iv = (ImageView) fogBoardLayout
+												.getChildAt(fire_coordinates[0]
+														* GameBoard
+																.getBoardHeight()
+														+ fire_coordinates[1]);
+										iv.setImageResource(R.drawable.hit_cell);
+										status_bar.setBackgroundResource(color.holo_green_light);
+										status_bar.setText("Your sunk a battleship.");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'N') {
@@ -1050,10 +1176,13 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										iv.setImageResource(R.drawable.miss_cell);
+										status_bar.setBackgroundResource(color.holo_red_light);
+										status_bar.setText("Missed at (" + Integer.toString(fire_coordinates[0])
+												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'H'
-											&& msgReceived.length() == 3) {
+											&& msgReceived.length() >= 3) {
 										int x = msgReceived.charAt(1) - 48;
 										int y = msgReceived.charAt(2) - 48;
 										ImageView iv = (ImageView) myBoardLayout
@@ -1062,10 +1191,14 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ y);
 										iv.setImageResource(R.drawable.hit_cell);
+										
+										update_bar.setBackgroundResource(color.holo_red_light);
+										update_bar.setText("You got hit at (" + Integer.toString(x) 
+															+ ", " + Integer.toString(y) + ")!");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'M'
-											&& msgReceived.length() == 3) {
+											&& msgReceived.length() >= 3) {
 										int x = msgReceived.charAt(1) - 48;
 										int y = msgReceived.charAt(2) - 48;
 										ImageView iv = (ImageView) myBoardLayout
@@ -1074,6 +1207,10 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ y);
 										iv.setImageResource(R.drawable.miss_cell);
+										
+										update_bar.setBackgroundResource(color.holo_orange_light);
+										update_bar.setText("Your opponent missed at (" + Integer.toString(x) 
+															+ ", " + Integer.toString(y) + ")!");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'W') {

@@ -10,22 +10,26 @@ import com.ece381.models.WorldObject;
 import com.ece381.models.Battleship.ShipOrientation;
 
 public class ComputerPlayer {
-
+	
+	//keep track potential hit coordinates
+	private Stack<int[]> targets = new Stack<int[]>();
+	
+	//computer player game board
 	private GameBoard aiGameBoard;
 	private int[][] hitMap; 
 	private int[] lastHitLocation = null;
-	//keep track potential hit coordinates
-	private Stack<int[]> targets = new Stack<int[]>();
 	
 	//ai status
 	private int aiHP = 10;
 	
+	//constructor
 	public ComputerPlayer()
 	{
 		generateGameBoard();
 		generateHitMap();
 	}
 
+	//generate computer player game board
 	private void generateGameBoard() {
 		// create a new empty game board
 		aiGameBoard = new GameBoard();
@@ -41,6 +45,7 @@ public class ComputerPlayer {
 		hitMap = new int[GameBoard.getBoardWidth()][GameBoard.getBoardHeight()];
 	}
 
+	//randomly generate a ship to place into the board (without overlapping)
 	private void generateRandomShip(int size) {
 		ShipOrientation orientation;
 		int[] coordinates = new int[2];
@@ -66,24 +71,24 @@ public class ComputerPlayer {
 	
 	public int[] computerFireCoordinates()
 	{
-		int[] fireCoor = new int[2];
+		int[] randomCoor = new int[2];
 		if (targets.isEmpty())
 		{
 			//generate completely random coordinates when computer have no clue
 			if (lastHitLocation == null)
 			{
 				do {
-					fireCoor[0] = (int) (Math.random() * GameBoard.getBoardWidth());
-					fireCoor[1] = (int) (Math.random() * GameBoard.getBoardHeight());
-				}while (hitMap[fireCoor[0]][fireCoor[1]] == 1);
+					randomCoor[0] = (int) (Math.random() * GameBoard.getBoardWidth());
+					randomCoor[1] = (int) (Math.random() * GameBoard.getBoardHeight());
+				}while (hitMap[randomCoor[0]][randomCoor[1]] == 1);
 			}
 		}
 		else 
 		{
-			fireCoor = targets.pop();
+			randomCoor = targets.pop();
 		}
 		
-		return fireCoor;
+		return randomCoor;
 	}
 	
 	public boolean receiveFireCommand(int[] fire_coordinates)
@@ -148,5 +153,4 @@ public class ComputerPlayer {
 	{
 		return this.aiHP;
 	}
-	
 }

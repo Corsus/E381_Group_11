@@ -157,15 +157,6 @@
             android:visibility="invisible" >
 
             <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="@string/game_status_string"
-                android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/white" />
-
-            <TextView
                 android:id="@+id/status_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -173,8 +164,18 @@
                 android:gravity="center"
                 android:text="@string/game_status_string"
                 android:textColor="@android:color/white"
-                android:textAppearance="?android:attr/textAppearanceMedium" />
+                android:textAppearance="?android:attr/textAppearanceSmall" />
 
+            <TextView
+                android:id="@+id/update_bar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@android:color/holo_red_light"
+                android:gravity="center"
+                android:text="@string/update_status_string"
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/white" />
+            
             <Button
                 android:id="@+id/fire_button"
                 android:layout_width="match_parent"

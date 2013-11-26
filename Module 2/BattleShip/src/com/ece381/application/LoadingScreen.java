@@ -39,6 +39,15 @@ public class LoadingScreen extends Activity {
 		return true;
 	}
 	
+	
+	
+	@Override
+	public void onBackPressed() {
+		//we don't want to go back here, so do nothing
+	}
+
+
+
 	public class ReadySignalHandler extends TimerTask {
 		public void run() {
 			final BattleShipApp app = (BattleShipApp) getApplication();

@@ -1,6 +1,6 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/connect_to_host"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/space_gradient"
@@ -58,7 +58,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:inputType="number"
-            android:text="107" />
+            android:text="100" />
     </LinearLayout>
 
     <LinearLayout

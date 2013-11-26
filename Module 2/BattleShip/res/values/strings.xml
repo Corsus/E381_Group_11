@@ -16,7 +16,8 @@
     <string name="setup_select_bar_string">Select Ship</string>
     <string name="change_orientation_button_string">Change Orientation</string>
     <string name="setup_ready_string">Ready</string>
-    <string name="game_status_string">Status</string>
+    <string name="game_status_string">STATUS</string>
+    <string name="update_status_string">UPDATES</string>
     <string name="button_fire_string">FIRE</string>
     <string name="title_activity_loading_screen">Loading Screen</string>
     <string name="loading_string">LOADING...</string>
@@ -29,5 +30,9 @@
     <string name="winner_string">You Win</string>
     <string name="loser_string">You Lost</string>
     <string name="return_to_menu">Return to Main Menu</string>
+    <string name="confirmation_prompt1">Are you sure?</string>
+    <string name="confirmation_prompt2">You will lose the game.</string>
+    <string name="yes_string">Yes</string>
+    <string name="no_string">No</string>
 
 </resources>
