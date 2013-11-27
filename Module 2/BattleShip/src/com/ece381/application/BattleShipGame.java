@@ -20,11 +20,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.TransitionDrawable;
 import android.support.v4.app.NavUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -62,6 +61,7 @@ public class BattleShipGame extends Activity {
 
 	private int crossfadeAnimationShort;
 	private int crossfadeAnimationMedium;
+	private int crossfadeAnimationLong;
 
 	private ViewFlipper viewflipper;
 	private GameMapOnTouchListener mapTouchListener;
@@ -141,6 +141,8 @@ public class BattleShipGame extends Activity {
 				android.R.integer.config_shortAnimTime);
 		crossfadeAnimationMedium = getResources().getInteger(
 				android.R.integer.config_mediumAnimTime);
+		crossfadeAnimationLong = getResources().getInteger(
+				android.R.integer.config_longAnimTime);
 
 		// after all initialization, we draw the map
 		drawGameBoard();
@@ -665,7 +667,7 @@ public class BattleShipGame extends Activity {
 							* GameBoard
 									.getBoardHeight()
 							+ coordinates[1]);
-			iv.setImageResource(R.drawable.hit_cell);
+			drawHitCell(iv);
 		}
 		else
 		{
@@ -675,7 +677,7 @@ public class BattleShipGame extends Activity {
 							* GameBoard
 									.getBoardHeight()
 							+ coordinates[1]);
-			iv.setImageResource(R.drawable.miss_cell);
+			drawMissCell(iv);
 		}
 	}
 
@@ -690,7 +692,7 @@ public class BattleShipGame extends Activity {
 			ImageView iv = (ImageView) myBoardLayout.getChildAt(
 					coordinates[0]* GameBoard.getBoardHeight()
 							+ coordinates[1]);
-			iv.setImageResource(R.drawable.hit_cell);
+			drawHitCell(iv);
 			
 			update_bar.setBackgroundResource(color.holo_red_light);
 			update_bar.setText("You got hit at (" + Integer.toString(coordinates[0]) 
@@ -715,7 +717,7 @@ public class BattleShipGame extends Activity {
 			ImageView iv = (ImageView) myBoardLayout.getChildAt(
 					coordinates[0]* GameBoard.getBoardHeight()
 							+ coordinates[1]);
-			iv.setImageResource(R.drawable.miss_cell);
+			drawMissCell(iv);
 			
 			update_bar.setBackgroundResource(color.holo_orange_light);
 			update_bar.setText("Your opponent missed at (" + Integer.toString(coordinates[0]) 
@@ -941,6 +943,20 @@ public class BattleShipGame extends Activity {
 		viewflipper.setOutAnimation(this, resource_out);
 	}
 	
+	private void drawHitCell(ImageView iv)
+	{
+		iv.setImageResource(R.drawable.hit_animation);
+		TransitionDrawable td = (TransitionDrawable) iv.getDrawable();
+		td.startTransition(crossfadeAnimationLong);
+	}
+	
+	private void drawMissCell(ImageView iv)
+	{
+		iv.setImageResource(R.drawable.miss_animation);
+		TransitionDrawable td = (TransitionDrawable) iv.getDrawable();
+		td.startTransition(crossfadeAnimationLong);
+	}
+	
 	
 	//load all the sound files
 	private void setUpSound() {
@@ -1152,7 +1168,7 @@ public class BattleShipGame extends Activity {
 														* GameBoard
 																.getBoardHeight()
 														+ fire_coordinates[1]);
-										iv.setImageResource(R.drawable.hit_cell);
+										drawHitCell(iv);
 										status_bar.setBackgroundResource(color.holo_green_light);
 										status_bar.setText("Hit at (" + Integer.toString(fire_coordinates[0])
 												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
@@ -1164,7 +1180,7 @@ public class BattleShipGame extends Activity {
 														* GameBoard
 																.getBoardHeight()
 														+ fire_coordinates[1]);
-										iv.setImageResource(R.drawable.hit_cell);
+										drawHitCell(iv);
 										status_bar.setBackgroundResource(color.holo_green_light);
 										status_bar.setText("Your sunk a battleship.");
 										// acknowledge
@@ -1175,7 +1191,7 @@ public class BattleShipGame extends Activity {
 														* GameBoard
 																.getBoardHeight()
 														+ fire_coordinates[1]);
-										iv.setImageResource(R.drawable.miss_cell);
+										drawMissCell(iv);
 										status_bar.setBackgroundResource(color.holo_red_light);
 										status_bar.setText("Missed at (" + Integer.toString(fire_coordinates[0])
 												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
@@ -1190,7 +1206,7 @@ public class BattleShipGame extends Activity {
 														* GameBoard
 																.getBoardHeight()
 														+ y);
-										iv.setImageResource(R.drawable.hit_cell);
+										drawHitCell(iv);
 										
 										update_bar.setBackgroundResource(color.holo_red_light);
 										update_bar.setText("You got hit at (" + Integer.toString(x) 
@@ -1206,7 +1222,7 @@ public class BattleShipGame extends Activity {
 														* GameBoard
 																.getBoardHeight()
 														+ y);
-										iv.setImageResource(R.drawable.miss_cell);
+										drawMissCell(iv);
 										
 										update_bar.setBackgroundResource(color.holo_orange_light);
 										update_bar.setText("Your opponent missed at (" + Integer.toString(x) 
