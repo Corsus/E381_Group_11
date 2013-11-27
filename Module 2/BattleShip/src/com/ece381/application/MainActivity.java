@@ -1,5 +1,8 @@
 package com.ece381.application;
 
+import java.io.IOException;
+import java.net.Socket;
+
 import com.example.myfirstapp.R;
 
 import android.media.AudioManager;
@@ -28,6 +31,8 @@ public class MainActivity extends Activity  {
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);	
 		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
 		soundId = sp.load(this, R.raw.menu, 1);
+		// close any opened sockets
+		closeSocket();
 	}
 
 	@Override
@@ -52,6 +57,18 @@ public class MainActivity extends Activity  {
 		Intent intent = new Intent(this, ConnectToHost.class);
 		sp.play(soundId, 100, 100, 1, 0, 1f);
 		startActivity(intent);
+	}
+	
+	// Called when the user closes a socket
+	private void closeSocket() {
+		BattleShipApp app = (BattleShipApp) getApplication();
+		Socket s = app.sock;
+		try {
+			s.getOutputStream().close();
+			s.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }
