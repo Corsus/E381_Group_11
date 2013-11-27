@@ -584,39 +584,34 @@ public class BattleShipGame extends Activity {
 	
 	@Override
 	public void onBackPressed() {
-		// TODO Auto-generated method stub
-		LayoutInflater li = LayoutInflater.from(this);
-		View confirmationPrompt = li.inflate(R.layout.confirmation_prompt, null);
-		
-		AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-		alertDialogBuilder.setView(confirmationPrompt);
-		
-		alertDialogBuilder
-			.setCancelable(false)
-			.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					if (single_player_mode == true)
-					{
+		// only allow leaving a single player game 
+		if (single_player_mode)
+		{
+			LayoutInflater li = LayoutInflater.from(this);
+			View confirmationPrompt = li.inflate(R.layout.confirmation_prompt, null);
+			
+			AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
+			alertDialogBuilder.setView(confirmationPrompt);
+			
+			alertDialogBuilder
+				.setCancelable(false)
+				.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
 						BattleShipGame.super.onBackPressed();
 					}
-					else
-					{
-						Intent intent = new Intent(BattleShipGame.this, MainActivity.class);
-						intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-						startActivity(intent);
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						// TODO Auto-generated method stub
+						dialog.cancel();
 					}
-				}
-			})
-			.setNegativeButton("No", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					dialog.cancel();
-				}
-			});
-		AlertDialog alertDialog = alertDialogBuilder.create();
-		alertDialog.show();
+				});
+			AlertDialog alertDialog = alertDialogBuilder.create();
+			alertDialog.show();
+		}
+		//there is no support for leaving a multiplayer game
 	}
 	
 	// ================Button OnClick Handlers==========//
