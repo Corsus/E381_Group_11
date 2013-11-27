@@ -39,8 +39,8 @@ void initializeGridContents(int grid[GRID_COLS][GRID_ROWS])
 	for (i = 0; i < 4; i++)
 	{
 		//start from smallest ship (1) to largest ship (4)
-		playerOneShip[i] = i+1;
-		playerTwoShip[i] = i+1;
+		playerOneShips[i] = i+1;
+		playerTwoShips[i] = i+1;
 	}
 }
 
