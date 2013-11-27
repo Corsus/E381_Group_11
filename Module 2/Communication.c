@@ -15,12 +15,12 @@ char* msgReceived = NULL;
 int clientFromID;
 int numReceived;
 
-char hit_signal[3];
-char miss_signal[3];
+char hit_signal[4];		//3 + 1 for null character
+char miss_signal[4];	//3 + 1 for null character
 
 char* ackMsg = "A";
-int lastMsg_clientID;
-char* lastMsg = NULL;
+char* lastMsgTo1 = NULL;
+char* lastMsgTo2 = NULL;
 
 void initializeRS232()
 {
@@ -40,7 +40,7 @@ void initializeReadTimerInterrupt()
 
 	IOWR_ALTERA_AVALON_TIMER_CONTROL(READ_TIMER_BASE, 0xb);
 
-	alt_irq_register(READ_TIMER_IRQ, 0x0, read_timer_isr);
+	alt_irq_register(READ_TIMER_IRQ, 0x0, resend1_isr);
 
 	alt_irq_enable(READ_TIMER_IRQ);
 
@@ -50,14 +50,27 @@ void initializeReadTimerInterrupt()
 	printf("Read timer initialization completed...\n");
 }
 
-void read_timer_isr(void* context, alt_u32 id)
+void resend1_isr(void* context, alt_u32 id)
 {
 	int i;
 	//resend the signal because client didn't not acknowledge
-	alt_up_rs232_write_data(uart, (unsigned char) lastMsg_clientID);
-	alt_up_rs232_write_data(uart, (unsigned char) strlen(lastMsg));
-	for (i = 0; i < strlen(lastMsg); i++) {
-		alt_up_rs232_write_data(uart, lastMsg[i]);
+	alt_up_rs232_write_data(uart, (unsigned char) 1);
+	alt_up_rs232_write_data(uart, (unsigned char) strlen(lastMsgTo1));
+	for (i = 0; i < strlen(lastMsgTo1); i++) {
+		alt_up_rs232_write_data(uart, lastMsgTo1[i]);
+	}
+	printf("Resent message...\n");
+	IOWR_ALTERA_AVALON_TIMER_STATUS(READ_TIMER_BASE, 0x0);
+}
+
+void resend2_isr(void* context, alt_u32 id)
+{
+	int i;
+	//resend the signal because client didn't not acknowledge
+	alt_up_rs232_write_data(uart, (unsigned char) 2);
+	alt_up_rs232_write_data(uart, (unsigned char) strlen(lastMsgTo2));
+	for (i = 0; i < strlen(lastMsgTo2); i++) {
+		alt_up_rs232_write_data(uart, lastMsgTo2[i]);
 	}
 	printf("Resent message...\n");
 	IOWR_ALTERA_AVALON_TIMER_STATUS(READ_TIMER_BASE, 0x0);
@@ -78,10 +91,18 @@ void sendToClient(int clientID, char* msg)
 	//printf("Sending the message to the Middleman\n");
 
 	//first keep track of this message
-	lastMsg_clientID = clientID;
-	free(lastMsg);
-	lastMsg = (char*) malloc(sizeof(char) * (strlen(msg) + 1));
-	strcpy(lastMsg, msg);
+	if (clientID % 2 == 1)
+	{
+		free(lastMsgTo1);
+		lastMsgTo1 = (char*) malloc(sizeof(char) * (strlen(msg) + 1));
+		strcpy(lastMsgTo1, msg);
+	}
+	else if (clientID % 2 == 0)
+	{
+		free(lastMsgTo2);
+		lastMsgTo2 = (char*) malloc(sizeof(char) * (strlen(msg) + 1));
+		strcpy(lastMsgTo2, msg);
+	}
 
 	//send clientID
 	alt_up_rs232_write_data(uart, (unsigned char) clientID);
@@ -98,18 +119,31 @@ void waitForClientsToSetup()
 	do{
 		receiveFromClient();
 	}while (isClientReady() == -1);
-	if (clientFromID == 1)
+	if (clientFromID % 2 == 1)
+	{
+		clientOneID = clientFromID;
 		printf("Client 1 reported in...\n");
-	else if (clientFromID == 2)
+	}
+	else if (clientFromID % 2 == 0)
+	{
+		clientTwoID = clientFromID;
 		printf("Client 2 reported in...\n");
+	}
+
 
 	do{
 		receiveFromClient();
 	}while (isClientReady() == -1);
-	if (clientFromID == 1)
+	if (clientFromID % 2 == 1)
+	{
+		clientOneID = clientFromID;
 		printf("Client 1 reported in...\n");
-	else if (clientFromID == 2)
+	}
+	else if (clientFromID % 2 == 0)
+	{
+		clientTwoID = clientFromID;
 		printf("Client 2 reported in...\n");
+	}
 }
 
 void receiveFromClient()
@@ -140,6 +174,14 @@ void receiveFromClient()
 void waitForAcknowledgement(int clientID)
 {
 	printf("Waiting for acknowledgement from %d...\n", clientID);
+	if (clientID % 2 == 1)
+	{
+		alt_irq_register(READ_TIMER_IRQ, 0x0, resend1_isr);
+	}
+	else if (clientID % 2 == 0)
+	{
+		alt_irq_register(READ_TIMER_IRQ, 0x0, resend2_isr);
+	}
 	enableReadTimerInterrupt();
 	do {
 		receiveFromClient();
@@ -164,39 +206,56 @@ void handleFireCommandFromClientOne()
 
 		//if message is fire command, we handle it
 		//if message is not fire command, we loop back and wait for another message
-		if (clientFromID == 1 && msgReceived[0] == 'F')
+		if (clientFromID % 2 == 1 && msgReceived[0] == 'F')
 		{
 			x = ((int) msgReceived[1]) - 48;
 			y = ((int) msgReceived[2]) - 48;
-			if (playerTwoGrid[x][y] == SHIP)
+			if (playerTwoGrid[x][y] > 0)
 			{
-				printf("P1 hit P2 at: %d %d \n", x, y);
 				//player one hit player one at (x,y)
-				playerTwoGrid[x][y] = FIRE_HIT;
-				//tell client one that he hit (Y for yes)
-				sendToClient(1, "Y");
-				waitForAcknowledgement(1);
+				printf("P1 hit P2 at: %d %d \n", x, y);
+				//decrement hp of corresponding ship
+				playerTwoShips[playerTwoGrid[x][y] - 1]--;
+				//check to see if hp fell to 0
+				if (playerTwoShips[playerTwoGrid[x][y] - 1] == 0)
+				{
+					//tell client one that he sunk (S for sunk)
+					sendToClient(clientOneID, "S");
+					waitForAcknowledgement(clientOneID);
+				}
+				else
+				{
+					//tell client one that he hit (Y for yes)
+					sendToClient(clientOneID, "Y");
+					waitForAcknowledgement(clientOneID);
+				}
+
 				//tell client two he got hit at (X,Y)
 				hit_signal[0] = 'H';
-				hit_signal[1] = msgReceived[1];
-				hit_signal[2] = msgReceived[2];
-				sendToClient(2, hit_signal);
-				waitForAcknowledgement(2);
+				hit_signal[1] = x + 48;
+				hit_signal[2] = y + 48;
+				hit_signal[3] = '\0';
+				sendToClient(clientTwoID, hit_signal);
+				waitForAcknowledgement(clientTwoID);
+
+				//keep track of this hit
+				playerTwoGrid[x][y] = -1;
 			}
-			else if (playerTwoGrid[x][y] == EMPTY)
+			else if (playerTwoGrid[x][y] == 0)
 			{
 				printf("P1 missed P2 at: %d %d \n", x, y);
 				//player one missed on empty cell
-				playerTwoGrid[x][y] = FIRE_MISS;
+				playerTwoGrid[x][y] = -1;
 				//tell client one he missed (N for no)
-				sendToClient(1, "N");
-				waitForAcknowledgement(1);
+				sendToClient(clientOneID, "N");
+				waitForAcknowledgement(clientOneID);
 				//tell client two the miss happened at (X,Y)
 				miss_signal[0] = 'M';
-				miss_signal[1] = msgReceived[1];
-				miss_signal[2] = msgReceived[2];
-				sendToClient(2, miss_signal);
-				waitForAcknowledgement(2);
+				miss_signal[1] = x + 48;
+				miss_signal[2] = y + 48;
+				miss_signal[3] = '\0';
+				sendToClient(clientTwoID, miss_signal);
+				waitForAcknowledgement(clientTwoID);
 			}
 			// if fire command was handled, then we break out of this loop
 			break;
@@ -217,39 +276,55 @@ void handleFireCommandFromClientTwo()
 
 		//if this is a fire command, we handle it
 		//otherwise, we loop back and wait for another message
-		if (clientFromID == 2 && msgReceived[0] == 'F')
+		if (clientFromID % 2 == 0 && msgReceived[0] == 'F')
 		{
 			x = ((int) msgReceived[1]) - 48;
 			y = ((int) msgReceived[2]) - 48;
-			if (playerOneGrid[x][y] == SHIP)
+			if (playerOneGrid[x][y] > 0)
 			{
-				printf("P2 hit P1 at: %d %d \n", x, y);
 				//player two hit player one at (x,y)
-				playerOneGrid[x][y] = FIRE_HIT;
-				//tell client two that he hit (Y for yes)
-				sendToClient(2, "Y");
-				waitForAcknowledgement(2);
+				printf("P2 hit P1 at: %d %d \n", x, y);
+				//decrement hp of corresponding ship
+				playerOneShips[playerOneGrid[x][y] - 1]--;
+				//check if hp fell to 0
+				if (playerOneShips[playerOneGrid[x][y] - 1] == 0)
+				{
+					//tell client two that he sunk (S for sunk)
+					sendToClient(clientTwoID, "S");
+					waitForAcknowledgement(clientTwoID);
+				}
+				else
+				{
+					//tell client two that he hit (Y for yes)
+					sendToClient(clientTwoID, "Y");
+					waitForAcknowledgement(clientTwoID);
+				}
+
 				//tell client one he got hit at (X,Y)
 				hit_signal[0] = 'H';
-				hit_signal[1] = msgReceived[1];
-				hit_signal[2] = msgReceived[2];
-				sendToClient(1, hit_signal);
-				waitForAcknowledgement(1);
+				hit_signal[1] = x + 48;
+				hit_signal[2] = y + 48;
+				hit_signal[3] = '\0';
+				sendToClient(clientOneID, hit_signal);
+				waitForAcknowledgement(clientOneID);
+
+				playerOneGrid[x][y] = -1;
 			}
-			else if (playerOneGrid[x][y] == EMPTY)
+			else if (playerOneGrid[x][y] == 0)
 			{
 				printf("P2 missed P1 at: %d %d \n", x, y);
 				//player two missed on empty cell
-				playerOneGrid[x][y] = FIRE_MISS;
+				playerOneGrid[x][y] = -1;
 				//tell client two he missed (N for no)
-				sendToClient(2, "N");
-				waitForAcknowledgement(2);
+				sendToClient(clientTwoID, "N");
+				waitForAcknowledgement(clientTwoID);
 				//tell client one the miss happened at (X,Y)
 				miss_signal[0] = 'M';
-				miss_signal[1] = msgReceived[1];
-				miss_signal[2] = msgReceived[2];
-				sendToClient(1, miss_signal);
-				waitForAcknowledgement(1);
+				miss_signal[1] = x + 48;
+				miss_signal[2] = y + 48;
+				miss_signal[3] = '\0';
+				sendToClient(clientOneID, miss_signal);
+				waitForAcknowledgement(clientOneID);
 			}
 			//at this point, fire command has been handled, we can break out of the loop
 			break;
@@ -262,7 +337,7 @@ int isClientReady()
 	int isReady = -1;
 	int i;
 	char* shipInfo;
-	if (clientFromID == 1)
+	if (clientFromID % 2 == 1)
 	{
 		if (msgReceived[0] == 'R')
 		{
@@ -275,7 +350,7 @@ int isClientReady()
 			isReady = 1;
 		}
 	}
-	else if (clientFromID == 2)
+	else if (clientFromID % 2 == 0)
 	{
 		if (msgReceived[0] == 'R')
 		{

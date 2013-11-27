@@ -19,26 +19,24 @@
 
 typedef enum
 {
-	EMPTY,
-	SHIP,
-	FIRE_MISS,
-	FIRE_HIT,
-}GridContent;
-
-typedef enum
-{
 	HORIZONTAL,
 	VERTICAL
 }Orientation;
 
-void initializeGridContents(GridContent grid[GRID_COLS][GRID_ROWS]);
+void initializeGridContents(int grid[GRID_COLS][GRID_ROWS]);
 void insertShipInGrid(int player, char* shipInfo);
-int isGameOver(GridContent gridToCheck[GRID_COLS][GRID_ROWS]);
+int isGameOver(int gridToCheck[GRID_COLS][GRID_ROWS]);
 int main();
 
-void testGridContents(GridContent grid[GRID_COLS][GRID_ROWS]);
+void testGridContents(int grid[GRID_COLS][GRID_ROWS]);
 
-extern GridContent playerOneGrid[GRID_COLS][GRID_ROWS];
-extern GridContent playerTwoGrid[GRID_COLS][GRID_ROWS];
+extern int playerOneGrid[GRID_COLS][GRID_ROWS];
+extern int playerTwoGrid[GRID_COLS][GRID_ROWS];
+
+extern int playerOneShips[4];
+extern int playerTwoShips[4];
+
+extern int clientOneID;
+extern int clientTwoID;
 
 #endif /* MAIN_H_ */

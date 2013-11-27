@@ -25,7 +25,8 @@ void waitForAcknowledgement(int clientID);
 void initializeReadTimerInterrupt();
 void enableReadTimerInterrupt();
 void disableReadTimerInterrupt();
-void read_timer_isr();
+void resend1_isr(void* context, alt_u32 id);
+void resend2_isr(void* context, alt_u32 id);
 
 void waitForClientsToSetup();
 int isClientReady();

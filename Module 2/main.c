@@ -6,28 +6,45 @@
  */
 #include "main.h"
 
-GridContent playerOneGrid[GRID_COLS][GRID_ROWS];
-GridContent playerTwoGrid[GRID_COLS][GRID_ROWS];
+// 0 = empty, 1,2,3,4 = ship, -1 = fired at
+int playerOneGrid[GRID_COLS][GRID_ROWS];
+int playerTwoGrid[GRID_COLS][GRID_ROWS];
+
+//keep track the health of the ships
+int playerOneShips[4];
+int playerTwoShips[4];
+
+//clientID for client 1 and client 2
+int clientOneID;
+int clientTwoID;
 
 char* ready_message = "R";
 char* turn_message = "T";
 char* win_message = "W";
 char* lose_message = "L";
 
-void initializeGridContents(GridContent grid[GRID_COLS][GRID_ROWS])
+void initializeGridContents(int grid[GRID_COLS][GRID_ROWS])
 {
 	int i;
 	int j;
+	//initialize an empty board
 	for (i = 0; i < GRID_ROWS; i++)
 	{
 		for (j = 0; j < GRID_COLS; j++)
 		{
-			grid[j][i] = EMPTY;
+			grid[j][i] = 0;
 		}
+	}
+	//also, initialize the health of all ships
+	for (i = 0; i < 4; i++)
+	{
+		//start from smallest ship (1) to largest ship (4)
+		playerOneShip[i] = i+1;
+		playerTwoShip[i] = i+1;
 	}
 }
 
-void testGridContents(GridContent grid[GRID_COLS][GRID_ROWS])
+void testGridContents(int grid[GRID_COLS][GRID_ROWS])
 {
 	int i;
 	int j;
@@ -35,10 +52,7 @@ void testGridContents(GridContent grid[GRID_COLS][GRID_ROWS])
 	{
 		for (j = 0; j < GRID_COLS; j++)
 		{
-			if (grid[j][i] == EMPTY)
-				printf("0 ");
-			else if (grid[j][i] == SHIP)
-				printf("1 ");
+			printf("%d ", grid[j][i]);
 		}
 		printf("\n");
 	}
@@ -57,14 +71,14 @@ void insertShipInGrid(int player, char* shipInfo)
 		{
 			for (i = 0; i < size; i++)
 			{
-				playerOneGrid[x + i][y] = SHIP;
+				playerOneGrid[x + i][y] = size;
 			}
 		}
 		else if (orientation == 'V')
 		{
 			for (i = 0; i < size; i++)
 			{
-				playerOneGrid[x][y + i] = SHIP;
+				playerOneGrid[x][y + i] = size;
 			}
 		}
 	}
@@ -74,20 +88,20 @@ void insertShipInGrid(int player, char* shipInfo)
 		{
 			for (i = 0; i < size; i++)
 			{
-				playerTwoGrid[x + i][y] = SHIP;
+				playerTwoGrid[x + i][y] = size;
 			}
 		}
 		else if (orientation == 'V')
 		{
 			for (i = 0; i < size; i++)
 			{
-				playerTwoGrid[x][y + i] = SHIP;
+				playerTwoGrid[x][y + i] = size;
 			}
 		}
 	}
 }
 
-int isGameOver(GridContent gridToCheck[GRID_COLS][GRID_ROWS])
+int isGameOver(int gridToCheck[GRID_COLS][GRID_ROWS])
 {
 	int i;
 	int j;
@@ -95,7 +109,7 @@ int isGameOver(GridContent gridToCheck[GRID_COLS][GRID_ROWS])
 	{
 		for (j = 0; j < GRID_COLS; j++)
 		{
-			if (gridToCheck[j][i] == SHIP)
+			if (gridToCheck[j][i] > 0)
 			{
 				//game is not over, this player is still alive
 				return 0;
@@ -134,51 +148,51 @@ int main()
 		//tell clients that loading is done
 		printf("Game is starting. Informing clients...\n");
 		//tell client 1 that loading is complete
-		sendToClient(1, ready_message);
+		sendToClient(clientOneID, ready_message);
 		//wait for acknowledgement
-		waitForAcknowledgement(1);
+		waitForAcknowledgement(clientOneID);
 
 		//tell client 2 that loading is complete
-		sendToClient(2, ready_message);
+		sendToClient(clientTwoID, ready_message);
 		//wait for acknowledgement
-		waitForAcknowledgement(2);
+		waitForAcknowledgement(clientTwoID);
 
 		//game is playing loop
 		while (1)
 		{
 			//tell client one to act "11T"
 			printf("Client 1 turn to act...\n");
-			sendToClient(1, turn_message);
+			sendToClient(clientOneID, turn_message);
 			//wait for acknowledgement
-			waitForAcknowledgement(1);
+			waitForAcknowledgement(clientOneID);
 			//wait for client one response/action and handle it
 			handleFireCommandFromClientOne();
 
 			if (isGameOver(playerTwoGrid) == 1)
 			{
 				printf("Client 1 is the winner...\n");
-				sendToClient(1, win_message);
-				waitForAcknowledgement(1);
-				sendToClient(2, lose_message);
-				waitForAcknowledgement(2);
+				sendToClient(clientOneID, win_message);
+				waitForAcknowledgement(clientOneID);
+				sendToClient(clientTwoID, lose_message);
+				waitForAcknowledgement(clientTwoID);
 				break;
 			}
 
 			//tell client two to act "21T"
 			printf("Client 2 turn to act...\n");
-			sendToClient(2, turn_message);
+			sendToClient(clientTwoID, turn_message);
 			//wait for acknowledgement
-			waitForAcknowledgement(2);
+			waitForAcknowledgement(clientTwoID);
 			//wait for client two response/action and handle it
 			handleFireCommandFromClientTwo();
 
 			if (isGameOver(playerOneGrid) == 1)
 			{
 				printf("Client 2 is the winner...\n");
-				sendToClient(2, win_message);
-				waitForAcknowledgement(2);
-				sendToClient(1, lose_message);
-				waitForAcknowledgement(1);
+				sendToClient(clientTwoID, win_message);
+				waitForAcknowledgement(clientTwoID);
+				sendToClient(clientOneID, lose_message);
+				waitForAcknowledgement(clientOneID);
 				break;
 			}
 		}
