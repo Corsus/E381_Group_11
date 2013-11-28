@@ -632,11 +632,10 @@ public class BattleShipGame extends Activity {
 		// unhighlight the tile
 		stopAnimateSelectedGridCell();
 		// update status bar
-		status_bar.setText("Fired at (" + Integer.toString(fire_coordinates[0])
+		changeStatusBar(status_bar, 1, "You fired at (" + Integer.toString(fire_coordinates[0])
 				+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 		// Multiplayer mode: send to DE2 board
 		if (single_player_mode == false) {
-			status_bar.setBackgroundResource(color.holo_orange_light);
 			sendAndWaitForAck("F" + Integer.toString(fire_coordinates[0])
 					+ Integer.toString(fire_coordinates[1]));
 		}
@@ -696,10 +695,9 @@ public class BattleShipGame extends Activity {
 							+ coordinates[1]);
 			drawHitCell(iv);
 			
-			update_bar.setBackgroundResource(color.holo_red_light);
-			update_bar.setText("You got hit at (" + Integer.toString(coordinates[0]) 
-								+ ", " + Integer.toString(coordinates[1]) + ")!");
-			
+			changeStatusBar(update_bar, 2, "Your opponent hit you at (" + Integer.toString(coordinates[0]) 
+					+ ", " + Integer.toString(coordinates[1]) + ")!");
+				
 			//need to inform ai
 			aiPlayer.updateHitMap(coordinates);
 			//update target list
@@ -721,9 +719,9 @@ public class BattleShipGame extends Activity {
 							+ coordinates[1]);
 			drawMissCell(iv);
 			
-			update_bar.setBackgroundResource(color.holo_orange_light);
-			update_bar.setText("Your opponent missed at (" + Integer.toString(coordinates[0]) 
-								+ ", " + Integer.toString(coordinates[1]) + ")!");
+			changeStatusBar(update_bar, 1, "Your opponent missed at (" + Integer.toString(coordinates[0]) 
+					+ ", " + Integer.toString(coordinates[1]) + ")!");
+
 			//need to inform ai
 			aiPlayer.updateHitMap(coordinates);
 		}
@@ -976,6 +974,15 @@ public class BattleShipGame extends Activity {
 		td.startTransition(crossfadeAnimationLong);
 	}
 	
+	private void changeStatusBar(TextView tv, int colorIndex, String s)
+	{
+		AnimationDrawable ad = (AnimationDrawable) tv.getBackground();
+		ad.setEnterFadeDuration(crossfadeAnimationShort);
+		ad.setExitFadeDuration(crossfadeAnimationShort);
+		ad.selectDrawable(colorIndex);
+		tv.setText(s);
+	}
+	
 	
 	//load all the sound files
 	private void setUpSound() {
@@ -1177,8 +1184,7 @@ public class BattleShipGame extends Activity {
 											// turn
 											swipeRightLeft();
 										}
-										status_bar.setBackgroundResource(color.holo_green_light);
-										status_bar.setText("Your Turn! Pick a tile.");
+										changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'Y') {
@@ -1188,8 +1194,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										drawHitCell(iv);
-										status_bar.setBackgroundResource(color.holo_green_light);
-										status_bar.setText("Hit at (" + Integer.toString(fire_coordinates[0])
+										changeStatusBar(status_bar, 0, "Hit at (" + Integer.toString(fire_coordinates[0])
 												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 										// acknowledge
 										send_message("A");
@@ -1200,8 +1205,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										drawHitCell(iv);
-										status_bar.setBackgroundResource(color.holo_green_light);
-										status_bar.setText("Your sunk a battleship.");
+										changeStatusBar(status_bar, 0, "You sunk a battleship!");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'N') {
@@ -1211,8 +1215,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										drawMissCell(iv);
-										status_bar.setBackgroundResource(color.holo_red_light);
-										status_bar.setText("Missed at (" + Integer.toString(fire_coordinates[0])
+										changeStatusBar(status_bar, 2, "Missed at (" + Integer.toString(fire_coordinates[0])
 												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 										// acknowledge
 										send_message("A");
@@ -1226,9 +1229,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ y);
 										drawHitCell(iv);
-										
-										update_bar.setBackgroundResource(color.holo_red_light);
-										update_bar.setText("You got hit at (" + Integer.toString(x) 
+										changeStatusBar(update_bar, 2, "Your opponent hit you at (" + Integer.toString(x) 
 															+ ", " + Integer.toString(y) + ")!");
 										// acknowledge
 										send_message("A");
@@ -1242,10 +1243,8 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ y);
 										drawMissCell(iv);
-										
-										update_bar.setBackgroundResource(color.holo_orange_light);
-										update_bar.setText("Your opponent missed at (" + Integer.toString(x) 
-															+ ", " + Integer.toString(y) + ")!");
+										changeStatusBar(update_bar, 1, "Your opponent missed at (" + Integer.toString(x) 
+												+ ", " + Integer.toString(y) + ")!");
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'W') {
