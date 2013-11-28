@@ -120,6 +120,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x][y+1] == 0)
 			{
+				hitMap[x][y+1] = 2;
 				this.targets.add(new int[] {x, y+1});
 			}
 		}
@@ -128,6 +129,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x][y-1] == 0)
 			{
+				hitMap[x][y-1] = 2;
 				this.targets.add(new int[] {x, y-1});
 			}
 		}
@@ -136,6 +138,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x+1][y] == 0)
 			{
+				hitMap[x+1][y] = 2;
 				this.targets.add(new int[] {x+1, y});
 			}
 		}
@@ -144,6 +147,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x-1][y] == 0)
 			{
+				hitMap[x-1][y] = 2;
 				this.targets.add(new int[] {x-1, y});
 			}
 		}
