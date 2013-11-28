@@ -64,8 +64,11 @@ public class MainActivity extends Activity  {
 		BattleShipApp app = (BattleShipApp) getApplication();
 		Socket s = app.sock;
 		try {
-			s.getOutputStream().close();
-			s.close();
+			if (s != null)
+			{
+				s.getOutputStream().close();
+				s.close();
+			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
