@@ -1179,11 +1179,6 @@ public class BattleShipGame extends Activity {
 											Toast.LENGTH_SHORT).show();
 									if (msgReceived.charAt(0) == 'T') {
 										myTurn = true;
-										if (viewflipper.getDisplayedChild() == 0) {
-											// go to the fog board when it is my
-											// turn
-											swipeRightLeft();
-										}
 										changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
 										// acknowledge
 										send_message("A");

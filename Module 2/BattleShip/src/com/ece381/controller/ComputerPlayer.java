@@ -1,8 +1,7 @@
 package com.ece381.controller;
 
-import java.util.Stack;
+import java.util.ArrayList;
 
-import com.ece381.application.BattleShipApp;
 import com.ece381.models.Battleship;
 import com.ece381.models.GameBoard;
 import com.ece381.models.ShipComponent;
@@ -12,7 +11,7 @@ import com.ece381.models.Battleship.ShipOrientation;
 public class ComputerPlayer {
 	
 	//keep track potential hit coordinates
-	private Stack<int[]> targets = new Stack<int[]>();
+	private ArrayList<int[]> targets = new ArrayList<int[]>();
 	
 	//computer player game board
 	private GameBoard aiGameBoard;
@@ -71,24 +70,25 @@ public class ComputerPlayer {
 	
 	public int[] computerFireCoordinates()
 	{
-		int[] randomCoor = new int[2];
+		int[] fireCoor = new int[2];
 		if (targets.isEmpty())
 		{
 			//generate completely random coordinates when computer have no clue
 			if (lastHitLocation == null)
 			{
 				do {
-					randomCoor[0] = (int) (Math.random() * GameBoard.getBoardWidth());
-					randomCoor[1] = (int) (Math.random() * GameBoard.getBoardHeight());
-				}while (hitMap[randomCoor[0]][randomCoor[1]] == 1);
+					fireCoor[0] = (int) (Math.random() * GameBoard.getBoardWidth());
+					fireCoor[1] = (int) (Math.random() * GameBoard.getBoardHeight());
+				}while (hitMap[fireCoor[0]][fireCoor[1]] == 1);
 			}
 		}
 		else 
 		{
-			randomCoor = targets.pop();
+			int randomIndex = (int) (Math.random() * targets.size());
+			fireCoor = targets.remove(randomIndex);
 		}
 		
-		return randomCoor;
+		return fireCoor;
 	}
 	
 	public boolean receiveFireCommand(int[] fire_coordinates)
@@ -120,7 +120,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x][y+1] == 0)
 			{
-				this.targets.push(new int[] {x, y+1});
+				this.targets.add(new int[] {x, y+1});
 			}
 		}
 		//south
@@ -128,7 +128,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x][y-1] == 0)
 			{
-				this.targets.push(new int[] {x, y-1});
+				this.targets.add(new int[] {x, y-1});
 			}
 		}
 		//east
@@ -136,7 +136,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x+1][y] == 0)
 			{
-				this.targets.push(new int[] {x+1, y});
+				this.targets.add(new int[] {x+1, y});
 			}
 		}
 		//west
@@ -144,7 +144,7 @@ public class ComputerPlayer {
 		{
 			if (hitMap[x-1][y] == 0)
 			{
-				this.targets.push(new int[] {x-1, y});
+				this.targets.add(new int[] {x-1, y});
 			}
 		}
 	}
