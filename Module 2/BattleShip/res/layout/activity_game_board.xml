@@ -156,10 +156,20 @@
             android:orientation="vertical"
             android:visibility="invisible" >
 
+            <RatingBar
+                android:id="@+id/hp_bar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:numStars="10"
+                style="?android:attr/ratingBarStyleSmall" 
+                android:isIndicator="true" />
+            
             <TextView
                 android:id="@+id/status_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="6dp"
                 android:background="@drawable/status_bar_background"
                 android:gravity="center"
                 android:text="@string/game_status_string"

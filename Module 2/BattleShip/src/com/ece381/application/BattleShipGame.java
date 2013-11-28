@@ -10,7 +10,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import android.R.color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -36,6 +35,7 @@ import android.widget.Button;
 import android.widget.GridLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -77,6 +77,7 @@ public class BattleShipGame extends Activity {
 	private Button fire_button;
 	private TextView status_bar;
 	private TextView update_bar;
+	private RatingBar hp_bar;
 	private int[] fire_coordinates;
 	private AnimationDrawable selected_fog_cell;
 
@@ -128,6 +129,7 @@ public class BattleShipGame extends Activity {
 		fire_button = (Button) findViewById(R.id.fire_button);
 		status_bar = (TextView) findViewById(R.id.status_bar);
 		update_bar = (TextView) findViewById(R.id.update_bar);
+		hp_bar = (RatingBar) findViewById(R.id.hp_bar);
 
 		// reference the map layouts
 		fogBoardLayout = (GridLayout) findViewById(R.id.fogBoardLayout);
@@ -697,7 +699,10 @@ public class BattleShipGame extends Activity {
 			
 			changeStatusBar(update_bar, 2, "Your opponent hit you at (" + Integer.toString(coordinates[0]) 
 					+ ", " + Integer.toString(coordinates[1]) + ")!");
-				
+			
+			gameBoard.killTileAt(coordinates[0], coordinates[1]);
+			hp_bar.setRating(gameBoard.getHP());
+			
 			//need to inform ai
 			aiPlayer.updateHitMap(coordinates);
 			//update target list
@@ -768,6 +773,8 @@ public class BattleShipGame extends Activity {
 		sp.play(soundIds[3], 100, 100, 1, 0, 1f);
 		// disable clicking for the gameboard
 		disableSetupClickListeners();
+		// setup hp bar
+		hp_bar.setRating(gameBoard.getHP());
 		// Build ready signal
 		String setupMsg = "R";
 		// Append ship positions to signal
@@ -800,6 +807,9 @@ public class BattleShipGame extends Activity {
 			crossfadePanels();
 			disableFireButton();
 			myTurn = true;
+			//move into the next panel right away
+			swipeRightLeft();
+			changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
 		}
 	}
 
@@ -1209,6 +1219,10 @@ public class BattleShipGame extends Activity {
 										drawHitCell(iv);
 										changeStatusBar(update_bar, 2, "Your opponent hit you at (" + Integer.toString(x) 
 															+ ", " + Integer.toString(y) + ")!");
+										
+										gameBoard.killTileAt(x, y);
+										hp_bar.setRating(gameBoard.getHP());
+										
 										// acknowledge
 										send_message("A");
 									} else if (msgReceived.charAt(0) == 'M'
