@@ -54,7 +54,7 @@ void resend1_isr(void* context, alt_u32 id)
 {
 	int i;
 	//resend the signal because client didn't not acknowledge
-	alt_up_rs232_write_data(uart, (unsigned char) 1);
+	alt_up_rs232_write_data(uart, (unsigned char) clientOneID);
 	alt_up_rs232_write_data(uart, (unsigned char) strlen(lastMsgTo1));
 	for (i = 0; i < strlen(lastMsgTo1); i++) {
 		alt_up_rs232_write_data(uart, lastMsgTo1[i]);
@@ -67,7 +67,7 @@ void resend2_isr(void* context, alt_u32 id)
 {
 	int i;
 	//resend the signal because client didn't not acknowledge
-	alt_up_rs232_write_data(uart, (unsigned char) 2);
+	alt_up_rs232_write_data(uart, (unsigned char) clientTwoID);
 	alt_up_rs232_write_data(uart, (unsigned char) strlen(lastMsgTo2));
 	for (i = 0; i < strlen(lastMsgTo2); i++) {
 		alt_up_rs232_write_data(uart, lastMsgTo2[i]);
