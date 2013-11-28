@@ -12,6 +12,7 @@ public class GameBoard {
 	
 	private ArrayList<Battleship> shipOnBoard;
 	private ArrayList<int[]> shipOnBoardCoor;
+	private int boardHP;
 	
 	public GameBoard()
 	{
@@ -59,6 +60,7 @@ public class GameBoard {
 					{
 						gameBoard[coordinates[0]][i].fillTile(ship.getShipComponentAt(i - coordinates[1]));
 					}
+					boardHP += size;
 					return true;
 				}
 				else
@@ -84,6 +86,7 @@ public class GameBoard {
 					{
 						gameBoard[i][coordinates[1]].fillTile(ship.getShipComponentAt(i - coordinates[0]));
 					}
+					boardHP += size;
 					return true;
 				}
 				else
@@ -131,6 +134,30 @@ public class GameBoard {
 		shipOnBoardCoor.remove(shipIndex);
 	}
 	
+	public void killTileAt(int x, int y)
+	{
+		Tile tile = getTileAt(x, y);
+		//if this tile contains something (ie. a ship), remove it
+		if (tile.getTileObject() != null)
+		{
+			boardHP--;
+			tile.fillTile(null);
+		}
+	}
 	
+	public boolean isAllDead()
+	{
+		boolean allDead = false;
+		if (boardHP <= 0)
+		{
+			allDead = true;
+		}
+		return allDead;
+	}
+	
+	public int getHP()
+	{
+		return this.boardHP;
+	}	
 	
 }
