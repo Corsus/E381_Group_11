@@ -43,11 +43,11 @@ import android.widget.ViewFlipper;
 import com.ece381.controller.ComputerPlayer;
 import com.ece381.models.*;
 import com.ece381.models.Battleship.ShipOrientation;
-import com.example.myfirstapp.R;
+import com.ece381.application.R;
 
 public class BattleShipGame extends Activity {
 
-	public final static String EXTRA_MESSAGE = "com.example.myfirstapp.MESSAGE";
+	public final static String EXTRA_MESSAGE = "com.ece381.application.MESSAGE";
 
 	private View setupPanel;
 	private View playPanel;
@@ -114,7 +114,7 @@ public class BattleShipGame extends Activity {
 			// Show the Up button in the action bar.
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-
+		
 		// reference view flipper
 		viewflipper = (ViewFlipper) findViewById(R.id.GameMapsLayout);
 		mapTouchListener = new GameMapOnTouchListener();
@@ -152,6 +152,12 @@ public class BattleShipGame extends Activity {
 		String message = intent.getStringExtra(MainActivity.EXTRA_MESSAGE);
 		if (message != null && message.equals("SINGLE")) {
 			single_player_mode = true;
+			getActionBar().setTitle(R.string.title_activity_game_versus_ai);
+		}
+		else
+		{
+			single_player_mode = false;
+			getActionBar().setTitle(R.string.title_activity_game_versus_player);
 		}
 		
 		setUpSound();
@@ -611,6 +617,7 @@ public class BattleShipGame extends Activity {
 			AlertDialog alertDialog = alertDialogBuilder.create();
 			alertDialog.show();
 		}
+		Toast.makeText(this, "You can't leave a multiplayer game.", Toast.LENGTH_SHORT).show();
 		//there is no support for leaving a multiplayer game
 	}
 	

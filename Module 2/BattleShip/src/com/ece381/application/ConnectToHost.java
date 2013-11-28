@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
-import com.example.myfirstapp.R;
+import com.ece381.application.R;
 
 import android.media.AudioManager;
 import android.media.SoundPool;

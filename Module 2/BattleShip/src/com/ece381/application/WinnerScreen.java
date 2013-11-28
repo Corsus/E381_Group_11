@@ -1,6 +1,6 @@
 package com.ece381.application;
 
-import com.example.myfirstapp.R;
+import com.ece381.application.R;
 
 import android.os.Bundle;
 import android.app.Activity;
@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.view.Menu;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class WinnerScreen extends Activity {
 

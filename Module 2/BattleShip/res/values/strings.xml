@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">BATTLESHIP</string>
+    <string name="app_name">Battleship</string>
+    <string name="main_menu_banner">Main Menu</string>
     <string name="hello_world">Hello world!</string>
     <string name="edit_message">Enter a message</string>
     <string name="button_send">Send</string>
@@ -12,14 +13,13 @@
     <string name="play_button_2">Multiplayer</string>
     <string name="title_activity_game_versus_ai">Versus AI</string>
     <string name="title_activity_game_versus_player">Versus Player</string>
-    <string name="title_activity_setup_game_board">Game Setup</string>
     <string name="setup_select_bar_string">Select Ship</string>
     <string name="change_orientation_button_string">Change Orientation</string>
     <string name="setup_ready_string">Ready</string>
     <string name="game_status_string">STATUS</string>
     <string name="update_status_string">UPDATES</string>
     <string name="button_fire_string">FIRE</string>
-    <string name="title_activity_loading_screen">Loading Screen</string>
+    <string name="title_activity_loading_screen">Loading</string>
     <string name="loading_string">LOADING...</string>
     <string name="remove_string">Remove</string>
     <string name="title_activity_connect_to_host">Connect</string>
