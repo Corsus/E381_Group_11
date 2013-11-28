@@ -3,7 +3,7 @@ package com.ece381.application;
 import java.io.IOException;
 import java.net.Socket;
 
-import com.example.myfirstapp.R;
+import com.ece381.application.R;
 
 import android.media.AudioManager;
 import android.media.SoundPool;
@@ -12,9 +12,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.view.Menu;
 import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
 
 public class MainActivity extends Activity  {
 	
@@ -27,6 +25,8 @@ public class MainActivity extends Activity  {
 		// creates the activity
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		getActionBar().setTitle(R.string.main_menu_banner);
 		// set up sound
         this.setVolumeControlStream(AudioManager.STREAM_MUSIC);	
 		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);

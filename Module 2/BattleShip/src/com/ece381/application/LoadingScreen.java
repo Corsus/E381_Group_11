@@ -5,13 +5,12 @@ import java.io.InputStream;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.example.myfirstapp.R;
+import com.ece381.application.R;
 
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
-import android.widget.Toast;
 
 public class LoadingScreen extends Activity {
 
