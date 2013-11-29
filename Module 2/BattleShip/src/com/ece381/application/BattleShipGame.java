@@ -625,7 +625,10 @@ public class BattleShipGame extends Activity {
 			AlertDialog alertDialog = alertDialogBuilder.create();
 			alertDialog.show();
 		}
-		Toast.makeText(this, "You can't leave a multiplayer game.", Toast.LENGTH_SHORT).show();
+		else
+		{
+			Toast.makeText(this, "You can't leave a multiplayer game.", Toast.LENGTH_SHORT).show();
+		}
 		//there is no support for leaving a multiplayer game
 	}
 	
