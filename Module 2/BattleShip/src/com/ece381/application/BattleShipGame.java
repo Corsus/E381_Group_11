@@ -653,7 +653,6 @@ public class BattleShipGame extends Activity {
 		// Singleplayer mode: process command locally
 		else {
 			myTurn = true;
-			sp.play(soundIds[5], 100, 100, 1, 0, 1f);
 			//fire at the computer
 			fireAtComputer(fire_coordinates);
 			if (aiPlayer.getHP() == 0)
