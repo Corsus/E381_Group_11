@@ -14,7 +14,8 @@
     <ViewFlipper
         android:id="@+id/GameMapsLayout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" >
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp" >
         
         <GridLayout
             android:id="@+id/myBoardLayout"
@@ -169,12 +170,12 @@
                 android:id="@+id/status_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="6dp"
+                android:layout_margin="0dp"
                 android:background="@drawable/status_bar_background"
                 android:gravity="center"
                 android:text="@string/game_status_string"
-                android:textColor="@android:color/white"
-                android:textAppearance="?android:attr/textAppearanceSmall" />
+                android:textAppearance="?android:attr/textAppearanceSmall"
+                android:textColor="@android:color/white" />
 
             <TextView
                 android:id="@+id/update_bar"
@@ -184,7 +185,8 @@
                 android:gravity="center"
                 android:text="@string/update_status_string"
                 android:textAppearance="?android:attr/textAppearanceSmall"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white" 
+                android:layout_marginTop="2dp"/>
             
             <Button
                 android:id="@+id/fire_button"
@@ -193,7 +195,8 @@
                 android:clickable="false"
                 android:enabled="false"
                 android:onClick="send_fire_command"
-                android:text="@string/button_fire_string" />
+                android:text="@string/button_fire_string"
+                android:layout_marginTop="2dp" />
 
         </LinearLayout>
 
