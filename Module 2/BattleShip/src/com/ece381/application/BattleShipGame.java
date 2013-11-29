@@ -838,7 +838,6 @@ public class BattleShipGame extends Activity {
 			crossfadePanels();
 			disableFireButton();
 			myTurn = true;
-			sp.play(soundIds[5], 100, 100, 1, 0, 1f);
 			//move into the next panel right away
 			swipeRightLeft();
 			changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
@@ -1233,6 +1232,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										drawHitCell(iv);
+										sp.play(soundIds[6], 100, 100, 1, 0, 1f);
 										changeStatusBar(status_bar, 0, "You sunk a battleship!");
 										// acknowledge
 										send_message("A");
