@@ -27,6 +27,7 @@ public class LoadingScreen extends Activity {
 	
 	private void finishLoading()
 	{
+		tcp_timer.cancel();
 		setResult(1);
 		finish();
 	}

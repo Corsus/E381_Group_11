@@ -1252,6 +1252,7 @@ public class BattleShipGame extends Activity {
 										runOnUiThread(new Runnable() {
 											@Override
 											public void run() {
+												tcp_timer.cancel();
 												Intent intent = new Intent(
 														BattleShipGame.this,
 														WinnerScreen.class);
@@ -1267,6 +1268,7 @@ public class BattleShipGame extends Activity {
 
 											@Override
 											public void run() {
+												tcp_timer.cancel();
 												Intent intent = new Intent(
 														BattleShipGame.this,
 														WinnerScreen.class);
