@@ -91,13 +91,13 @@ void sendToClient(int clientID, char* msg)
 	//printf("Sending the message to the Middleman\n");
 
 	//first keep track of this message
-	if (clientID % 2 == 1)
+	if (clientID == clientOneID)
 	{
 		free(lastMsgTo1);
 		lastMsgTo1 = (char*) malloc(sizeof(char) * (strlen(msg) + 1));
 		strcpy(lastMsgTo1, msg);
 	}
-	else if (clientID % 2 == 0)
+	else if (clientID == clientTwoID)
 	{
 		free(lastMsgTo2);
 		lastMsgTo2 = (char*) malloc(sizeof(char) * (strlen(msg) + 1));
@@ -174,11 +174,11 @@ void receiveFromClient()
 void waitForAcknowledgement(int clientID)
 {
 	printf("Waiting for acknowledgement from %d...\n", clientID);
-	if (clientID % 2 == 1)
+	if (clientID  == clientOneID)
 	{
 		alt_irq_register(READ_TIMER_IRQ, 0x0, resend1_isr);
 	}
-	else if (clientID % 2 == 0)
+	else if (clientID  == clientTwoID)
 	{
 		alt_irq_register(READ_TIMER_IRQ, 0x0, resend2_isr);
 	}
@@ -206,7 +206,7 @@ void handleFireCommandFromClientOne()
 
 		//if message is fire command, we handle it
 		//if message is not fire command, we loop back and wait for another message
-		if (clientFromID % 2 == 1 && msgReceived[0] == 'F')
+		if (clientFromID == clientOneID && msgReceived[0] == 'F')
 		{
 			x = ((int) msgReceived[1]) - 48;
 			y = ((int) msgReceived[2]) - 48;
@@ -276,7 +276,7 @@ void handleFireCommandFromClientTwo()
 
 		//if this is a fire command, we handle it
 		//otherwise, we loop back and wait for another message
-		if (clientFromID % 2 == 0 && msgReceived[0] == 'F')
+		if (clientFromID == clientTwoID && msgReceived[0] == 'F')
 		{
 			x = ((int) msgReceived[1]) - 48;
 			y = ((int) msgReceived[2]) - 48;

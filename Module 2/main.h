@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include "Communication.h"
 
-#define GRID_ROWS 7
+#define GRID_ROWS 6
 #define GRID_COLS 6
 
 typedef enum
