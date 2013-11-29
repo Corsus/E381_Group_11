@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="@android:color/transparent"
+            android:background="@drawable/box_indicator_white"
             android:columnCount="6"
             android:columnOrderPreserved="true"
             android:rowCount="6"
