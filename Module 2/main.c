@@ -123,15 +123,15 @@ int isGameOver(int gridToCheck[GRID_COLS][GRID_ROWS])
 int main()
 {
 	//main server loop
+	printf("Initializing RS232 Connection...\n");
+	initializeRS232();
+	initializeReadTimerInterrupt();
+
 	while (1)
 	{
 		printf("Initializing Grid Models...\n");
 		initializeGridContents(playerOneGrid);
 		initializeGridContents(playerTwoGrid);
-
-		printf("Initializing RS232 Connection...\n");
-		initializeRS232();
-		initializeReadTimerInterrupt();
 
 		//wait for players to report ship positions (PRESS READY ON ANDROID)
 		//store ship positions in grid model
