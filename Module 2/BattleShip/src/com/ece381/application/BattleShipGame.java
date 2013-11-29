@@ -10,6 +10,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import android.R.color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.Build;
@@ -445,7 +446,12 @@ public class BattleShipGame extends Activity {
 	// onClick handler for the 4 ship selector buttons
 	public void selectShipOnClick(View view) {
 		
+		//play sound
 		sp.play(soundIds[0], 100, 100, 1, 0, 1f);
+		
+		//draw box indicator
+		myBoardLayout.setBackgroundResource(R.drawable.box_indicator_animation);
+		((AnimationDrawable) myBoardLayout.getBackground()).start();
 		
 		if (shipOnHand != null)
 		{
@@ -643,7 +649,6 @@ public class BattleShipGame extends Activity {
 		}
 		// Singleplayer mode: process command locally
 		else {
-			// TODO: Single player mode implementation
 			myTurn = true;
 			//fire at the computer
 			fireAtComputer(fire_coordinates);
@@ -833,7 +838,7 @@ public class BattleShipGame extends Activity {
 	public void sendAndWaitForAck(String msg) {
 		send_message(msg);
 		resend_service = Executors.newSingleThreadScheduledExecutor();
-		resend_service.scheduleAtFixedRate(rmt, 3, 3, TimeUnit.SECONDS);
+		resend_service.scheduleAtFixedRate(rmt, 5, 5, TimeUnit.SECONDS);
 		try {
 			synchronized (acknowledgementWaiter) {
 				acknowledgementWaiter.wait();
@@ -901,10 +906,13 @@ public class BattleShipGame extends Activity {
 					drawShipOnMap(shipOnHand, index);
 					disableSelectShipButton(shipOnHand);
 					isBoardReady();
+					myBoardLayout.setBackgroundColor(color.transparent);
 				}
 				else
 				{
 					enableSelectShipButton(shipOnHand.getSize());
+					myBoardLayout.setBackgroundResource(R.drawable.error_indicator_animation);
+					((AnimationDrawable) myBoardLayout.getBackground()).start();
 				}
 				shipOnHand = null;
 			}
@@ -1118,6 +1126,7 @@ public class BattleShipGame extends Activity {
 				}
 				break;
 			}
+			gameBoard.setHP(gameBoard.getHP() - size);
 		}
 
 		// helper method to undraw the ship from the board
