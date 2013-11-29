@@ -625,7 +625,10 @@ public class BattleShipGame extends Activity {
 			AlertDialog alertDialog = alertDialogBuilder.create();
 			alertDialog.show();
 		}
-		Toast.makeText(this, "You can't leave a multiplayer game.", Toast.LENGTH_SHORT).show();
+		else
+		{
+			Toast.makeText(this, "You can't leave a multiplayer game.", Toast.LENGTH_SHORT).show();
+		}
 		//there is no support for leaving a multiplayer game
 	}
 	
@@ -650,11 +653,13 @@ public class BattleShipGame extends Activity {
 		// Singleplayer mode: process command locally
 		else {
 			myTurn = true;
+			sp.play(soundIds[5], 100, 100, 1, 0, 1f);
 			//fire at the computer
 			fireAtComputer(fire_coordinates);
 			if (aiPlayer.getHP() == 0)
 			{
 				//we win
+				sp.play(soundIds[7], 100, 100, 1, 0, 1f);
 				Intent intent = new Intent(BattleShipGame.this,	WinnerScreen.class);
 				intent.putExtra(EXTRA_MESSAGE, "WIN");
 				startActivity(intent);
@@ -670,6 +675,8 @@ public class BattleShipGame extends Activity {
 		if (aiPlayer.receiveFireCommand(coordinates))
 		{
 			//hit :)
+			sp.play(soundIds[6], 100, 100, 1, 0, 1f);
+			
 			ImageView iv = (ImageView) fogBoardLayout
 					.getChildAt(coordinates[0]
 							* GameBoard
@@ -697,6 +704,8 @@ public class BattleShipGame extends Activity {
 		if (wo != null)
 		{
 			//got hit
+			sp.play(soundIds[6], 100, 100, 1, 0, 1f);
+			
 			ImageView iv = (ImageView) myBoardLayout.getChildAt(
 					coordinates[0]* GameBoard.getBoardHeight()
 							+ coordinates[1]);
@@ -716,6 +725,7 @@ public class BattleShipGame extends Activity {
 			if (--single_player_hp == 0)
 			{
 				//you lost
+				sp.play(soundIds[8], 100, 100, 1, 0, 1f);
 				Intent intent = new Intent(BattleShipGame.this,	WinnerScreen.class);
 				intent.putExtra(EXTRA_MESSAGE, "LOSE");
 				startActivity(intent);
@@ -829,6 +839,7 @@ public class BattleShipGame extends Activity {
 			crossfadePanels();
 			disableFireButton();
 			myTurn = true;
+			sp.play(soundIds[5], 100, 100, 1, 0, 1f);
 			//move into the next panel right away
 			swipeRightLeft();
 			changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
@@ -1016,6 +1027,8 @@ public class BattleShipGame extends Activity {
 		soundIds[4] = sp.load(this, R.raw.fire, 1);
 		soundIds[5] = sp.load(this, R.raw.turn, 1);
 		soundIds[6] = sp.load(this, R.raw.hit, 1);	
+		soundIds[7] = sp.load(this, R.raw.win, 1);
+		soundIds[8] = sp.load(this, R.raw.loss, 1);
 	}
 
 
@@ -1198,6 +1211,7 @@ public class BattleShipGame extends Activity {
 											Toast.LENGTH_SHORT).show();
 									if (msgReceived.charAt(0) == 'T') {
 										myTurn = true;
+										sp.play(soundIds[5], 100, 100, 1, 0, 1f);
 										changeStatusBar(status_bar, 0, "Your Turn! Pick a tile.");
 										// acknowledge
 										send_message("A");
@@ -1208,6 +1222,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ fire_coordinates[1]);
 										drawHitCell(iv);
+										sp.play(soundIds[6], 100, 100, 1, 0, 1f);
 										changeStatusBar(status_bar, 0, "Hit at (" + Integer.toString(fire_coordinates[0])
 												+ "," + Integer.toString(fire_coordinates[1]) + ")!");
 										// acknowledge
@@ -1243,6 +1258,7 @@ public class BattleShipGame extends Activity {
 																.getBoardHeight()
 														+ y);
 										drawHitCell(iv);
+										sp.play(soundIds[6], 100, 100, 1, 0, 1f);
 										changeStatusBar(update_bar, 2, "Your opponent hit you at (" + Integer.toString(x) 
 															+ ", " + Integer.toString(y) + ")!");
 										
@@ -1270,6 +1286,7 @@ public class BattleShipGame extends Activity {
 											@Override
 											public void run() {
 												tcp_timer.cancel();
+												sp.play(soundIds[7], 100, 100, 1, 0, 1f);
 												Intent intent = new Intent(
 														BattleShipGame.this,
 														WinnerScreen.class);
@@ -1286,6 +1303,7 @@ public class BattleShipGame extends Activity {
 											@Override
 											public void run() {
 												tcp_timer.cancel();
+												sp.play(soundIds[8], 100, 100, 1, 0, 1f);
 												Intent intent = new Intent(
 														BattleShipGame.this,
 														WinnerScreen.class);
