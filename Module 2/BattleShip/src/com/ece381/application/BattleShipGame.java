@@ -724,7 +724,7 @@ public class BattleShipGame extends Activity {
 			if (--single_player_hp == 0)
 			{
 				//you lost
-				sp.play(soundIds[8], 100, 100, 1, 0, 1f);
+				sp.play(soundIds[8], 70, 70, 1, 0, 1f);
 				Intent intent = new Intent(BattleShipGame.this,	WinnerScreen.class);
 				intent.putExtra(EXTRA_MESSAGE, "LOSE");
 				startActivity(intent);
@@ -1302,7 +1302,7 @@ public class BattleShipGame extends Activity {
 											@Override
 											public void run() {
 												tcp_timer.cancel();
-												sp.play(soundIds[8], 100, 100, 1, 0, 1f);
+												sp.play(soundIds[8], 70, 70, 1, 0, 1f);
 												Intent intent = new Intent(
 														BattleShipGame.this,
 														WinnerScreen.class);
