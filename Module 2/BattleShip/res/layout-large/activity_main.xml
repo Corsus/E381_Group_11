@@ -23,6 +23,7 @@
 
     <Button
         android:id="@+id/multi_play"
+        android:layout_width="192dp"
         android:layout_column="0"
         android:layout_gravity="center"
         android:background="@android:drawable/btn_default"
@@ -36,6 +37,7 @@
 
     <Button
         android:id="@+id/solo_play"
+        android:layout_width="192dp"
         android:layout_column="0"
         android:layout_gravity="center_horizontal|bottom"
         android:layout_marginTop="100dp"
