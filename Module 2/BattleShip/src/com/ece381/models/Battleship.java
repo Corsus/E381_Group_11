@@ -52,5 +52,10 @@ public class Battleship {
 	{
 		return this.size;
 	}
+	
+	public void setOrientation (ShipOrientation so)
+	{
+		this.orientation = so;
+	}
 
 }
