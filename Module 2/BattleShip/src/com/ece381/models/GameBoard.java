@@ -160,4 +160,8 @@ public class GameBoard {
 		return this.boardHP;
 	}	
 	
+	public void setHP(int hp)
+	{
+		this.boardHP = hp;
+	}
 }
