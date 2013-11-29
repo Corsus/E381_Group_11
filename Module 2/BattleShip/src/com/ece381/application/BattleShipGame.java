@@ -1019,7 +1019,7 @@ public class BattleShipGame extends Activity {
 		this.setVolumeControlStream(AudioManager.STREAM_MUSIC);
 				
 		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
-		soundIds = new int[7];
+		soundIds = new int[10];
 		soundIds[0] = sp.load(this, R.raw.click_ship, 1);
 		soundIds[1] = sp.load(this, R.raw.click_grid, 1);
 		soundIds[2] = sp.load(this, R.raw.orientation, 1);
