@@ -1,35 +1,47 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/LinearLayout1"
+    android:id="@+id/GridLayout1"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/space_gradient"
-    android:orientation="vertical"
+    android:columnCount="2"
+    android:orientation="horizontal"
     android:paddingTop="?android:attr/actionBarSize" >
 
     <Space
         android:id="@+id/Space1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_gravity="fill_vertical" />
 
-    <Button
-        android:id="@+id/solo_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:layout_marginTop="100dp"
-        android:background="@android:drawable/btn_default"
-        android:onClick="playAI"
-        android:text="@string/play_button_1" />
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_column="0"
+        android:layout_gravity="top"
+        android:layout_row="0"
+        android:src="@drawable/cover" />
 
     <Button
         android:id="@+id/multi_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_column="0"
         android:layout_gravity="center"
         android:background="@android:drawable/btn_default"
         android:onClick="playMulti"
         android:text="@string/play_button_2" />
 
-</LinearLayout>
+    <Space
+        android:layout_column="1"
+        android:layout_gravity="fill_horizontal"
+        android:layout_row="3" />
+
+    <Button
+        android:id="@+id/solo_play"
+        android:layout_column="0"
+        android:layout_gravity="center_horizontal|bottom"
+        android:layout_marginTop="100dp"
+        android:layout_row="0"
+        android:background="@android:drawable/btn_default"
+        android:onClick="playAI"
+        android:text="@string/play_button_1" />
+
+</GridLayout>

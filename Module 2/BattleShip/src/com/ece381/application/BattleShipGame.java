@@ -769,6 +769,23 @@ public class BattleShipGame extends Activity {
 		}
 			break;
 		}
+		
+		if(this.shipOnHand != null)
+		{
+			switch(this.shipOnHand.getOrientation())
+			{
+			case VERTICAL:
+			{
+				shipOnHand.setOrientation(ShipOrientation.HORIZONTAL);
+			}
+			break;
+			case HORIZONTAL:
+			{
+				shipOnHand.setOrientation(ShipOrientation.VERTICAL);
+			}
+			break;
+			}
+		}
 	}
 
 	// onClick handler for the Ready button
