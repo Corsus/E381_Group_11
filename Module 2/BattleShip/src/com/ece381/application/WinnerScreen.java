@@ -2,6 +2,8 @@ package com.ece381.application;
 
 import com.ece381.application.R;
 
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.Intent;
@@ -11,10 +13,18 @@ import android.widget.TextView;
 
 public class WinnerScreen extends Activity {
 
+	private SoundPool sp;
+    private int soundId;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_winner_screen);
+		
+		// set up sound
+        this.setVolumeControlStream(AudioManager.STREAM_MUSIC);	
+		sp = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
+		soundId = sp.load(this, R.raw.menu, 1);
 		
 		Intent intent = getIntent();
 		String message = intent.getStringExtra(BattleShipGame.EXTRA_MESSAGE);
@@ -44,6 +54,7 @@ public class WinnerScreen extends Activity {
 	
 	public void returnToMain(View view)
 	{
+		sp.play(soundId, 100, 100, 1, 0, 1f);
 		Intent intent = new Intent(this, MainActivity.class);
 		intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		startActivity(intent);
